@@ -178,8 +178,7 @@ public class Text {
 	 * @return
 	 */
 	public boolean hasPMID () {
-		return //true;//
-			ID.matches("[0-9]+");
+		return (PMID >= 1);
 	}
 
 

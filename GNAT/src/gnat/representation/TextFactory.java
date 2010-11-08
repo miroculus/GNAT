@@ -299,6 +299,8 @@ public class TextFactory {
 		// remove the extension from the filename to get an ID
 		String id = filename.replaceFirst("^(.+)\\..*?$", "$1");
 		
+		//System.out.println("id: "+ id);
+		
 		StringBuffer text = new StringBuffer();
 		
 		try {
