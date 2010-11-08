@@ -1,0 +1,95 @@
+-- GNAT installation --
+-----------------------
+
+1) Download several files
+2) Create and fill a relational database
+3) Edit property files
+4) Run a test
+
+
+
+1) Download several files
+-------------------------
+
+Download the following files from Sourceforge:
+- gnat.jar            - GNAT binaries for client and server
+                        should go into the lib/ directory
+- data.tar.gz         - data, scripts, test cases needed for GNAT
+- dictionaries.tar.gz - example dictionaries for human, mouse, and fruit fly,
+                        genes; and for GeneOntology and MeSH term recognition
+- sql.tar.gz          - gene information for GNAT
+
+Unzip all *.gz files into the same directory. The following sub-directories
+will be created:
+- config/         - various configuration files
+- data/           - static data required to run GNAT
+- dictionaries/   - data for NER dictionaries
+- documentation/  - readme files
+- lib/            - required libraries such as gnat.jar; you can store other
+                    libraries such as mysql.jar (see below) here as well.
+                    * if this directory is not present, create it and move
+                      gnat.jar and other libraries here
+- scripts/        - example scripts to generate and start dictionaries, run
+                    GNAT, etc.
+                    * you might need to change the class path in these scripts
+- sql/            - data that need to be loaded into a DB, see below
+- texts/          - example texts and tests to process by GNAT
+and two property files (isgn_ and service_properties.xml).
+
+
+
+2) Create and fill a relational database
+----------------------------------------
+
+Load the SQL data into a relational database, such as MySQL.
+a) set up a local database if none is already running
+b) create a schema for GNAT data, for instance, called "GNAT"
+c) load all the SQL files into that schema
+   Example in MySQL:
+   - change to the sql/ directory
+   - start the MySQL command prompt
+   - run the command
+     > source gr_goterm.sql;
+   to load the GOTerm table.
+   For MySQL, you can also run
+     > source mysqlImportAll.sql;
+   to import all SQL files at once.
+   Again, you need to be in the sql/ directory!
+d) download a JDBC driver for that database from the respective website, such
+   as mysql-connector-java-5.1.7-bin.jar, and move it to the lib/ directory
+e) change the database-related settings in isgn_properties.xml, see below
+
+
+
+3) Edit property files
+----------------------
+
+Edit the properties file "isgn_properties.xml"
+- change the database access information according to your local configuration:
+  change entries for dbUser, dbPass, dbAccessUrl, and dbDriver
+  Examples:
+    dbAccessUrl: jdbc:mysql://localhost:3306/GNAT
+    dbDriver:    org.gjt.mm.mysql.Driver
+
+
+
+4) Run a test
+-------------
+
+a) Start the human gene recognition dictionary locally
+   - see scripts/startHuman.sh for an example of how to start a dictionary
+   - you need to provide the path to the human (9606) dictionary directory,
+   - as well as a port on which the server will run
+   - needs around 2GB of memory
+   - needs around 1min to start
+   - after successful startup, the dictionary will display a message like
+     "Startup in x seconds."
+b) If you chose a port other than given in the example shell script ("56001"),
+   edit data/taxonToServerPort.txt and change the entry for "9606" accordingly
+c) You can also run the dictionary on a different machine; in this case, add
+   the machine's address and port to the entry for 9606, in the format
+   "server:port". Example:
+     9606[TAB]myserver.com:5555[TAB]optional comment
+d) Run the test with scripts/runTest.sh
+e) The test should return the message "Test okay!" upon completion
+

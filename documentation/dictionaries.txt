@@ -1,0 +1,77 @@
+-- Dictionaries for NER in GNAT --
+----------------------------------
+
+Dictionary NER taggers, or short: Dictionaries, are implemented as automata, 
+encoding regular expressions that match one type of entity per dictionary. Each
+stop state is assigned with an ID that represents the entity matched, or 
+sometimes multiple IDs if several entities share the same name.
+
+The automata are based on the BRICS library, http://www.brics.dk/automaton/.
+
+A dictionary automaton is represented by gnat.server.dictionary.Dictionary. It
+can be loaded from binary files, found in GNAT's 'dictionaries' directory; or
+it can be generated from a file containing the regular expressions for each
+entity of a certain type. For each entity type, there might be sub-types, 
+defined by separate dictionaries, as is currently the case for genes:
+
+In GNAT, NER of genes is currently split into separate NER modules for each
+species, such as human, fruit fly, and mouse. The main reason is that 
+EntrezGene, on which GNAT's gene NER builds, contains about 6 million gene 
+entries for 6800 species, which constitutes too a large set to handle with the 
+current methods. In future versions, we might release a single NER module that 
+handles all species at once. 
+
+Dictionaries supplied with this version:
+dictionaries/9606/    -  tags human gene names and assigns EntrezGene IDs
+dictionaries/7227/    -  tags fruit fly genes and assigns EntrezGene IDs
+dictionaries/10090/   -  tags murine genes and assigns EntrezGene IDs
+dictionaries/goMesh/  -  tags GeneOntology and MeSH terms and assigns GO codes
+                         and MeSH IDs, respectively; GO codes are stripped of
+                         'GO' and leading zeroes; MeSH Unique IDs are stripped
+                         of 'D' and leading zeroes
+
+Regular expressions are stored in *.mwt files (see dictionaries/ folder for 
+examples). A series of steps is required to obtain a regular expression file,
+classes handling these steps are found in the package gnat.server.ner.*. There
+are shell scripts in the scripts/makeDictionaries/. directory to handle most
+steps.
+
+1) For gene names, download a recent copy of the 'gene_info' file from NCBI's 
+   FTP site, see below, available as 'gene_info.gz' (currently about 115MB). 
+2) Extract the data relevant to a single species from gene_info, using 
+   makeListFromGeneInfo.sh, into a file where each line starts with the gene's 
+   ID, followed by names and synonyms, all tab-separated.
+   See class: gnat.server.ner.GeneInfo2Dictionary
+3) Convert this file into a format where every line contains only one name in
+   addition to the gene ID, using makeDictFromList.sh.
+   See class gnat.server.ner.ConvertDictionaryToIDNamePairs
+4) Generate an MWT file from that dictionary file, which encodes each name as
+   a regular expression covering common spelling variations, using makeMwt.sh.
+   See class gnat.server.ner.GeneNamesToMWT for gene names
+5) Compile an automaton for that MWT file using makeAutomaton.sh.
+   See class gnat.server.dictionary.Dictionary
+6) Launch the dictionary as a webserver, see scripts/startHuman.sh for an 
+   example.
+   See class gnat.server.dictionary.DictionaryServer
+   
+A gnat.server.dictionary.DictionaryServer listens on a specified port and 
+accepts requests, where each text to annotate is wrapped in <text> XML tags.
+Per text in the query, a line with entities will be returned, each wrapped in
+<entity> tags, with attributes for ids, startIndex, and endIndex; the actual 
+match is stored in the element's content. Additional attributes might be added
+in future releases.
+
+For genes, entries of which dictionary is available on which server and which
+port should go into the configuration file config/taxonToServerPort.txt, which 
+in turn is the value of the 'taxon2port' key in ISGNProperties.
+
+
+NCBI EntrezGene: http://www.ncbi.nlm.nih.gov/sites/entrez/?db=gene
+NCBI FTP: ftp://ftp.ncbi.nih.gov/gene/DATA/
+Gene Ontology: http://www.geneontology.org
+MeSH: see http://www.nlm.nih.gov/mesh/MBrowser.html for a browser
+NCBI Taxonomy: http://www.ncbi.nlm.nih.gov/sites/entrez/?db=taxonomy
+
+
+-----
+JH 5 Nov 2010

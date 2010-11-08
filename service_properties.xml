@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!DOCTYPE properties SYSTEM "http://java.sun.com/dtd/properties.dtd">
+<properties>
+<comment>Date: 1253817159sec</comment>
+
+<!-- Needed for the GeneService and the GeneNormalization task in GnatService: -->
+<!-- Access parameters to the database that hosts GNAT's data (GR_* tables, GO2GO, GO2LCA tables) -->
+<entry key="dbUser">GnatReadOnly</entry>
+<entry key="dbPass">not_so_obvi0us</entry>
+<entry key="dbAccessUrl">jdbc:mysql://localhost:3306/GNAT</entry>
+<entry key="dbDriver">org.gjt.mm.mysql.Driver</entry>
+
+
+<!-- Needed for GnatService: -->
+<!-- the default server where all/most dictionaries are located; exception can be defined in the taxonToPort mapping file -->
+<entry key="dictionaryServer">localhost</entry>
+<!-- ports for each dictionary; also used for exceptions for the default 'dictionaryServer' address -->
+<entry key="taxon2port">data/taxonToServerPort.txt</entry>
+
+
+<!-- Needed by the GO term recognition task of GnatService: -->
+<!-- Address and port of the dictionary server for GO term recognition -->
+<entry key="dictionaryServerGO">http://bergman.smith.man.ac.uk:56099</entry>
+
+</properties>

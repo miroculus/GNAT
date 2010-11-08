@@ -1,0 +1,18 @@
+#####
+# A mapping of DictionaryServers for gene NER from taxon to server address and port.
+# Alternatively to an address, the name of a gnat.filter.Filter can be given, including the package.
+# 
+# If a species is mapped by multiple entries, all corresponding servers will be called, one after the other.
+# An entry 'ALL' for the taxon ID means that this Server/Filter will be called for all species; if a particular
+# taxon is also given, both servers will be called for that species.
+# An entry 'OTHER' for the taxon ID means that the given server will be called if no other mapping for a particular species exists.
+#
+# Thus, if you are proving your own NER for a certain species, but want to use GNAT for all others, you should have an entry
+# for 'OTHER', mapped to 'gnat.filter.ner.GnatServiceNer'; plus an entry for your own dictionary, mapping its species to a
+# server address:port or your own Filter class.
+#####
+#Comment lines starts with #
+#Tab-seprated entries for:
+#Taxon ID	Server address or filter class
+OTHER	gnat.filter.ner.GnatServiceNer	# handle all NER requests *except* for the ones below (if any) with GNAT
+7227	localhost:56008	# requests for fruit fly genes will be handled by a local DictionaryServer

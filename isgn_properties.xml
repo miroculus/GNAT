@@ -1,0 +1,71 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!DOCTYPE properties SYSTEM "http://java.sun.com/dtd/properties.dtd">
+<properties>
+<comment>Date: 1253817159sec</comment>
+
+<!-- some values that you have to set/change: -->
+<entry key="dbUser">joerg</entry>
+<entry key="dbPass">fadd!8772</entry>
+<entry key="dbAccessUrl">jdbc:mysql://bergman.smith.man.ac.uk:3306/joerg</entry>
+<entry key="dbDriver">org.gjt.mm.mysql.Driver</entry>
+<entry key="dictionaryServer">localhost</entry>
+<entry key="defaultSpecies">9606</entry>
+
+<entry key="gnatServiceUrl">http://bergman.smith.man.ac.uk:8081/</entry>
+<entry key="geneNerServiceMapping">config/geneNerDictionaryServers.txt</entry>
+<entry key="runAdditionalFilters">config/runAdditionalFilters.txt</entry>
+<entry key="geneRepositoryFile">data/geneRepository.obj</entry>
+<entry key="geneRepositoryService">http://bergman.smith.man.ac.uk:8082</entry>
+<entry key="taxon2port">config/taxonToServerPort.txt</entry>
+
+<entry key="linnaeusUrl">localhost:55000</entry>
+<!--<entry key="dbMedlineAccessUrl">jdbc:mysql://localhost:3306/joerg</entry>-->
+<entry key="italicsFile">data/pmc-italics.tsv</entry>
+<!-- Format of the filenames in input/test directories. Valid: {pmcid,pmid,doi,any} as base filename, plus extension. -->
+<!-- pmcid allows for either "pmc12345" or "12345" -->
+<entry key="filenameFormat">pmcid.txt</entry>
+
+<!-- the default mode is 'input' and most likely you'll want to keep it: -->
+<!-- allowed modes: input, test, evaluation -->
+<entry key="mode">input</entry>
+<!-- 'input' mode reads all files to annotate from a given directory -->
+<entry key="inputDirectory">eval/bc3GNtrain/Set1/txt</entry>
+
+<!-- all annotations will be written into a single file -->
+<entry key="predictionsOutput">train.set1.txtNoMethods.predictions</entry>
+
+<!-- 'test' mode returns some debug info -->
+<entry key="testDirectory">abstracts</entry>
+<!-- 'evaluation' mode compares the predictions to a given gold standard -->
+<entry key="evalDirectory">data/allSpecies/100</entry>
+<entry key="evalSolution">data/allSpecies/test100.genelist</entry>
+<entry key="evalScript">data/allSpecies/bc2scoring.py</entry>
+
+<!-- some values you might have to change, mainly if you changed the directory structure: -->
+<entry key="geneRepository">data/g100.object</entry>
+<entry key="pubmedId2GO">textObjects/allSpecies/</entry>
+<entry key="dictionaryServerGO">http://bergman.smith.man.ac.uk:56099</entry>
+<entry key="taxonParentTable">data/tax_parenttable.txt</entry>
+<entry key="uniprot2taxon">data/uniprot2taxid.txt</entry>
+<entry key="pubmed2Taxon">data/pmid2Taxon.txt</entry>
+<entry key="stopWords">data/bnc_wordlist.txt</entry>
+<entry key="verbosity">0</entry>
+<entry key="log">0</entry>
+<entry key="pubmedToGoCodeTable">PubMedToGO</entry>
+
+<!-- some values you usually don't need not to bother with: -->
+<!--entry key="candidateScoreThreshold">3.0</entry-->
+<!--entry key="linnaeusPrecomputed">eval/bc3GNtrain/Set1/output/ner-linnaeus-absonly.tsv</entry-->
+<entry key="disambiguationThreshold">3</entry>
+<entry key="maxIdsForCandidatePrediction">1</entry>
+<entry key="xmode">interspecies</entry>
+<entry key="textbytext">false</entry>
+<!--entry key="pipelineOrder">loadTR,NRE,SRF,MDRER,REU,LRCF,ICF,loadGR,UNF,NVF,AF,SVF,UMF,MSDF,UMF,ITF,SCSA,SCSF,UMF</entry-->
+<!--entry key="pipelineOrder">loadTR,NRE,SRF,MDRER,PAD,REU,LRCF,PAD,ICF,PAD,loadGR,UNF,NVF,PAD,AF,PAD,SVF,PAD,UMF,PAD,MSDF,PAD,UMF,ITF,SCSA,SCSF</entry-->
+<entry key="pipelineOrder">loadTR,NRE,SRF,CEF,MDRER,CEF,TAP,PAD,REU,CEF,TAP,LRCF,CEF,TAP,PAD,ICF,CEF,TAP,PAD,loadGR,CEF,TAP,UNF,CEF,TAP,NVF,CEF,TAP,PAD,AF,CEF,TAP,PAD,SVF,CEF,TAP,PAD,UMF,CEF,TAP,PAD,MSDF,CEF,TAP,PAD,UMF,CEF,TAP,ITF,CEF,TAP,SCSA,CEF,TAP,SCSF,CEF,TAP</entry>
+<!--entry key="pipelineOrder">loadTR,NRE,SRF,MDRER,PAD,REU,LRCF,PAD,ICF,PAD,loadGR,UNF,NVF,PAD,AF,PAD,SVF,PAD,UMF,PAD,MSDF,PAD,UMF,ITF,SCSA,SCSF</entry-->
+<entry key="alternatePipeline:0">loadTR,NRE,SRF,MDRER,REU,LRCF,ICF,loadGR,UNF,NVF,AF,SVF,UMF,MSDF,UMF</entry>
+<entry key="alternatePipeline:iaf">loadTR,NRE,SRF,MDRER,REU,loadGR,IAF</entry>
+<entry key="alternatePipeline:web">loadTR,NRE,SRF,MDRER,REU,LRCF,ICF,loadGR,UNF,NVF,AF,SVF,UMF,MSDF,UMF</entry>
+<entry key="alternatePipeline:highRecall">loadTR,NRE,SRF,MDRER,REU,loadGR,UNF,IAF</entry>
+</properties>
