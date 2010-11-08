@@ -4,9 +4,9 @@
 <comment>Date: 1253817159sec</comment>
 
 <!-- some values that you have to set/change: -->
-<entry key="dbUser">joerg</entry>
-<entry key="dbPass">fadd!8772</entry>
-<entry key="dbAccessUrl">jdbc:mysql://bergman.smith.man.ac.uk:3306/joerg</entry>
+<entry key="dbUser">myusername</entry>
+<entry key="dbPass">mypassword</entry>
+<entry key="dbAccessUrl">jdbc:mysql://myserver.com:3306/GNAT</entry>
 <entry key="dbDriver">org.gjt.mm.mysql.Driver</entry>
 <entry key="dictionaryServer">localhost</entry>
 <entry key="defaultSpecies">9606</entry>
@@ -19,7 +19,6 @@
 <entry key="taxon2port">config/taxonToServerPort.txt</entry>
 
 <entry key="linnaeusUrl">localhost:55000</entry>
-<!--<entry key="dbMedlineAccessUrl">jdbc:mysql://localhost:3306/joerg</entry>-->
 <entry key="italicsFile">data/pmc-italics.tsv</entry>
 <!-- Format of the filenames in input/test directories. Valid: {pmcid,pmid,doi,any} as base filename, plus extension. -->
 <!-- pmcid allows for either "pmc12345" or "12345" -->
