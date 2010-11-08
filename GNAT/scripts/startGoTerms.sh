@@ -1,5 +1,5 @@
 JAVA="java -XX:ThreadStackSize=256k -XX:+UseCompressedOops -XX:+UseParallelGC"
-CP="lib/gnats.jar:lib/bc3.jar"
+CP="lib/gnat.jar"
 DICT="dictionaries"
 
 #GO terms
