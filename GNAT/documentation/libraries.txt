@@ -1,0 +1,51 @@
+-- Third-party libraries used in GNAT --
+----------------------------------------
+
+GNAT relies on several third-party Java libraries that have to be obtained
+prior to running client or server.
+
+BRICS -- a DFA/NFA (finite-state automata) implementation
+Webpage: http://www.brics.dk/automaton/
+As several changes were required to make this work the way we need to represent
+each gnat.server.dictionary.Dictionary, the source code is included here, see
+package brics.automaton.*
+
+MySQL Connector/JDBC
+Webpage: http://dev.mysql.com/usingmysql/java/
+Jar files:
+- mysql-connector-java-5.1.7-bin.jar
+Version tested: 5.1.7
+
+JDOM
+Jar files:
+- jdom-1.0.jar
+Version tested: 1.0
+
+
+-----
+
+Some classes that might be added in future releases require the following
+third-party libraries.
+
+
+An Hmm-based context filter (gnat.filter.HmmFilter) uses JAHMMM:
+
+JAHMM -- An implementation of Hidden Markov Models in Java
+Webpage: http://code.google.com/p/jahmm/
+Jar files:
+- jahmm061.jar
+Version tested: 0.61
+
+
+An alternative sentence splitter is based on the Julie lab sentence splitter
+(wrapper: gnat.preprocessing.sentences.SentenceSplitterJulie):
+
+JSBD -- JULIE Lab Sentence Boundary Detector
+Webpage: http://www.julielab.de/Resources/Software/NLP_Tools.html
+Jar files: 
+- jsbd-1.6.jar
+- mallet-deps.jar
+- mallet-optimized.jar
+- mallet-troveless-0.4.jar
+- trove-1.1b5.jar
+Version tested: 1.6

@@ -1,0 +1,5 @@
+Contains some shell scripts that can be used to
+
+- launch servers and services
+- create dictionaries
+

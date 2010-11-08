@@ -1,0 +1,13 @@
+Contains some exemplary texts to run pipelines on.
+
+
+The texts/test directory contains five PubMed abstracts that can be used to 
+test a local installation. They come together with the gold standard solution
+from the BioCreative 2 GN community challenge (see below) in test.solution. An
+expected output for running the test in gnat.client.Test is given in test.out.
+
+
+
+[1] BioCreative 2 GN data
+    http://biocreative.sourceforge.net/biocreative_2_dataset.html
+
