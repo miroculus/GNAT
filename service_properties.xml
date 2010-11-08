@@ -5,8 +5,8 @@
 
 <!-- Needed for the GeneService and the GeneNormalization task in GnatService: -->
 <!-- Access parameters to the database that hosts GNAT's data (GR_* tables, GO2GO, GO2LCA tables) -->
-<entry key="dbUser">GnatReadOnly</entry>
-<entry key="dbPass">not_so_obvi0us</entry>
+<entry key="dbUser">myGnatAccessUser</entry>
+<entry key="dbPass">mypassword</entry>
 <entry key="dbAccessUrl">jdbc:mysql://localhost:3306/GNAT</entry>
 <entry key="dbDriver">org.gjt.mm.mysql.Driver</entry>
 
