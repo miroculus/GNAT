@@ -30,10 +30,6 @@ public class DefaultSpeciesRecognitionFilter implements Filter {
 	/** Use default species instead of actually running the NER for species. For debug purposes mostly. */
 	public boolean useAllDefaultSpecies = false;
 	
-	/** Use a set of default taxa if the recognizer was not able to find any textual evidence referring
-	 *  to a species. Overwrites the setting in ISGNProperties, entry key defaultSpecies. */
-	private Set<Integer> myDefaultTaxa = new HashSet<Integer>();
-
 	
 	/**
 	 * 
@@ -41,14 +37,6 @@ public class DefaultSpeciesRecognitionFilter implements Filter {
 	public DefaultSpeciesRecognitionFilter () {
 	}
 	
-	
-	/**
-	 * 
-	 */
-	public DefaultSpeciesRecognitionFilter (Set<Integer> defaultTaxa) {
-		myDefaultTaxa = defaultTaxa;
-	}
-
 
 	/**
 	 * Processes all texts in the text repository by calling the remote server and adds the outcome,
@@ -100,7 +88,7 @@ public class DefaultSpeciesRecognitionFilter implements Filter {
 					names.add(name);
 					id2names.put(10090, names);
 					
-					System.err.println("###Found mouse###");
+					//System.err.println("###Found mouse###");
 				}
 				
 				if (line.toLowerCase().matches(".*(?:^|[\\W])" +
@@ -159,17 +147,14 @@ public class DefaultSpeciesRecognitionFilter implements Filter {
 
 			// assign default IDs if none where found in the text
 			if (taxonIDs.size() == 0) {
-				if (myDefaultTaxa != null)
-					taxonIDs = myDefaultTaxa;
-				else
-					taxonIDs = ConstantsNei.DEFAULT_SPECIES;
+				taxonIDs = ConstantsNei.DEFAULT_SPECIES;
 				if (ConstantsNei.OUTPUT_LEVEL.compareTo(ConstantsNei.OUTPUT_LEVELS.DEBUG) >= 0)
 					System.out.println("#SRF: no taxIds found for " + text.PMID + ". Using default: " + taxonIDs);
 			}
 			
 			text.setTaxonIDs(taxonIDs);
 			text.addTaxonToNameMap(id2names);
-			//if (ConstantsNei.OUTPUT_LEVEL.compareTo(ConstantsNei.OUTPUT_LEVELS.DEBUG) >= 0)
+			if (ConstantsNei.OUTPUT_LEVEL.compareTo(ConstantsNei.OUTPUT_LEVELS.DEBUG) >= 0)
 				System.out.println("#SRF: for text " + text.PMID + ", found species " + taxonIDs);
 			
 			allTaxonIDs.addAll(taxonIDs);
@@ -179,20 +164,4 @@ public class DefaultSpeciesRecognitionFilter implements Filter {
 			System.out.println("#SRF: recognized species in the text collection: " + allTaxonIDs);
 	}
 
-	
-	/**
-	 * 
-	 * @param defaultTaxa
-	 */
-	public void setDefaultTaxa (Set<Integer> defaultTaxa) {
-		myDefaultTaxa = defaultTaxa;
-	}
-
-	
-	/**
-	 * 
-	 */
-	public Set<Integer> getDefaultTaxa (Set<Integer> defaultTaxa) {
-		return myDefaultTaxa;
-	}
 }

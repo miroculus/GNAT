@@ -81,6 +81,25 @@ public class Run {
 	
 	
 	/**
+	 * Assume that all file names in the textRepository are based on PubMed IDs: they have the form
+	 * "<tt>some/path/id.txt</tt>", where path and extension could be missing, but
+	 * the <tt>id</tt> needs to be numeric. For each such text, sets the {@link Text#PMID} field
+	 * to <tt>id</tt>.
+	 * @param textRepository
+	 */
+	public void setFilenamesAsPubMedId () {
+		for (Text text: textRepository.getTexts()) {
+			String id = text.getID();
+			if (id.matches("(.*\\/)?(\\d+)(\\.txt)?")) {
+				int pmid = Integer.parseInt(id.replaceFirst("(.*\\/)?(\\d+)(\\.txt)?", "$2"));
+				text.setPMID(pmid);
+			}
+				
+		}
+	}
+	
+	
+	/**
 	 * Adds a {@link Text} to the current {@link #textRepository}.
 	 * @param text
 	 */

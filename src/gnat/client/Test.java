@@ -65,6 +65,9 @@ public class Test {
 			
 		// load all texts required for the test
 		run.setTextRepository(TextFactory.loadTextRepositoryFromDirectories("texts/test"));
+		
+		//
+		run.setFilenamesAsPubMedId();
 
 		// Pre-processing filter here:
 		run.addFilter(new NameRangeExpander());
