@@ -19,8 +19,10 @@ import java.util.TreeSet;
 import java.util.Vector;
 
 /**
- * Context for NEI processing.
+ * Context for NEI processing.<br>
  * This context keeps track of recognized entities and their identification status.
+ * <br><br>
+ * Provides several methods to sort/print/store predicted results in various formats.
  *
  */
 
@@ -31,7 +33,7 @@ public class Context {
 	private Map<RecognizedEntity, IdentificationStatus> identificationStatusMap;
 	/** Contains all genes that have been identified. */
 	private List<IdentifiedGene> asGeneIdentifiedEntities;
-	/** A mapping from PubMed IDs to gene names contained therein. */
+	/** A mapping from PubMed IDs to gene names contained in each article. */
 	private HashMap<String, TreeSet<String>> pmid2allNames = new HashMap<String, TreeSet<String>>();
 
 
@@ -472,69 +474,6 @@ public class Context {
         }
 	    return geneMap;
     }
-
-
-	/**
-	 * Returns a string of identified genes in BioCreative-tab-delimited-format.
-	 * */
-	public String toIdentifiedGeneListInBioCreativeFormat()
-    {
-		StringBuffer listBuffer = new StringBuffer();
-	    List<IdentifiedGene> identifiedGenes = this.getEntitiesIdentifiedAsGene();
-	    for (IdentifiedGene gene : identifiedGenes) {
-	    	String line = gene.getRecognizedEntity().getText().getID()+"\t"+gene.getGene().getID()+"\t"+gene.getName()+"\t"+gene.getConfidenceScore();
-	    	listBuffer.append(line+"\n");
-	    	System.out.println("prediction: "+line);
-        }
-
-	    return listBuffer.toString();
-    }
-
-
-	/**
-	 * Writes a file of identified genes in BioCreative-tab-delimited-format.
-	 * @throws IOException
-	 * */
-	public void toIdentifiedGeneListInBioCreativeFormat(String outfile) throws IOException
-    {
-		FileWriter writer = new FileWriter(outfile);
-	    List<IdentifiedGene> identifiedGenes = this.getEntitiesIdentifiedAsGene();
-	    for (IdentifiedGene gene : identifiedGenes) {
-	    	String line = 
-	    		gene.getRecognizedEntity().getText().getID()
-	    			+"\t"+gene.getGene().getID()
-	    			+"\t"+gene.getName()
-	    			+"\t"+gene.getConfidenceScore();
-	    	writer.write(line+"\n");
-	    	//System.out.println("prediction: "+line);
-        }
-
-	    writer.close();
-    }
-	
-	
-	/**
-	 * Appends predictions to a file of identified genes in BioCreative-tab-delimited-format.
-	 * @throws IOException
-	 * */
-	public void appendIdentifiedGeneListInBioCreativeFormat (String outfile) throws IOException
-    {
-		FileWriter writer = new FileWriter(outfile, true);
-	    List<IdentifiedGene> identifiedGenes = this.getEntitiesIdentifiedAsGene();
-	    for (IdentifiedGene gene : identifiedGenes) {
-	    	String line = 
-	    		gene.getRecognizedEntity().getText().getID()
-	    			+"\t"+gene.getGene().getID()
-	    			+"\t"+gene.getName()
-	    			+"\t"+gene.getConfidenceScore()
-	    			+"\t"+gene.getRecognizedEntity().getBegin()
-	    			+"\t"+gene.getRecognizedEntity().getEnd();
-	    	writer.write(line+"\n");
-	    	//System.out.println("prediction: "+line);
-        }
-
-	    writer.close();
-    }
 	
 	
 	/**
@@ -543,7 +482,7 @@ public class Context {
 	 * gene name as found in the text, a confidence score, start position, and end position.
 	 * @return
 	 */
-	public List<String> getIdentifiedGeneListInBioCreativeFormat () {
+	public List<String> getIdentifiedGeneList () {
 		List<String> result = new LinkedList<String>();
 	    List<IdentifiedGene> identifiedGenes = this.getEntitiesIdentifiedAsGene();
 	    for (IdentifiedGene gene : identifiedGenes) {
@@ -564,21 +503,28 @@ public class Context {
 	
 	
 	/**
-	 * Returns a list of strings that represent the result in BioCreative GN format:
+	 * Returns a list of strings that represent the result in TSV format:
 	 * a tab-separated list with columns for text ID (PubMed ID), gene ID (EntrezGene),
 	 * gene name(s) as found in the text, a confidence score, and species.
+	 * <br><br>
+	 * This list is sorted by text ID and gene ID; thus all duplicate gene IDs (per text)
+	 * are removed, even if they occur at different positions in the text.
+	 * @see #getIdentifiedGeneListInBioCreativeFormat()
 	 * @return
 	 */
-	public List<String> getIdentifiedGeneListInBioCreativeFormatSorted () {
+	public List<String> getIdentifiedGeneList_SortedByTextAndId () {
 		List<String> result = new LinkedList<String>();
+		
 	    List<IdentifiedGene> identifiedGenes = this.getEntitiesIdentifiedAsGene();
+	    List<IdentifiedGene> uniqIdentifiedGenes = new LinkedList<IdentifiedGene>();
 	    
+	    // remove duplicate genes: same text ID, same gene ID,
+	    // but maybe different name and start/end position (thus IdentifiedGene.equal() does not work here).
 	    TreeSet<String> textIds = new TreeSet<String>();
 	    Map<String, TreeSet<String>> textToGeneIds = new HashMap<String, TreeSet<String>>();
-	    
 	    for (IdentifiedGene gene : identifiedGenes) {
 	    	String textId = gene.getRecognizedEntity().getText().getID();
-	    	String name   = gene.getName();
+	    	//String name   = gene.getName();
 	    	String geneId = gene.getGene().getID();
 	    	
 	    	textIds.add(textId);
@@ -592,122 +538,68 @@ public class Context {
 	    	} else {
 		    	geneIds.add(geneId);
 		    	textToGeneIds.put(textId, geneIds);
-		    	
-		    	String line = 
-		    		gene.getRecognizedEntity().getText().getID()
-		    			+"\t"+gene.getGene().getID()
-		    			+"\t"+gene.getName()
-		    			+"\t"+gene.getConfidenceScore()
-		    			+"\t"+gene.getGene().getTaxon()
-		    			;
-		    	result.add(line);
+		    	uniqIdentifiedGenes.add(gene);
 	    	}
-        }
+	    }
 	    
-	    Collections.sort(result);
+	    Collections.sort(uniqIdentifiedGenes, new IdentifiedGeneIdComparator());
+	    		//new IdentifiedGeneNameComparator());
+	    
+	    for (IdentifiedGene gene : uniqIdentifiedGenes) {
+	    	String line = 
+	    		gene.getRecognizedEntity().getText().getID()
+	    		+"\t"+gene.getGene().getID()
+	    		+"\t"+gene.getName()
+	    		+"\t"+gene.getConfidenceScore()
+	    		+"\t"+gene.getGene().getTaxon()
+	    		;
+	    	result.add(line);
+        }
 
 	    return result;
     }
 
 
 	/**
-	 * Writes a file of identified genes in BioCreative-tab-delimited-format.
+	 * Writes all currently identified genes in this context to a file; the file will be 
+	 * overwritten if it exists already.
+	 * @see #appendIdentifiedGeneList_SortedByPosition(String)
 	 * @throws IOException
 	 * */
-	public void toIdentifiedGeneListInWebOutputFormat(String outfile) throws IOException {
-//		//TreeSet<String> addedGenes = new TreeSet<String>();
-//		HashMap<Integer, TreeSet<IdentifiedGene>> allGenes = new HashMap<Integer, TreeSet<IdentifiedGene>>();
-//		Vector<Integer> begins = new Vector<Integer>();
-//		List<IdentifiedGene> identifiedGenes = this.getEntitiesIdentifiedAsGene();
-//	    for (IdentifiedGene gene : identifiedGenes) {
-//	    	if (!begins.contains(gene.getRecognizedEntity().getBegin()))
-//	    		begins.add(gene.getRecognizedEntity().getBegin());
-//	    	TreeSet<IdentifiedGene> genes = allGenes.get(gene.getRecognizedEntity().getBegin());
-//	    	if (genes == null) {
-//	    		genes = new TreeSet<IdentifiedGene>();
-//	    		allGenes.put(gene.getRecognizedEntity().getBegin(), genes);
-//	    	}
-//	    	//if (!addedGenes.contains(gene.getGene().getID() + "/" + gene.getRecognizedEntity().getBegin())) {
-//	    		//System.out.println("#Adding " + gene.getGene().getID() + "/" + gene.getRecognizedEntity().getBegin());
-//	    		//addedGenes.add(gene.getGene().getID() + "/" + gene.getRecognizedEntity().getBegin());
-//	    		genes.add(gene);
-//	    	//}
-//	    	
-//	    	//if (allGenes.containsKey(gene.getRecognizedEntity().getBegin())) {
-//	    	//	//TODO: merge annotations for this form of output
-//	    	//} else {
-//	    	//	
-//	    	//	genes.add(gene);
-//	    	//	allGenes.put(gene.getRecognizedEntity().getBegin(), genes);
-//	    	//}
-//	    }
-//	    Collections.sort(begins);
-//	    Collections.reverse(begins);
-//	    
-//		FileWriter writer = new FileWriter(outfile);
-//	    for (int begin: begins) {
-//	    	TreeSet<IdentifiedGene> genes = allGenes.get(begin);
-//	    	//System.out.println("#" + genes.size() + " genes for begin " + begin);
-//	    	String ids = "";
-//	    	String taxa = "";
-//	    	for (IdentifiedGene gene: genes) {
-////		    	String line = gene.getRecognizedEntity().getText().getID()
-////		    			+"\t"+gene.getGene().getID()
-////		    			+"\t"+gene.getRecognizedEntity().getName()
-////		    			+"\t"+gene.getConfidenceScore()
-////		    			+"\t"+gene.getRecognizedEntity().getBegin()
-////		    			+"\t"+gene.getRecognizedEntity().getEnd()
-////		    			+"\t"+gene.getGene().taxon;
-////		    	writer.write(line+"\n");
-//	    		if (ids.length() == 0)
-//	    			ids = gene.getGene().getID();
-//	    		else
-//	    			ids += ";" + gene.getGene().getID();
-//	    		
-//	    		if (taxa.length() == 0)
-//	    			taxa = ""+gene.getGene().taxon;
-//	    		else
-//	    			taxa += ";" + gene.getGene().taxon;
-//	    	}
-//	    	IdentifiedGene gene = genes.first();
-//	    	String line = gene.getRecognizedEntity().getText().getID()
-//				+"\t"+ids
-//				+"\t"+gene.getRecognizedEntity().getName()
-//				+"\t"+gene.getConfidenceScore()
-//				+"\t"+gene.getRecognizedEntity().getBegin()
-//				+"\t"+gene.getRecognizedEntity().getEnd()
-//				+"\t"+taxa;
-//	    	writer.write(line+"\n");
-//			
-//
-//	    	
-//	    }
-//	    
-////	    List<IdentifiedGene> identifiedGenes = this.getEntitiesIdentifiedAsGene();
-////	    for (IdentifiedGene gene : identifiedGenes) {
-////	    	String line = gene.getRecognizedEntity().getText().getID()
-////	    			+"\t"+gene.getGene().getID()
-////	    			+"\t"+gene.getRecognizedEntity().getName()
-////	    			+"\t"+gene.getConfidenceScore()
-////	    			+"\t"+gene.getRecognizedEntity().getBegin()
-////	    			+"\t"+gene.getRecognizedEntity().getEnd()
-////	    		;
-////	    	writer.write(line+"\n");
-////	    	//System.out.println("prediction: "+line);
-////        }
-//
-//	    writer.close();
+	public void writeIdentifiedGeneList_SortedByPosition (String outfile) throws IOException {
 		FileWriter writer = new FileWriter(outfile);
-		String[] lines = toIdentifiedGeneList();
+		List<String> lines = toIdentifiedGeneList_SortedByPosition();
 		for (String line: lines)
 			writer.write(line + "\n");
 		writer.close();
     }
 	
 	
+	/**
+	 * Appends all currently identified genes in this context to a file of identified genes.
+	 * The file will be created if it does not exist yet.
+	 * @see #writeIdentifiedGeneList_SortedByPosition(String)
+	 * @throws IOException
+	 * */
+	public void appendIdentifiedGeneList_SortedByPosition (String outfile) throws IOException {
+		FileWriter writer = new FileWriter(outfile, true);
+		List<String> lines = toIdentifiedGeneList_SortedByPosition();
+		for (String line: lines)
+			writer.write(line + "\n");
+		writer.close();
+    }
 	
-	public String[] toIdentifiedGeneList () {
-		LinkedList<String> temp = new LinkedList<String>();
+	
+	/**
+	 * 
+	 * <br><br>
+	 * Note: currently sorts by start position, even across texts! So this is useful
+	 * only if results for a single text are involved.
+	 * 
+	 * @return
+	 */
+	public List<String> toIdentifiedGeneList_SortedByPosition () {
+		List<String> geneList = new LinkedList<String>();
 		
 		//TreeSet<String> addedGenes = new TreeSet<String>();
 		HashMap<Integer, TreeSet<IdentifiedGene>> allGenes = new HashMap<Integer, TreeSet<IdentifiedGene>>();
@@ -757,21 +649,39 @@ public class Context {
 				+"\t"+gene.getRecognizedEntity().getBegin()
 				+"\t"+gene.getRecognizedEntity().getEnd()
 				+"\t"+taxa;
-	    	temp.add(line);
+	    	geneList.add(line);
 	    }
-
 	    
-	    String[] result = new String[temp.size()];
-	    for (int r = 0; r < result.length; r++)
-	    	result[r] = temp.get(r);
-	    return result;
+	    return geneList;
 	}
 
+	
+	/**
+	 * Writes a file with all currently identified genes in BioCreative-tab-delimited-format:
+	 * text ID, gene ID, gene name as mentioned, confidence score.
+	 * 
+	 * @throws IOException
+	 * */
+	public void toIdentifiedGeneListInBioCreativeFormat (String outfile) throws IOException {
+		FileWriter writer = new FileWriter(outfile);
+	    List<IdentifiedGene> identifiedGenes = this.getEntitiesIdentifiedAsGene();
+	    for (IdentifiedGene gene : identifiedGenes) {
+	    	String line = 
+	    		gene.getRecognizedEntity().getText().getID()
+	    			+"\t"+gene.getGene().getID()
+	    			+"\t"+gene.getName()
+	    			+"\t"+gene.getConfidenceScore();
+	    	writer.write(line+"\n");
+        }
+
+	    writer.close();
+    }
+	
 
 	/**
 	 * Sorts a set of recognized entities using a RecognizedEntityComparator.
 	 * */
-	public static List<RecognizedEntity> sortRecognizedEntities(Set<RecognizedEntity> entities) {
+	public static List<RecognizedEntity> sortRecognizedEntities (Set<RecognizedEntity> entities) {
 		List<RecognizedEntity> entityList = toList(entities);
 		Collections.sort(entityList, new RecognizedEntityComparator());
 		return entityList;
@@ -788,31 +698,67 @@ public class Context {
         }
 		return list;
 	}
+	
 
 	/**
-	 * A comparator to compare entities by their text range begin index. If both have equal begin index, the name length is compared.
+	 * A comparator to compare entities by their text range begin index. If both have equal begin index,
+	 * the name length is compared. Sorts by text ID first.
 	 * */
 	public static class RecognizedEntityComparator implements Comparator<RecognizedEntity>{
 		public int compare(RecognizedEntity arg0, RecognizedEntity arg1) {
+			
+			// try text ID first
+			String text0 = arg0.getText().getID();
+			String text1 = arg1.getText().getID();
+			int compare = text0.compareTo(text1);
+			if (compare != 0) return compare;
+			
+			// now try start position
 			int beginArg0 = arg0.getAnnotation().getTextRange().getBegin();
 			int beginArg1 = arg1.getAnnotation().getTextRange().getBegin();
+			compare = new Integer(beginArg0).compareTo(beginArg1);
+			if (compare != 0) return compare;
 
-			int compare = new Integer(beginArg0).compareTo(beginArg1);
-
-			if(compare==0){
-				compare = new Integer(arg0.getName().length()).compareTo(arg1.getName().length());
-			}
-
+			// finally use length
+			compare = new Integer(arg0.getName().length()).compareTo(arg1.getName().length());
 			return compare;
 		}
 	}
 
+	
 	/**
-	 * A comparator to compare identified genes by their gene name.
+	 * A comparator to compare identified genes by their text ID, gene name, and gene ID.
 	 * */
-	public static class IdentifiedGeneComparator implements Comparator<IdentifiedGene>{
-		public int compare(IdentifiedGene arg0, IdentifiedGene arg1) {
-			return arg0.getName().compareTo(arg1.getName());
+	public static class IdentifiedGeneNameComparator implements Comparator<IdentifiedGene>{
+		public int compare (IdentifiedGene arg0, IdentifiedGene arg1) {
+			// try text ID first
+			String text0 = arg0.getRecognizedEntity().getText().getID();
+			String text1 = arg1.getRecognizedEntity().getText().getID();
+			int compare = text0.compareTo(text1);
+			if (compare != 0) return compare;
+			
+			compare = arg0.getName().compareTo(arg1.getName());
+			if (compare != 0) return compare;
+			
+			compare = arg0.getGene().getID().compareTo(arg0.getGene().getID());
+			return compare;
+		}
+	}
+	
+	
+	/**
+	 * A comparator to compare identified genes by their text ID and gene ID (disregards gene names).
+	 * */
+	public static class IdentifiedGeneIdComparator implements Comparator<IdentifiedGene>{
+		public int compare (IdentifiedGene arg0, IdentifiedGene arg1) {
+			// try text ID first
+			String text0 = arg0.getRecognizedEntity().getText().getID();
+			String text1 = arg1.getRecognizedEntity().getText().getID();
+			int compare = text0.compareTo(text1);
+			if (compare != 0) return compare;
+
+			compare = arg0.getGene().getID().compareTo(arg0.getGene().getID());
+			return compare;
 		}
 	}
 }

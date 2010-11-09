@@ -106,6 +106,11 @@ public class Run {
 	public void addText (Text text) {
 		this.textRepository.addText(text);
 	}
+
+	
+	public void clearTextRepository () {
+		this.textRepository.clear();
+	}
 	
 	
 	/**

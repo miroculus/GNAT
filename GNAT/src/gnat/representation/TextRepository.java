@@ -21,6 +21,7 @@ public class TextRepository {
 	 */
 	public TextRepository () {
 	}
+	
 
 	/**
 	 *
@@ -101,4 +102,11 @@ public class TextRepository {
 		return textMap.size();
 	}
 
+	
+	/**
+	 * Clears this TextRepository, removing all Texts.
+	 */
+	public void clear () {
+		textMap.clear();
+	}
 }
