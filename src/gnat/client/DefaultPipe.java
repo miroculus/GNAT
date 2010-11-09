@@ -24,7 +24,7 @@ import java.util.List;
  * - To use the GeneService, the property <tt>geneRepositoryServer</tt> has to point to the address and port of such a service.<br>
  * <br>
  * 
- * TODO read the list of filters to load from ISGNProperties
+ * TODO read the list of filters to load from ISGNProperties: 'pipeline' entry
  * 
  * 
  * @author J&ouml;rg Hakenberg &lt;jhakenberg@users.sourceforge.net&gt;
@@ -45,22 +45,21 @@ public class DefaultPipe {
 				run.verbosity = Integer.parseInt(arg.replaceFirst("^\\-\\-?v(erbosity)?\\=(\\d+)$", "$2"));
 			} else {
 				File DIR = new File(arg);
-				if (DIR.exists() && DIR.isDirectory())
+				if (DIR.exists() && DIR.canRead())
 					directoriesToProcess.add(arg);
 				else
-					System.out.println("Parameter '" + arg + "' is not a valid directory; skipping.");
+					System.out.println("Parameter '" + arg + "' is not a valid/readable file or directory; skipping.");
 			}
 		}
 		
 		// load all texts from the given directory/ies:
-		if (directoriesToProcess.size() > 0)
-			// load texts from the given directories
-			run.setTextRepository(
-					TextFactory.loadTextRepositoryFromDirectories(directoriesToProcess));
-		else
-			// load some default texts
-			run.setTextRepository(
-					TextFactory.loadTextRepositoryFromDirectories("texts/pubmed/2009", "texts/pubmed/2010"));
+		if (directoriesToProcess.size() == 0) {
+			System.err.println("Provide at least one file or directory with files (*.txt) to annotate.");
+			System.exit(2);
+		}
+		
+		// load texts from the given directories
+		run.setTextRepository(TextFactory.loadTextRepositoryFromDirectories(directoriesToProcess));
 			
 		// add some individual mocked-up texts:
 		// #1
@@ -143,7 +142,7 @@ public class DefaultPipe {
 		run.runFilters();
 		
 		// print the results for each text, in BioCreative tab-separated format
-		List<String> result = run.context.getIdentifiedGeneListInBioCreativeFormat();
+		List<String> result = run.context.getIdentifiedGeneList();
 		for (String res: result)
 			System.out.println(res);
 	}

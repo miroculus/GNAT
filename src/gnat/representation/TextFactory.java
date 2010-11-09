@@ -173,21 +173,28 @@ public class TextFactory {
 		TextRepository textRepository = new TextRepository();
 
 		for (String dir: directories) {
-			
-			if (!dir.endsWith("/")) dir += "/";
-	
-			Set<String> textIds = new TreeSet<String>();
+			//Set<String> textIds = new TreeSet<String>();
 	
 			// read all plain texts from the directory
 			File DIR = new File(dir);
-			if (DIR.exists()) {
-				String[] files = DIR.list();
-				for (String filename : files) {
-					if (filename.endsWith("txt")){
-						Text text = loadTextFromFile(dir + filename);
-						textRepository.addText(text);
-						textIds.add(text.ID);
+			if (DIR.exists() && DIR.canRead()) {
+				if (DIR.isDirectory()) {
+					if (!dir.endsWith("/")) dir += "/";					
+					// get the list of all files in that directory, load each if it is a .txt file
+					String[] files = DIR.list();
+					for (String filename : files) {
+						if (filename.endsWith(".txt")){
+							Text text = loadTextFromFile(dir + filename);
+							textRepository.addText(text);
+							//textIds.add(text.ID);
+						}
 					}
+
+				} else {
+					// load an individual file
+					Text text = loadTextFromFile(dir);
+					textRepository.addText(text);
+					//textIds.add(text.ID);
 				}
 			}
 		}

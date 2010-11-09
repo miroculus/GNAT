@@ -1,6 +1,13 @@
 package gnat.server;
 
 import gnat.ServiceProperties;
+import gnat.representation.GeneContextModel;
+import gnat.representation.RecognizedEntity;
+import gnat.representation.Text;
+import gnat.representation.TextAnnotation;
+import gnat.representation.TextContextModel;
+import gnat.representation.TextRange;
+import gnat.representation.TextRepository;
 import gnat.retrieval.PmcAccess;
 import gnat.retrieval.PubmedAccess;
 import gnat.server.dictionary.DictionaryServer;
@@ -66,6 +73,9 @@ public class GnatService extends HttpService {
 					   GENE_NORM,
 					   GO_TERMS}
 	
+	Set<Tasks> providesTasks = new HashSet<Tasks>();
+	Set<Tasks> defaultTasks  = new HashSet<Tasks>();
+	
 	Map<Integer, String> taxonToServerPortMap = new LinkedHashMap<Integer, String>();
 	
 	/**
@@ -76,7 +86,9 @@ public class GnatService extends HttpService {
 		int port = 8081;
 		int log = 0;
 		Modes mode = Modes.STATUS;
-		
+		Set<Tasks> providesTasks = new HashSet<Tasks>();
+		Set<Tasks> defaultTasks  = new HashSet<Tasks>();
+
 		for (String a: args) {
 			if (a.toLowerCase().matches("\\-\\-?p(ort)?=(\\d+)"))
 				port = Integer.parseInt(a.replaceFirst("\\-\\-?p(ort)?=(\\d+)", "$2"));
@@ -90,10 +102,58 @@ public class GnatService extends HttpService {
 				System.err.println("Unknown parameter: " + a + " - ignoring.");
 		}
 		
+		String provides = ServiceProperties.get("providesTasks");
+		if (provides == null || provides.trim().length() == 0) {
+			System.err.println("Set the tasks this service should provide in the entry 'providesTasks' in " +
+					"" + ServiceProperties.getPropertyFilename());
+			System.err.println("Select one or more from species NER ('sner'), gene NER ('gner'), " +
+					"GO term recognition ('goterms'), gene normalization ('gnorm')");
+			System.err.println("For example,");
+			System.err.println("  <entry key=\"providesTasks\">gner,goterms</entry>");
+			System.exit(2);
+		}
+		for (String task: provides.split("\\s*[\\;\\,]\\s*")) {
+			Tasks aTask = getTask(task);
+			if (aTask != null)
+				providesTasks.add(aTask);
+			else {
+				System.err.println("Unrecognized task to provide: '" + task + "'");
+				System.err.println("Select one or more from species NER ('sner'), gene NER ('gner'), " +
+								   "GO term recognition ('goterms'), gene normalization ('gnorm')");
+				System.err.println("Exiting.");
+				System.exit(3);
+			}
+		}
+		
+		String defaults = ServiceProperties.get("defaultTasks");
+		if (defaults == null || defaults.trim().length() == 0) {
+			System.err.println("Set the tasks this service should provide by default in the entry 'defaultTasks' in " +
+					"" + ServiceProperties.getPropertyFilename());
+			System.err.println("Select one or more from species NER ('sner'), gene NER ('gner'), " +
+					"GO term recognition ('goterms'), gene normalization ('gnorm')");
+			System.err.println("For example,");
+			System.err.println("  <entry key=\"defaultTasks\">gner</entry>");
+			System.exit(2);
+		}
+		for (String task: defaults.split("\\s*[\\;\\,]\\s*")) {
+			Tasks aTask = getTask(task);
+			if (aTask != null)
+				defaultTasks.add(aTask);
+			else {
+				System.err.println("Unrecognized default task: '" + task + "'");
+				System.err.println("Select one or more from species NER ('sner'), gene NER ('gner'), " +
+								   "GO term recognition ('goterms'), gene normalization ('gnorm')");
+				System.err.println("Exiting.");
+				System.exit(3);
+			}
+		}
+		
 		if (mode == Modes.START) {
 			GnatService service = new GnatService();
 			service.loadTaxonMap(ServiceProperties.get("dictionaryServer"), ServiceProperties.get("taxon2port"));
 			service.logLevel = log;
+			service.providesTasks = providesTasks;
+			service.defaultTasks  = defaultTasks;
 			service.start(port);
 		} else if (mode == Modes.STOP) {
 			//service.stop();
@@ -101,6 +161,8 @@ public class GnatService extends HttpService {
 		} else {
 			//service.status();
 		}
+		
+
 	}
 	
 	
@@ -115,7 +177,7 @@ public class GnatService extends HttpService {
 		InetSocketAddress addr = new InetSocketAddress(port);
 		server = HttpServer.create(addr, 0);
 		
-		server.createContext("/", new GnatServiceHandler(this.taxonToServerPortMap, this.logLevel));
+		server.createContext("/", new GnatServiceHandler(this.taxonToServerPortMap, this.logLevel, this.providesTasks, this.defaultTasks));
 		server.setExecutor(Executors.newCachedThreadPool());
 	    server.start();
 	    
@@ -153,21 +215,47 @@ public class GnatService extends HttpService {
 	}
 	
 	
+	/**
+	 * 
+	 * @param task
+	 * @return
+	 */
+	public static Tasks getTask (String task) {
+		task = task.toLowerCase();
+		if (task.equals("sner") || task.equals("species") || task.equals("speciesner"))
+			return Tasks.SPECIES_NER;
+		else if (task.equals("gner") || task.equals("genes") || task.equals("genener"))
+			return Tasks.GENE_NER;
+		else if (task.equals("gnorm") || task.equals("genenormalization"))
+			return Tasks.GENE_NORM;
+		else if (task.equals("goterms") || task.equals("goterm") || task.equals("gotermrecognition"))
+			return Tasks.GO_TERMS;
+		else 
+			return null;
+	}
 }
 
 
 class GnatServiceHandler extends ServiceHandler {
 	
 	Map<Integer, String> taxonToServerPortMap = new HashMap<Integer, String>();
-	
+	Set<GnatService.Tasks> providesTasks = new HashSet<GnatService.Tasks>();
+	Set<GnatService.Tasks> defaultTasks  = new HashSet<GnatService.Tasks>();
+
 	
 	/**
 	 * 
 	 * @param taxonToServerPortMap
+	 * @param logLevel
+	 * @param tasks
+	 * @param defaultTasks
 	 */
-	GnatServiceHandler (Map<Integer, String> taxonToServerPortMap, int logLevel) {
+	GnatServiceHandler (Map<Integer, String> taxonToServerPortMap, int logLevel,
+			Set<GnatService.Tasks> tasks, Set<GnatService.Tasks> defaultTasks) {
 		this.taxonToServerPortMap = taxonToServerPortMap;
 		this.logLevel = logLevel;
+		this.providesTasks = tasks;
+		this.defaultTasks = defaultTasks;
 	}
 	
 	
@@ -238,7 +326,8 @@ class GnatServiceHandler extends ServiceHandler {
 			responseBody.write(("A minimal request has at least one of 'pmid', 'pmc', or 'text'; with a corresponding value.\n\n").getBytes());
 			responseBody.write(("In TSV output, the fields for an entity annotation are text ID (e.g., PubMed ID), text cross-reference (source, " +
 								"e.g., PubMed), entity type (gene, goterm), entity subtype (species of the gene, GO branch), " +
-								"entity candidate ID(s) [semi-colon separated], start position, end position, mention as found in the text.\n").getBytes());
+								"entity candidate ID(s) [semi-colon separated], start position, end position, mention as found in the text, " +
+								"and a score (optional).\n").getBytes());
 			responseBody.write("\n".getBytes());
 			responseBody.close();
 			return;
@@ -277,33 +366,36 @@ class GnatServiceHandler extends ServiceHandler {
 			userQuery.setValue("returntype", "tsv");
 		
 		// set the tasks to perform on the text
-		Set<String> annotationTasks = new LinkedHashSet<String>();
+		Set<GnatService.Tasks> annotationTasks = new LinkedHashSet<GnatService.Tasks>();
 		if (userQuery.hasParameter("task")) {
 			String[] tasks = userQuery.getValue("task").split("\\s*[\\,\\;]\\s*");
 			for (String task: tasks) {
-				task = task.toLowerCase();
-				if (task.equals("speciesner") || task.equals("sner") || task.equals("species"))
-					annotationTasks.add("sner");
-				else if (task.equals("genener") || task.equals("gner") || task.equals("gene") || task.equals("genes"))
-					annotationTasks.add("gner");
-				else if (task.equals("genenormalization") || task.equals("gnorm")) {
-					annotationTasks.add("sner");
-					annotationTasks.add("gner");
-					annotationTasks.add("gnorm");
-				} else if (task.equals("gotermrecognition") || task.equals("gotrec") || task.equals("goterms")) {
-					annotationTasks.add("goterms");
+				GnatService.Tasks aTask = GnatService.getTask(task);
+				if (aTask != null) {
+					if (aTask == GnatService.Tasks.GENE_NORM) {
+						// TODO don;t run GENE_NORM if any of the sub-tasks is not provided by this service
+						annotationTasks.add(GnatService.Tasks.SPECIES_NER);
+						annotationTasks.add(GnatService.Tasks.GENE_NER);
+						annotationTasks.add(GnatService.Tasks.GO_TERMS);
+						annotationTasks.add(GnatService.Tasks.GENE_NORM);
+					} else {
+						if (providesTasks.contains(aTask))
+							annotationTasks.add(aTask);
+						else
+							responseBody.write(("<error>The task '" + task + "' is not provided by this serivce; ignoring.</error>\n").getBytes());
+					}
 				} else
 					responseBody.write(("<error>Unrecognized task in request: '" + task + "', ignoring.</error>\n").getBytes());
 			}
-			// only some unsupported tasks given via parameter? use default: gene NER
+			// only some unsupported tasks given via parameter? use defaults
 			if (annotationTasks.size() == 0) {
-				//userQuery.setValue("tasks", "gner");
-				annotationTasks.add("gner");
+				annotationTasks.addAll(defaultTasks);
 			}				
-		// if no list of tasks is given, use the default task: gene NER
+		// if no list of tasks is given, use the default task(s)
 		} else {
 			//userQuery.setValue("tasks", "gner");
-			annotationTasks.add("gner");
+			annotationTasks.clear();
+			annotationTasks.addAll(defaultTasks);
 		}
 		
 		// get the species requested by the user
@@ -422,29 +514,23 @@ class GnatServiceHandler extends ServiceHandler {
 		}
 		
 		
-		// perform each requested task, in the order species NER, gene NER, gene normalization
+		// perform each requested task, in the order species NER, gene NER, GO term, gene normalization
 		// perform species NER?
-		if (annotationTasks.contains("sner")) {
+		if (annotationTasks.contains(GnatService.Tasks.SPECIES_NER));
 			responseBody.write(("<message>Named entity recognition for species not yet implemented.</message>\n").getBytes());
-		}
 		
 		// perform gene NER?
-		if (annotationTasks.contains("gner")) {
+		if (annotationTasks.contains(GnatService.Tasks.GENE_NER))
 			annotatedTexts = geneNer(annotatedTexts, requestedSpecies);
-		} // if geneNER was requested
-		
 		
 		// perform GO term recognition?
-		if (annotationTasks.contains("goterms")) {
+		if (annotationTasks.contains(GnatService.Tasks.GO_TERMS))
 			annotatedTexts = goTermRecognition(annotatedTexts);
-		}
-		
 		
 		// perform gene normalization?
-		if (annotationTasks.contains("gnorm")) {
-			responseBody.write(("<message>Gene mention normaliation is not yet implemented.</message>\n").getBytes());
-		}
-
+		if (annotationTasks.contains(GnatService.Tasks.GENE_NORM)) 
+			//responseBody.write(("<message>Gene mention normaliation is not yet implemented.</message>\n").getBytes());
+			annotatedTexts = geneNormalization(annotatedTexts);
 		
 		// return the results for each queried text as a response
 		for (AnnotatedText aText: annotatedTexts) {
@@ -622,7 +708,7 @@ class GnatServiceHandler extends ServiceHandler {
 						currentEntity = currentEntity.replaceFirst(" ids=\"[^\"]+\"", " ids=\"" + idString + "\"");
 
 						// add information about the dictionary: entity type and sub-type (=species for the gene, GO-branch for GO terms, ...)
-						currentEntity = currentEntity.replaceFirst("<entity ", "<entity type=\"goterm\" subtype=\"-\" ");
+						currentEntity = currentEntity.replaceFirst("<entity ", "<entity type=\"gocode\" subtype=\"-\" ");
 						aText.addAnnotation(currentEntity);
 					}
 
@@ -644,6 +730,111 @@ class GnatServiceHandler extends ServiceHandler {
 			annotatedTexts.set(a, aText);
 			
 		} // for each text
+		
+		return annotatedTexts;
+	}
+	
+	
+	/**
+	 * 
+	 * @param annotatedTexts
+	 * @return
+	 */
+	public List<AnnotatedText> geneNormalization (List<AnnotatedText> annotatedTexts) {
+		// TODO could be merged into one request to the DictionaryServer that has all texts at once
+		
+		for (int a = 0; a < annotatedTexts.size(); a++) {
+			ServicePipe pipe = new ServicePipe();
+			
+			AnnotatedText annotatedText = annotatedTexts.get(a);
+			Text text = new Text(annotatedText.id, annotatedText.text);
+
+			// every Text needs a context model
+			TextContextModel tcm = new TextContextModel(text.ID);
+			tcm.addPlainText(text.getPlainText());
+
+			// add the extracted context model to the text
+			text.setContextModel(tcm);
+
+			List<String> keptAnnotations = new LinkedList<String>();
+			// convert gene annotations into RecognizedGenes with IdentificationStatus for IDs
+			// convert species annotations into taxon IDs
+			// convert GO codes into a ContextModel vector
+			for (String annotation: annotatedText.getAnnotations()) {
+				
+				if (annotation.startsWith("<entity")) {
+					String type = annotation.replaceFirst("^<entity.* type=\"(.*?)\".*$", "$1");
+					String subtype = annotation.replaceFirst("^<entity.* subtype=\"(.*?)\".*$", "$1");
+					String ids = annotation.replaceFirst("^<entity.* ids=\"(.*?)\".*$", "$1");
+					String startIndex = annotation.replaceFirst("^<entity.* startIndex=\"(.*?)\".*$", "$1");
+					String endIndex = annotation.replaceFirst("^<entity.* endIndex=\"(.*?)\".*$", "$1");
+					String name = annotation.replaceFirst("^<entity.*>(.*?)</entity>$", "$1");
+					
+					int start = Integer.parseInt(startIndex);
+					int end   = Integer.parseInt(endIndex);
+					TextRange textRange = new TextRange(start, end);
+	
+					if (type.equals("species")) {
+						String[] taxa = ids.split("\\s*[\\;\\,]\\s*");
+						for (String taxon: taxa)
+							if (taxon.matches("\\d+"))
+								text.addTaxonWithName(Integer.parseInt(taxon), name);
+						
+						keptAnnotations.add(annotation);
+						continue;
+					}
+					
+					if (type.equals("gocode")) {
+						String[] goCodes = ids.split("\\s*[\\;\\,]\\s*");
+						
+						//String[] gocodes = objectTable.get(textId);
+						if (goCodes != null)
+							tcm.addCodes(goCodes, GeneContextModel.CONTEXTTYPE_GOCODES);
+						
+						keptAnnotations.add(annotation);
+						continue;
+					}
+										
+					if (type.equals("gene")) {
+						TextAnnotation textAnnotation = new TextAnnotation(textRange, name, TextAnnotation.TYPE_GENE);
+						RecognizedEntity gene = new RecognizedEntity(text, textAnnotation);
+						
+						String[] idCandidates = ids.split("\\s*[\\;\\,]\\s*");
+						pipe.run.context.addRecognizedEntity1(gene, idCandidates);	
+												
+						continue;
+					}
+				}
+				
+				// else? add this annotation as it was
+				keptAnnotations.add(annotation);
+			}
+			
+			// remove all old annotations
+			annotatedText.clearAnnotations();
+			// start adding the new annoations: first the ones we kept (species, GO terms, ..)
+			for (String keptAnnotation: keptAnnotations)
+				annotatedText.addAnnotation(keptAnnotation);
+			
+			// run the processing pipeline to normalize all genes
+			List<String> normalizedResult = pipe.run(text);
+			
+			// convert result into new gene annotations
+			for (String normalized: normalizedResult) {
+				String[] cols = normalized.split("\t");
+				
+				String annotation = "<entity type=\"gene\" subtype=\"" + cols[6] + "\"" +
+									" ids=\"" + cols[1] + "\"" +
+									" startIndex=\"" + cols[4] + "\" endIndex=\"" + cols[5] + "\"" +
+									" score=\"" + cols[3] + "\">" +
+									cols[2] + "</entity>";
+				
+				annotatedText.addAnnotation(annotation);
+			}
+			
+			// overwrite old, unannotated text
+			annotatedTexts.set(a, annotatedText);
+		}
 		
 		return annotatedTexts;
 	}

@@ -136,7 +136,7 @@ public class Bc3Pipeline {
 		run.runFilters();
 		
 		// print the results for each text, in BioCreative tab-separated format
-		List<String> result = run.context.getIdentifiedGeneListInBioCreativeFormat();
+		List<String> result = run.context.getIdentifiedGeneList();
 		for (String res: result)
 			System.out.println(res);
 	}

@@ -5,6 +5,7 @@ import gnat.preprocessing.sentences.SentenceSplitterRegex;
 
 import java.util.Collection;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.Map;
 import java.util.Set;
@@ -29,13 +30,16 @@ import java.util.Vector;
 
 public class Text {
 
+	public enum IdTypes {PMID, PMC, UNKNOWN};
+
 	/** */
 	TextContextModel model;
-
 
 	/** */
 	public String ID = "-1";
 
+	public IdTypes idType;
+	
 
 	/** */
 	public String plainText = "";
@@ -194,6 +198,16 @@ public class Text {
 	 */
 	public int lengthInTokens () {
 		return getPlainText().split(" ").length;
+	}
+	
+	
+	public void addTaxonWithName (int taxon, String name) {
+		Set<String> allNames = taxonIdsToNames.get(taxon);
+		if (allNames == null)
+			allNames = new HashSet<String>();
+		
+		allNames.add(name);
+		taxonIdsToNames.put(taxon, allNames);
 	}
 	
 	

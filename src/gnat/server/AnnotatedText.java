@@ -42,6 +42,14 @@ public class AnnotatedText extends RequestedText {
 	
 	
 	/**
+	 * 
+	 */
+	public void clearAnnotations () {
+		this.annotations.clear();
+	}
+	
+	
+	/**
 	 * Returns a tab-separated list of annotations for this text.<br><br>
 	 * Format: text-id [tab] text-xref [tab] annotation-type [tab] <em>annotation-data...</em><br>
 	 * <em>annotation-data</em> varies for different annotation-types.
@@ -66,29 +74,40 @@ public class AnnotatedText extends RequestedText {
 			
 			if (annotation.startsWith("<entity")) {
 				String type = annotation.replaceFirst("^<entity.* type=\"(.*?)\".*$", "$1");
-				out.append(type);
+				if (type.equals(annotation)) out.append("-");
+				else out.append(type);
 				out.append("\t");
 
 				String subtype = annotation.replaceFirst("^<entity.* subtype=\"(.*?)\".*$", "$1");
-				out.append(subtype);
+				if (subtype.equals(annotation)) out.append("-");
+				else out.append(subtype);
 				out.append("\t");
 
 				String ids = annotation.replaceFirst("^<entity.* ids=\"(.*?)\".*$", "$1");
-				out.append(ids);
+				if (ids.equals(annotation)) out.append("-");
+				else out.append(ids);
 				out.append("\t");
 
 				String startIndex = annotation.replaceFirst("^<entity.* startIndex=\"(.*?)\".*$", "$1");
-				out.append(startIndex);
+				if (startIndex.equals(annotation)) out.append("-");
+				else out.append(startIndex);
 				out.append("\t");
 
 				String endIndex = annotation.replaceFirst("^<entity.* endIndex=\"(.*?)\".*$", "$1");
-				out.append(endIndex);
+				if (endIndex.equals(annotation)) out.append("-");
+				else out.append(endIndex);
 				out.append("\t");
-
+				
 				String name = annotation.replaceFirst("^<entity.*>(.*?)</entity>$", "$1");
-				out.append(name);				
-				out.append("\n");
+				if (name.equals(annotation)) out.append("-");
+				else out.append(name);				
+				out.append("\t");
 			
+				String score = annotation.replaceFirst("^<entity.* score=\"(.*?)\".*$", "$1");
+				if (score.equals(annotation)) out.append("-");
+				else out.append(score);
+				out.append("\n");
+
 			// TODO handle other types of annotations
 			} else {
 				out.append(annotation);

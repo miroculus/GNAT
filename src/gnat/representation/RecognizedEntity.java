@@ -1,6 +1,7 @@
 package gnat.representation;
 
 
+
 /**
  * Represents a recognized entity in a text.
  *
@@ -9,6 +10,7 @@ public class RecognizedEntity
 {
 	private Text text;
 	private TextAnnotation textAnnotation;
+
 
 	/**
 	 * Creates a new entity recognized in the given text under position denoted by the given annotation.

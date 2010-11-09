@@ -13,6 +13,7 @@ import gnat.filter.nei.UnspecificNameFilter;
 import gnat.filter.ner.DefaultSpeciesRecognitionFilter;
 import gnat.filter.ner.GnatServiceNer;
 import gnat.preprocessing.NameRangeExpander;
+import gnat.representation.RecognizedEntity;
 import gnat.representation.TextFactory;
 import gnat.server.GnatService;
 import gnat.utils.AlignmentHelper;
@@ -112,9 +113,15 @@ public class Test {
 		// run all filters, changing run.context, run.textRepository, and run.geneRepository
 		run.runFilters();
 
+		
+//		List<RecognizedEntity> sortedREs = 
+//			run.context.sortRecognizedEntities(run.context.getRecognizedEntities());
+//		for (RecognizedEntity re: sortedREs)
+//			System.out.println(re.getText().getID() + "\t" + re.getName() + "\t" + re.getBegin() + "\t" + re.getEnd());
+//		if (true) return;
 				
 		// get the results for each text, in BioCreative tab-separated format
-		List<String> result = run.context.getIdentifiedGeneListInBioCreativeFormatSorted();
+		List<String> result = run.context.getIdentifiedGeneList_SortedByTextAndId();
 		// get expected results from saved file
 		List<String> expected = getExpectedOutput("texts/test/test.out");
 		
@@ -124,8 +131,11 @@ public class Test {
 			if (result.contains(res))
 				foundInTest++;
 		}
-
+		
 		if (foundInTest == expected.size() && expected.size() == result.size()) {
+			System.out.println("Result:");
+			for (String res: result)
+				System.out.println(res);
 			System.out.println("\nTest okay!");
 			
 		} else {
