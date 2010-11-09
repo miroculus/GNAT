@@ -3,7 +3,8 @@
 
 
 
-- Add a simplified version that returns all potential IDs
+- Add a simplified pipe that just returns all potential IDs after only a few 
+  filtering steps (immediate context, left-right context, alignment)
 
 - Map to Homologene, UniProt Cluster, etc., instead of a single gene
 
@@ -14,3 +15,9 @@
   This would also make it easier to switch to a dictionary with different IDs,
   such as UniProt; HUGO, MGI, ...
 
+- Unify Text.ID and Text.PMID (with getters and setters)
+
+- Simplify the various ContextModel setters that are currently implemented for
+  the different gene information types (chromosomal location, GO terms, ...)
+
+- Check SimpleSpeciesNER: should find mouse! and assign it to a Text.taxonIDs
