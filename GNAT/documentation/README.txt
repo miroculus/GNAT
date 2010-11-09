@@ -4,8 +4,18 @@
 GNAT is a package to recognize and identify gene names in biomedical text.
 
 
+GNAT performs a series of steps, first to recognize names of genes, species,
+and other terms in each text it is given; assign candidate IDs (of all possible
+genes that share the found name; and then to disambiguate between the 
+candidates to find a single identifier (or as few as possible) pointing to an
+EntrezGene record for that gene.
+
 GNAT comes in two parts, a client and a server, although both can run on the 
-same machine. A server is able to handle
+same machine.
+
+Server
+------
+A server is able to handle
 - requests for named entity recognition: by submitting plain texts, PubMed IDs,
   and/or PMC IDs; candidate IDs will be returned with positional and other 
   information; 
@@ -36,6 +46,8 @@ a gnat.server.GeneService, again essentially a wrapper that hides the actual
 database from direct, outside access and also makes access by the client more 
 transparent.
 
+Client
+------
 A client is responsible for
 - loading and pre-processing texts (or obtain IDs if an invoked server can 
   handle the download/pre-processing/caching);

@@ -1,0 +1,16 @@
+-- TO-DO list --
+----------------
+
+
+
+- Add a simplified version that returns all potential IDs
+
+- Map to Homologene, UniProt Cluster, etc., instead of a single gene
+
+- A protein version that maps to UniProt
+
+- Alternative NER + candidate assignment: via ML-based NER tool plus a matching
+  against the entire dictionary for each recognized name afterwards.
+  This would also make it easier to switch to a dictionary with different IDs,
+  such as UniProt; HUGO, MGI, ...
+
