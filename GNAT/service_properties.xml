@@ -1,7 +1,6 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
 <!DOCTYPE properties SYSTEM "http://java.sun.com/dtd/properties.dtd">
 <properties>
-<comment>Date: 1253817159sec</comment>
 
 <!-- Needed for the GeneService and the GeneNormalization task in GnatService: -->
 <!-- Access parameters to the database that hosts GNAT's data (GR_* tables, GO2GO, GO2LCA tables) -->
@@ -15,11 +14,17 @@
 <!-- the default server where all/most dictionaries are located; exception can be defined in the taxonToPort mapping file -->
 <entry key="dictionaryServer">localhost</entry>
 <!-- ports for each dictionary; also used for exceptions for the default 'dictionaryServer' address -->
-<entry key="taxon2port">data/taxonToServerPort.txt</entry>
+<entry key="taxon2port">config/taxonToServerPort.txt</entry>
+
+
+<!-- Services that are made accessible: species NER (sner), gene NER (gner), GO term recognition (goterms), gene normalization (gnorm) -->
+<entry key="providesTasks">gner,goterms,gnorm</entry>
+<!-- Services provided by default if none is specified in a client request -->
+<entry key="defaultTasks">gner</entry>
 
 
 <!-- Needed by the GO term recognition task of GnatService: -->
 <!-- Address and port of the dictionary server for GO term recognition -->
-<entry key="dictionaryServerGO">http://bergman.smith.man.ac.uk:56099</entry>
+<entry key="dictionaryServerGO">localhost:56099</entry>
 
 </properties>
