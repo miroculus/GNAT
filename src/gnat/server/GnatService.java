@@ -54,7 +54,8 @@ import com.sun.net.httpserver.HttpServer;
  *   <li>tsv: tab-separated list of annotiations, with positions, etc.
  *   </ul>
  * <li>species    - list of taxon IDs, depicting the species for which genes should be annotated; default: 9606=human
- * <li>task       - task(s) to perform on the text: speciesNER, geneNER, geneNormalization
+ * <li>task       - task(s) to perform on the text: speciesNER, geneNER, geneNormalization, goTermRecognition; default: gner
+ * <li>taxa       - get a list of all supported gene dictionaries (for each taxon) and their status (online/offline)
  * <li>help       - returns a short description and list of valid parameters; disregards all other parameters
  * </ul>
  * <br><br>
@@ -68,10 +69,25 @@ public class GnatService extends HttpService {
 	/**
 	 * Tasks provided by this service.
 	 */
-	public enum Tasks {SPECIES_NER,
+	public enum Tasks {UNKNOWN,
+					   SPECIES_NER,
 					   GENE_NER,
 					   GENE_NORM,
-					   GO_TERMS}
+					   GO_TERMS;
+		public static Tasks getValue(String string) {
+			string = string.toLowerCase();
+			if (string.equals("sner") || string.equals("species") || string.equals("speciesner"))
+				return SPECIES_NER;
+			else if (string.equals("gner") || string.equals("genes") || string.equals("genener"))
+				return GENE_NER;
+			else if (string.equals("gnorm") || string.equals("genenormalization"))
+				return GENE_NORM;
+			else if (string.equals("goterms") || string.equals("goterm") || string.equals("gotermrecognition"))
+				return GO_TERMS;
+			else 
+				return UNKNOWN;
+		}
+	}
 	
 	Set<Tasks> providesTasks = new HashSet<Tasks>();
 	Set<Tasks> defaultTasks  = new HashSet<Tasks>();
@@ -113,7 +129,7 @@ public class GnatService extends HttpService {
 			System.exit(2);
 		}
 		for (String task: provides.split("\\s*[\\;\\,]\\s*")) {
-			Tasks aTask = getTask(task);
+			Tasks aTask = Tasks.getValue(task);
 			if (aTask != null)
 				providesTasks.add(aTask);
 			else {
@@ -136,7 +152,7 @@ public class GnatService extends HttpService {
 			System.exit(2);
 		}
 		for (String task: defaults.split("\\s*[\\;\\,]\\s*")) {
-			Tasks aTask = getTask(task);
+			Tasks aTask = Tasks.getValue(task);
 			if (aTask != null)
 				defaultTasks.add(aTask);
 			else {
@@ -213,26 +229,7 @@ public class GnatService extends HttpService {
 			ioe.printStackTrace();
 		}
 	}
-	
-	
-	/**
-	 * 
-	 * @param task
-	 * @return
-	 */
-	public static Tasks getTask (String task) {
-		task = task.toLowerCase();
-		if (task.equals("sner") || task.equals("species") || task.equals("speciesner"))
-			return Tasks.SPECIES_NER;
-		else if (task.equals("gner") || task.equals("genes") || task.equals("genener"))
-			return Tasks.GENE_NER;
-		else if (task.equals("gnorm") || task.equals("genenormalization"))
-			return Tasks.GENE_NORM;
-		else if (task.equals("goterms") || task.equals("goterm") || task.equals("gotermrecognition"))
-			return Tasks.GO_TERMS;
-		else 
-			return null;
-	}
+
 }
 
 
@@ -370,10 +367,10 @@ class GnatServiceHandler extends ServiceHandler {
 		if (userQuery.hasParameter("task")) {
 			String[] tasks = userQuery.getValue("task").split("\\s*[\\,\\;]\\s*");
 			for (String task: tasks) {
-				GnatService.Tasks aTask = GnatService.getTask(task);
+				GnatService.Tasks aTask = GnatService.Tasks.getValue(task);
 				if (aTask != null) {
 					if (aTask == GnatService.Tasks.GENE_NORM) {
-						// TODO don;t run GENE_NORM if any of the sub-tasks is not provided by this service
+						// TODO don't run GENE_NORM if any of the sub-tasks is not provided by this service
 						annotationTasks.add(GnatService.Tasks.SPECIES_NER);
 						annotationTasks.add(GnatService.Tasks.GENE_NER);
 						annotationTasks.add(GnatService.Tasks.GO_TERMS);

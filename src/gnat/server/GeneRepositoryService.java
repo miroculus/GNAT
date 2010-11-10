@@ -84,7 +84,7 @@ public class GeneRepositoryService extends HttpService {
 		server.setExecutor(Executors.newCachedThreadPool());
 	    server.start();
 	    
-	    System.out.println("GeneService started on port " + port + " in " + (System.currentTimeMillis() - start) + "ms.");
+	    System.out.println("GeneRepositoryService started on port " + port + " in " + (System.currentTimeMillis() - start) + "ms.");
 	}
 	
 	
