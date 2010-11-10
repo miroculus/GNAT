@@ -57,13 +57,13 @@ public class DefaultSpeciesRecognitionFilter implements Filter {
 			}
 			
 			Map<Integer, Set<String>> id2names = new HashMap<Integer, Set<String>>();
-			String[] lines = text.getPlainText().split("[\\r\\n]");
+			String[] lines = text.getPlainText().split("[\r\n]+");
 			for (String line: lines) {
-				if (line.toLowerCase().matches(".*(?:^|[\\W])" +
-						"(human|man|patient|h(\\.|omo)\\ssap(\\.|iens))" +
+				if (line.matches(".*(?:^|[\\W])" +
+						"([Hh]uman|man|patient|[Hh](\\.|omo)\\ssap(\\.|iens))" +
 						"(?:[\\W]|$).*")) {
 					String name = line.replaceFirst("^.*(?:^|[\\W])" +
-							"(human|man|patient|h(\\.|omo)\\ssap(\\.|iens))" +
+							"([Hh]uman|man|patient|[Hh](\\.|omo)\\ssap(\\.|iens))" +
 							"(?:[\\W]|$).*$", "$1");
 					Set<String> names;
 					if (id2names.containsKey(9606))
@@ -72,13 +72,15 @@ public class DefaultSpeciesRecognitionFilter implements Filter {
 						names = new TreeSet<String>();
 					names.add(name);
 					id2names.put(9606, names);
+					
+					//System.err.println("###Found human: '" + name + "'###");
 				}
 				
-				if (line.toLowerCase().matches(".*(?:^|[\\W])" +
-						"(mouse|mice|murine|m(\\.|us)\\smus(\\.|culus)?)" +
+				if (line.matches(".*(?:^|[\\W])" +
+						"([Mm]ouse|[Mm]ice|[Mm]urine|[Mm](\\.|us)\\s[Mm]us(\\.|culus)?)" +
 						"(?:[\\W]|$).*")) {
 					String name = line.replaceFirst("^.*(?:^|[\\W])" +
-							"(mouse|mice|murine|m(\\.|us)\\smus(\\.|culus)?)" +
+							"([Mm]ouse|[Mm]ice|[Mm]urine|[Mm](\\.|us)\\s[Mm]us(\\.|culus)?)" +
 							"(?:[\\W]|$).*$", "$1");
 					Set<String> names;
 					if (id2names.containsKey(10090))
@@ -88,14 +90,14 @@ public class DefaultSpeciesRecognitionFilter implements Filter {
 					names.add(name);
 					id2names.put(10090, names);
 					
-					//System.err.println("###Found mouse###");
+					//System.err.println("###Found mouse: '" + name + "'###");
 				}
 				
-				if (line.toLowerCase().matches(".*(?:^|[\\W])" +
-						"(rat|rats|r(\\.|attus)\\snor(\\.||v\\.|vegicus)?)" +
+				if (line.matches(".*(?:^|[\\W])" +
+						"([Rr]at|[Rr]ats|[Rr](\\.|attus)\\s[Nn]or(\\.||v\\.|vegicus)?)" +
 						"(?:[\\W]|$).*")) {
 					String name = line.replaceFirst("^.*(?:^|[\\W])" +
-							"(rat|rats|r(\\.|attus)\\snor(\\.||v\\.|vegicus)?)" +
+							"([Rr]at|[Rr]ats|[Rr](\\.|attus)\\s[Nn]or(\\.||v\\.|vegicus)?)" +
 							"(?:[\\W]|$).*$", "$1");
 					Set<String> names;
 					if (id2names.containsKey(10116))
@@ -104,13 +106,15 @@ public class DefaultSpeciesRecognitionFilter implements Filter {
 						names = new TreeSet<String>();
 					names.add(name);
 					id2names.put(10116, names);
+					
+					//System.err.println("###Found rat: '" + name + "'###");
 				}
 				
-				if (line.toLowerCase().matches(".*(?:^|[\\W])" +
-						"(rodents?)" +
+				if (line.matches(".*(?:^|[\\W])" +
+						"([Rr]odents?)" +
 						"(?:[\\W]|$).*")) {
 					String name = line.replaceFirst("^.*(?:^|[\\W])" +
-							"(rodents?)" +
+							"([Rr]odents?)" +
 							"(?:[\\W]|$).*$", "$1");
 					Set<String> names;
 					if (id2names.containsKey(10090))
@@ -126,13 +130,17 @@ public class DefaultSpeciesRecognitionFilter implements Filter {
 						names = new TreeSet<String>();
 					names.add(name);
 					id2names.put(10116, names);
+					
+					//System.err.println("###Found rodent: '" + name + "'###");
 				}
 				
-				if (line.toLowerCase().matches(".*(?:^|[\\W])" +
-						"(fruit[\\s\\-]?fly|flies|fly|d(\\.|rosophilae?)|d(\\.|rosophila)\\smel(\\.|anogaster))" +
+				if (line.matches(".*(?:^|[\\W])" +
+						"([Ff]ruit[\\s\\-]?[Ff]ly|[Ff]lies|[Ff]ly|[Dd](\\.|rosophilae?)|[Dd](\\.|rosophila)\\s[Mm]el(\\.|anogaster))" +
+						//"(drosophila)" +
 						"(?:[\\W]|$).*")) {
 					String name = line.replaceFirst("^.*(?:^|[\\W])" +
-							"(fruit[\\s\\-]?fly|flies|fly|d(\\.|rosophilae?)|d(\\.|rosophila)\\smel(\\.|anogaster))" +
+							"([Ff]ruit[\\s\\-]?[Ff]ly|[Ff]lies|[Ff]ly|[Dd](\\.|rosophilae?)|[Dd](\\.|rosophila)\\s[Mm]el(\\.|anogaster))" +
+							//"(drosophila)" +
 							"(?:[\\W]|$).*$", "$1");
 					Set<String> names;
 					if (id2names.containsKey(7227))
@@ -140,10 +148,18 @@ public class DefaultSpeciesRecognitionFilter implements Filter {
 					else
 						names = new TreeSet<String>();
 					names.add(name);
-					id2names.put(10116, names);
+					id2names.put(7227, names);
+					
+					//System.err.println("###Found fly: '" + name + "'###");
 				}
-			}
+			} // for each line
 			
+			//System.out.println("Species IDs: " + id2names.keySet());
+			//for (int taxon: id2names.keySet()) {
+			//	System.out.println("  names for " + taxon + ": " + id2names.get(taxon));
+			//}
+			
+			taxonIDs = id2names.keySet();
 
 			// assign default IDs if none where found in the text
 			if (taxonIDs.size() == 0) {
@@ -157,8 +173,9 @@ public class DefaultSpeciesRecognitionFilter implements Filter {
 			if (ConstantsNei.OUTPUT_LEVEL.compareTo(ConstantsNei.OUTPUT_LEVELS.DEBUG) >= 0)
 				System.out.println("#SRF: for text " + text.PMID + ", found species " + taxonIDs);
 			
-			allTaxonIDs.addAll(taxonIDs);
-		}
+			allTaxonIDs.addAll(id2names.keySet());
+		} // for each text
+		
 		
 		if (ConstantsNei.OUTPUT_LEVEL.compareTo(ConstantsNei.OUTPUT_LEVELS.STATUS) >= 0)
 			System.out.println("#SRF: recognized species in the text collection: " + allTaxonIDs);

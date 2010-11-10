@@ -16,6 +16,19 @@ import java.util.Set;
 
 import uk.ac.man.entitytagger.Mention;
 
+/**
+ * Tests the connection to a Linnaeus instance.
+ * <br><br>
+ * Sends a fixed short text and compares the received answer to the expected result.<br>
+ * Server and port for the Linnaeus instance are set in the entry 'linnaeusUrl' in ISGNProperties.
+ * 
+ * For more information on Linnaeus, see <a href="http://linnaeus.sourceforge.net">linnaeus.sourceforge.net</a>.
+ * <br><br>
+ * Start this test with scripts/testLinnaeusConnection.sh
+ * 
+ * @author J&ouml;rg Hakenberg &lt;jhakenberg@users.sourceforge.net&gt;
+ *
+ */
 public class LinnaeusTest {
 
 	/**

@@ -115,6 +115,9 @@ public class GnatServiceNer implements Filter {
 			    	  + "&" + URLEncoder.encode("species", "UTF-8")    + "=" + URLEncoder.encode(speciesList, "UTF-8")
 			    	  + "&" + URLEncoder.encode("text", "UTF-8")       + "=" + URLEncoder.encode(text.getPlainText(), "UTF-8");
 	
+			    //System.out.println("Call for text " + text.getID() + ":");
+			    //System.out.println("  SERVER/?" + data);
+			    
 			    // Send data
 			    URL url = new URL(ISGNProperties.getProperty("gnatServiceUrl"));
 			    URLConnection conn = url.openConnection();
@@ -126,11 +129,9 @@ public class GnatServiceNer implements Filter {
 			    // Get the response
 			    BufferedReader rd = new BufferedReader(new InputStreamReader(conn.getInputStream()));
 			    String line;
-			    while ((line = rd.readLine()) != null) {
-			    	
+			    while ((line = rd.readLine()) != null)			    	
 			    	addRecognizedEntity(context, text, line);
-			    	
-			    }
+
 			    wr.close();
 			    rd.close();
 
@@ -157,11 +158,9 @@ public class GnatServiceNer implements Filter {
 	 * @param geneRepository
 	 * @param taxa
 	 */
-	public void filter (Context context, TextRepository textRepository, GeneRepository geneRepository, Set<Integer> restrictedTaxa) {
+	public void filterX (Context context, TextRepository textRepository, GeneRepository geneRepository, Set<Integer> restrictedTaxa) {
 		if (textRepository == null) 
 			throw new RuntimeException("No text repository set.");
-
-		
 	}
 	
 	
@@ -176,11 +175,10 @@ public class GnatServiceNer implements Filter {
 	 * @param annotation
 	 */
 	void addRecognizedEntity (Context context, Text text, String annotation) {
-		if (annotation.startsWith("<error")) return;
+		if (annotation.startsWith("<error") || annotation.startsWith("<message")) return;
 		
 		String[] cols = annotation.split("\t");
-		
-		//System.err.println(annotation);
+		//System.out.println("Annotation: " + annotation);
 		
 		//String textId   = cols[0];
 		//String textXref = cols[1];

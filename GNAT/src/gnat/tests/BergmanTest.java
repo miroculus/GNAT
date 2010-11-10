@@ -12,9 +12,10 @@ import gnat.filter.nei.StopWordFilter;
 import gnat.filter.nei.UnambiguousMatchFilter;
 import gnat.filter.nei.UnspecificNameFilter;
 import gnat.filter.ner.DefaultSpeciesRecognitionFilter;
-import gnat.filter.ner.RunDictionaries;
+import gnat.filter.ner.GnatServiceNer;
 import gnat.preprocessing.NameRangeExpander;
 import gnat.representation.TextFactory;
+import gnat.server.GnatService;
 import gnat.utils.AlignmentHelper;
 
 import java.io.BufferedReader;
@@ -31,44 +32,31 @@ import java.util.List;
 import java.util.Set;
 
 /**
- * Runs a test using a fixed GNAT text processing pipeline to ensure a local copy
- * is running as expected. Requires a local dictionary for human genes, a local 
- * database for gene information; uses a simple species recognizer.
  * 
+ * Test of an entire processing pipeline that uses a GnatService for species NER, which
+ * is running on <tt>http://bergman.smith.ac.uk:8081</tt>. This address could change in
+ * future releases.
  * <br><br>
- * Start the test with scripts/testLocalPipeline.sh, see requirements below.
- * <br><br>
- * Test abstracts are read from texts/test/*.txt; an output file in texts/test/*.output
- * contains the expected results.
- * <br>
- * Requirements:<br>
- * - local copy of the GNAT client (Jar file);<br>
- * - running database server (locally or remote, visible via JDBC) with the GNAT gene information (see sql.tar.gz);<br>
- * 
  * 
  * 
  * 
  * @author J&ouml;rg Hakenberg &lt;jhakenberg@users.sourceforge.net&gt;
+ *
  */
-public class LocalPipelineTest extends PipelineTest {
+public class BergmanTest extends PipelineTest {
 
-	
 	/**
 	 * 
 	 * @param args
 	 */
 	public static void main (String[] args) {
-		System.out.println("Testing a locally running pipeline: human dictionary and accessible database.");		
+		System.out.println("Testing a pipeline that contacts a remote GnatService and uses a local gene information database.");		
 		System.out.println("Reading configuration from " + ISGNProperties.getPropertyFilename());
+		System.out.println("  GnatService expected at " + ISGNProperties.get("gnatServiceUrl"));
+		System.out.println("  Using database at " + ISGNProperties.get("dbAccessUrl"));
 		
 		Run run = new Run();
 		run.verbosity = 0;
-		
-		if (args.length > 0) {
-			// the only parameter is -v to regulate verbosity at runtime
-			if (args[0].matches("\\-v=\\d+"))
-				run.verbosity = Integer.parseInt(args[0].replaceFirst("^\\-v=(\\d+)$", "$1"));
-		}
 		
 		//
 		if (!testConfiguration())
@@ -87,15 +75,15 @@ public class LocalPipelineTest extends PipelineTest {
 		// default species NER: spots human, mouse, rat, and fly only
 		run.addFilter(new DefaultSpeciesRecognitionFilter());
 		// genes via a GnatService
-//		GnatServiceNer gnatServiceNer = new GnatServiceNer(GnatService.Tasks.GENE_NER);
-//		// tell the remote service to run only for a few species:
-//		gnatServiceNer.setLimitedToTaxa(9606); // only human genes
-//		gnatServiceNer.useDefaultSpecies = true;
-//		run.addFilter(gnatServiceNer);
+		GnatServiceNer gnatServiceNer = new GnatServiceNer(GnatService.Tasks.GENE_NER);
+		// tell the remote service to run only for a few species:
+		gnatServiceNer.setLimitedToTaxa(9606, 10090, 7227, 10116); // use for human, murine, fruit fly, and rat genes
+		gnatServiceNer.useDefaultSpecies = true;
+		run.addFilter(gnatServiceNer);
 		// construct a dictionary for human genes only
-		RunDictionaries humanDictionaryFilter = new RunDictionaries();
-		humanDictionaryFilter.addLimitToTaxon(9606);
-		run.addFilter(humanDictionaryFilter);
+//		RunDictionaries humanDictionaryFilter = new RunDictionaries();
+//		humanDictionaryFilter.addLimitToTaxon(9606);
+//		run.addFilter(humanDictionaryFilter);
 		
 		// NER post-processing filters here:
 		run.addFilter(new RecognizedEntityUnifier());
@@ -168,47 +156,25 @@ public class LocalPipelineTest extends PipelineTest {
 	
 	
 	/**
-	 * Check whether some basic settings in the configuration (files) have been set:<br>
-	 * - database access (dbUser, dbAccessUrl, ...)<br>
+	 * Checks the settings and connections to a GnatService.
 	 * 
 	 * @return
 	 */
 	static boolean testConfiguration () {
 		boolean configOk = true;
 		
+		//
 		configOk = testDatabase();
 		
-		String tax2portFile = ISGNProperties.get("taxon2port");
+		String tax2portFile = ISGNProperties.get("gnatServiceUrl");
 		if (tax2portFile == null || tax2portFile.length() == 0) {
 			System.err.println("Configuration file " + ISGNProperties.getPropertyFilename() + ":\nSet a value " +
-				"for the entry 'taxon2port';\nshould point to a file that contains a mapping of NCBI taxonomy " +
-				"IDs to servers and port;\nan example is provided with config/taxonToServerPort.txt");
+				"for the entry 'gnatServiceUrl'.");
 			configOk = false;
 		}
 
 		return configOk;
 	}
 
-
-	/**
-	 * Read the expected results from an existing file.
-	 * @param filename
-	 * @return
-	 */
-	static List<String> getExpectedOutput (String filename) {
-		List<String> result = new LinkedList<String>();
-		try {
-			BufferedReader br = new BufferedReader(new FileReader(filename));
-			String line;
-			while ((line = br.readLine()) != null) {
-				if (line.startsWith("#") || line.length() == 0 || line.matches("[\\s\\t]+")) continue;
-				result.add(line);
-			}
-			br.close();
-		} catch (IOException ioe) {
-			ioe.printStackTrace();
-		}
-		return result;
-	}
 	
 }
