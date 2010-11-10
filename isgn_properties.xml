@@ -17,8 +17,8 @@
 <entry key="geneRepositoryFile">data/geneRepository.obj</entry>
 <entry key="geneRepositoryService">http://bergman.smith.man.ac.uk:8082</entry>
 <entry key="taxon2port">config/taxonToServerPort.txt</entry>
+<entry key="linnaeusUrl">bergman.smith.man.ac.uk:55000</entry>
 
-<entry key="linnaeusUrl">localhost:55000</entry>
 <entry key="italicsFile">data/pmc-italics.tsv</entry>
 <!-- Format of the filenames in input/test directories. Valid: {pmcid,pmid,doi,any} as base filename, plus extension. -->
 <!-- pmcid allows for either "pmc12345" or "12345" -->
