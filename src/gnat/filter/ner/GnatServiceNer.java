@@ -182,17 +182,22 @@ public class GnatServiceNer implements Filter {
 		
 		//System.err.println(annotation);
 		
-		String textId   = cols[0];
-		String textXref = cols[1];
-		String type     = cols[2]; // e.g., "gene"
-		String subtype  = cols[3]; // e.g., species for a gene, as taxon ID: "9606"
+		//String textId   = cols[0];
+		//String textXref = cols[1];
+		String type     = cols[2]; // e.g., "gene", "goterm", "species"
+		//String subtype  = cols[3]; // e.g., species for a gene, as taxon ID: "9606"; or GeneOntology branch
 		String idString = cols[4]; // gene ID
 		int startIndex  = Integer.parseInt(cols[5]);
 		int endIndex    = Integer.parseInt(cols[6]);
 		String evidence = cols[7];
+		//float score     = Float.parseFloat(cols[8]);
 		
-		RecognizedEntity recognizedGeneName = new RecognizedEntity(text, new TextAnnotation(new TextRange(startIndex, endIndex), evidence, TextAnnotation.TYPE_GENE));
-		context.addRecognizedEntity1(recognizedGeneName, idString.split(";"));
+		TextRange position = new TextRange(startIndex, endIndex);
+		TextAnnotation.Type eType = TextAnnotation.Type.getValue(type);
+		String[] ids = idString.split("\\s*[\\;\\,]\\s*");
+		
+		RecognizedEntity recognizedGeneName = new RecognizedEntity(text, new TextAnnotation(position, evidence, eType));
+		context.addRecognizedEntity1(recognizedGeneName, ids);
 	}
 	
 }

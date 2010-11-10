@@ -32,7 +32,7 @@ import com.sun.net.httpserver.HttpServer;
  * @author J&ouml;rg Hakenberg &lt;jhakenberg@users.sourceforge.net&gt;
  *
  */
-public class GeneService extends HttpService {
+public class GeneRepositoryService extends HttpService {
 	
 	/**
 	 * 
@@ -50,18 +50,18 @@ public class GeneService extends HttpService {
 				log = Integer.parseInt(a.replaceFirst("\\-\\-?log=(\\d+)", "$1"));
 			else if (a.equalsIgnoreCase("start"))
 				mode = Modes.START;
-			else if (a.equalsIgnoreCase("stop"))
-				mode = Modes.STOP;
+			//else if (a.equalsIgnoreCase("stop"))
+			//	mode = Modes.STOP;
 			else
 				System.err.println("Unknown parameter: " + a + " - ignoring.");
 		}
 		
 		if (mode == Modes.START) {
-			GeneService service = new GeneService();
+			GeneRepositoryService service = new GeneRepositoryService();
 			service.logLevel = log;
 			service.start(port);
-		} else if (mode == Modes.STOP) {
-			//service.stop();
+		//} else if (mode == Modes.STOP) {
+		//	service.stop();
 			
 		} else {
 			//service.status();

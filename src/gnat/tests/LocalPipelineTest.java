@@ -1,6 +1,7 @@
-package gnat.client;
+package gnat.tests;
 
 import gnat.ISGNProperties;
+import gnat.client.Run;
 import gnat.filter.nei.AlignmentFilter;
 import gnat.filter.nei.GeneRepositoryLoader;
 import gnat.filter.nei.IdentifyAllFilter;
@@ -11,23 +12,29 @@ import gnat.filter.nei.StopWordFilter;
 import gnat.filter.nei.UnambiguousMatchFilter;
 import gnat.filter.nei.UnspecificNameFilter;
 import gnat.filter.ner.DefaultSpeciesRecognitionFilter;
-import gnat.filter.ner.GnatServiceNer;
+import gnat.filter.ner.RunDictionaries;
 import gnat.preprocessing.NameRangeExpander;
-import gnat.representation.RecognizedEntity;
 import gnat.representation.TextFactory;
-import gnat.server.GnatService;
 import gnat.utils.AlignmentHelper;
 
 import java.io.BufferedReader;
 import java.io.FileReader;
 import java.io.IOException;
+import java.sql.Connection;
+import java.sql.DriverManager;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.sql.Statement;
+import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Set;
 
 /**
- * 
  * Runs a test using a fixed GNAT text processing pipeline to ensure a local copy
- * is running as expected.
+ * is running as expected. Requires a local dictionary for human genes, a local 
+ * database for gene information; uses a simple species recognizer.
+ * 
  * <br><br>
  * Start the test with scripts/runTest.sh, see requirements below.
  * <br><br>
@@ -43,7 +50,7 @@ import java.util.List;
  * 
  * @author J&ouml;rg Hakenberg &lt;jhakenberg@users.sourceforge.net&gt;
  */
-public class Test {
+public class LocalPipelineTest {
 
 	
 	/**
@@ -51,6 +58,9 @@ public class Test {
 	 * @param args
 	 */
 	public static void main (String[] args) {
+		System.out.println("Testing a locally running pipeline: human dictionary and accessible database.");		
+		System.out.println("Reading configuration from " + ISGNProperties.getPropertyFilename());
+		
 		Run run = new Run();
 		run.verbosity = 0;
 		
@@ -73,15 +83,19 @@ public class Test {
 		// Pre-processing filter here:
 		run.addFilter(new NameRangeExpander());
 
-		// 
-		GnatServiceNer gnatServiceNer = new GnatServiceNer(GnatService.Tasks.SPECIES_NER, GnatService.Tasks.GENE_NER);
-		// tell the remote service to run only for a few species:
-		gnatServiceNer.setLimitedToTaxa(9606); // only human genes
-		gnatServiceNer.useDefaultSpecies = true;
-		run.addFilter(gnatServiceNer);
-		
-		// NER post-processing filters here:
+		// NER filters here:
+		// default species NER: spots human, mouse, rat, and fly only
 		run.addFilter(new DefaultSpeciesRecognitionFilter());
+		// genes via a GnatService
+//		GnatServiceNer gnatServiceNer = new GnatServiceNer(GnatService.Tasks.GENE_NER);
+//		// tell the remote service to run only for a few species:
+//		gnatServiceNer.setLimitedToTaxa(9606); // only human genes
+//		gnatServiceNer.useDefaultSpecies = true;
+//		run.addFilter(gnatServiceNer);
+		// construct a dictionary for human genes only
+		RunDictionaries humanDictionaryFilter = new RunDictionaries();
+		humanDictionaryFilter.addLimitToTaxon(9606);
+		run.addFilter(humanDictionaryFilter);
 		
 		// NER post-processing filters here:
 		run.addFilter(new RecognizedEntityUnifier());
@@ -95,7 +109,7 @@ public class Test {
 
 		// load the gene repository to obtain information on each gene (if only the species)
 		// not loading gene repository will produce an empty result at the end
-		run.addFilter(new GeneRepositoryLoader(GeneRepositoryLoader.RetrievalMethod.SERVICE));
+		run.addFilter(new GeneRepositoryLoader(GeneRepositoryLoader.RetrievalMethod.DATABASE));
 
 		//
 		run.addFilter(new StopWordFilter(ISGNProperties.get("stopWords")));
@@ -123,13 +137,15 @@ public class Test {
 		// get the results for each text, in BioCreative tab-separated format
 		List<String> result = run.context.getIdentifiedGeneList_SortedByTextAndId();
 		// get expected results from saved file
-		List<String> expected = getExpectedOutput("texts/test/test.out");
+		List<String> expected = getExpectedOutput("texts/test/test.solution");
 		
 		// compare tested and expected results
 		int foundInTest = 0;
-		for (String res: expected) {
-			if (result.contains(res))
+		for (String exp: expected) {
+			if (result.contains(exp))
 				foundInTest++;
+			else
+				System.out.println("#Not found in result: '" + exp + "'");
 		}
 		
 		if (foundInTest == expected.size() && expected.size() == result.size()) {
@@ -141,8 +157,8 @@ public class Test {
 		} else {
 			System.out.println("\nTested and expected results differ!");
 			System.out.println("Expected result:");
-			for (String res: expected)
-				System.out.println(res);
+			for (String exp: expected)
+				System.out.println(exp);
 			System.out.println("-----\nResult from test:");
 			for (String res: result)
 				System.out.println(res);
@@ -167,8 +183,53 @@ public class Test {
 		
 		if (dbUser == null || dbPass == null || dbAccessUrl == null || dbDriver == null ||
 			dbUser.length() == 0 || dbPass.length() == 0 || dbAccessUrl.length() == 0 || dbDriver.length() == 0) {
-			System.err.println("Configuration file " + ISGNProperties.getPropertyFilename() + ":\nPlease set values " +
+			System.err.println("Configuration file " + ISGNProperties.getPropertyFilename() + ":\nSet values " +
 					"for the entries dbUser/dbPass/dbAccessUrl/dbDriver to reflect your local configuration.");
+			configOk = false;
+		}
+		
+		// check DB connectivity / queries
+		try {
+			Class.forName(ISGNProperties.get("dbDriver"));
+			Connection conn = DriverManager.getConnection(
+					ISGNProperties.get("dbAccessUrl"),
+					ISGNProperties.get("dbUser"),
+					ISGNProperties.get("dbPass"));
+			Statement stm = conn.createStatement();
+			ResultSet rs = stm.executeQuery("DESCRIBE GR_Origin");
+			// the following fields have to be present in the GR_Origin table (for others we don't care):
+			Set<String> expectedFields = new HashSet<String>();
+			expectedFields.add("ID");
+			expectedFields.add("taxon");
+			while (rs.next()) {
+				String fieldName = rs.getString("Field");
+				expectedFields.remove(fieldName);
+			}
+			// succcess if all required fields could be found in that table
+			if (expectedFields.size() == 0) {
+				System.out.println("#LPT: database test ok.");
+			} else {
+				System.out.println("#LPT: database test failed -- missing table or fields!");
+				System.out.println("#LPT: requiring table `GR_Origin` with fields `ID` and `taxon`");
+				configOk = false;
+			}
+			
+		} catch (SQLException sqle) {
+			System.err.println("#LPT: database test failed:");
+			System.err.println(sqle.getMessage());
+			configOk = false;
+		} catch (ClassNotFoundException e) {
+			System.err.println("#LPT: database test failed:");
+			System.err.println("Failed to load the database driver '" + ISGNProperties.get("dbDriver") + "'");
+			configOk = false;
+		}
+		
+		
+		String tax2portFile = ISGNProperties.get("taxon2port");
+		if (tax2portFile == null || tax2portFile.length() == 0) {
+			System.err.println("Configuration file " + ISGNProperties.getPropertyFilename() + ":\nSet a value " +
+				"for the entry 'taxon2port';\nshould point to a file that contains a mapping of NCBI taxonomy " +
+				"IDs to servers and port;\nan example is provided with config/taxonToServerPort.txt");
 			configOk = false;
 		}
 
