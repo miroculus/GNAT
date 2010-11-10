@@ -744,7 +744,7 @@ class GnatServiceHandler extends ServiceHandler {
 		// TODO could be merged into one request to the DictionaryServer that has all texts at once
 		
 		for (int a = 0; a < annotatedTexts.size(); a++) {
-			ServicePipe pipe = new ServicePipe();
+			GnatServicePipe pipe = new GnatServicePipe();
 			
 			AnnotatedText annotatedText = annotatedTexts.get(a);
 			Text text = new Text(annotatedText.id, annotatedText.text);
@@ -796,7 +796,8 @@ class GnatServiceHandler extends ServiceHandler {
 					}
 										
 					if (type.equals("gene")) {
-						TextAnnotation textAnnotation = new TextAnnotation(textRange, name, TextAnnotation.TYPE_GENE);
+						TextAnnotation.Type ttype = TextAnnotation.Type.GENE;
+						TextAnnotation textAnnotation = new TextAnnotation(textRange, name, ttype);
 						RecognizedEntity gene = new RecognizedEntity(text, textAnnotation);
 						
 						String[] idCandidates = ids.split("\\s*[\\;\\,]\\s*");

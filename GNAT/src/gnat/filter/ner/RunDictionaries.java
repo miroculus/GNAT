@@ -464,8 +464,10 @@ public class RunDictionaries implements Filter {
 
 		int geneTagBeginIndex = annotatedText.indexOf("<entity");
 		while (geneTagBeginIndex != -1) {
+			// get the annotation of the next single entity
 			int geneTagEndIndex = annotatedText.indexOf("</entity>", geneTagBeginIndex);
 			String annotatedGeneName = annotatedText.substring(geneTagBeginIndex, geneTagEndIndex);
+			
 			String geneName = annotatedGeneName.substring(annotatedGeneName.indexOf(">") + 1);
 			int idOpenQuot = annotatedGeneName.indexOf("\"");
 			int idCloseQuot = annotatedGeneName.indexOf("\"", idOpenQuot + 1);
@@ -477,9 +479,13 @@ public class RunDictionaries implements Filter {
 			int startIndex = Integer.parseInt(annotatedGeneName.substring(startIndexOpenQuot+1, startIndexCloseQuot));
 			int endIndex = Integer.parseInt(annotatedGeneName.substring(endIndexOpenQuot+1, endIndexCloseQuot));
 
+			//int typeBeginIndex = annotatedGeneName.indexOf(" type=\"", geneTagBeginIndex);
+			String type = annotatedGeneName.replaceFirst("^.*(^|\\s)type=\"([^\"]*)\".*$", "$1");
+			TextAnnotation.Type ttype = TextAnnotation.Type.getValue(type);
+			
 			String idString = annotatedGeneName.substring(idOpenQuot + 1, idCloseQuot);
 
-			RecognizedEntity recognizedGeneName = new RecognizedEntity(originalText, new TextAnnotation(new TextRange(startIndex, endIndex), geneName, TextAnnotation.TYPE_GENE));
+			RecognizedEntity recognizedGeneName = new RecognizedEntity(originalText, new TextAnnotation(new TextRange(startIndex, endIndex), geneName, ttype));
 			context.addRecognizedEntity(recognizedGeneName, idString.split(";"));
 
 			geneTagBeginIndex = annotatedText.indexOf("<entity", geneTagEndIndex);

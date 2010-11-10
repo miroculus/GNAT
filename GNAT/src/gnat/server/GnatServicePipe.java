@@ -16,11 +16,11 @@ import java.util.List;
  * @author J&ouml;rg Hakenberg &lt;jhakenberg@users.sourceforge.net&gt;
  *
  */
-public class ServicePipe {
+public class GnatServicePipe {
 
 	Run run;
 	
-	public ServicePipe () {
+	public GnatServicePipe () {
 		run = new Run();
 		run.verbosity = 0;
 		

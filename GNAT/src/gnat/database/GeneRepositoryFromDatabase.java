@@ -60,14 +60,6 @@ public class GeneRepositoryFromDatabase {
 			System.err.println("Exception: unknown host?");
 		}
 	}
-	
-	
-	/**
-	 * 
-	 * @param dummy
-	 */
-	public GeneRepositoryFromDatabase (boolean dummy) {
-	}
 
 
 	/**
@@ -497,7 +489,7 @@ public class GeneRepositoryFromDatabase {
 		Map<Integer, Set<String>> gene2geneRifs = getValues("GR_GeneRIF", "generif", geneIds);
 		Map<Integer, Set<String>> gene2pmIds = getValues("GR_PubMedID", "PMID", geneIds);
 		Map<Integer, Set<String>> gene2summary = getValues("GR_Summary", "summary", geneIds);
-		Map<Integer, Set<String>> gene2interactor = getValues("GR_Interactorname", "name", geneIds);
+//		Map<Integer, Set<String>> gene2interactor = getValues("GR_Interactorname", "name", geneIds);
 		Map<Integer, Set<String>> gene2disease = getValues("GR_ProteinDisease", "disease", geneIds);
 		Map<Integer, Set<String>> gene2domain = getValues("GR_ProteinDomain", "domain", geneIds);
 		Map<Integer, Set<String>> gene2function = getValues("GR_ProteinFunction", "function", geneIds);
@@ -547,10 +539,10 @@ public class GeneRepositoryFromDatabase {
 				gcm.addEntrezGeneSummary(ArrayHelper.set2StringArray(summary)[0]);
 			}
 
-			Set<String> interactors = gene2interactor.get(id);
-			if(interactors!=null){
-				gcm.addInteractors(ArrayHelper.set2StringArray(interactors));
-			}
+//			Set<String> interactors = gene2interactor.get(id);
+//			if(interactors!=null){
+//				gcm.addInteractors(ArrayHelper.set2StringArray(interactors));
+//			}
 
 			Set<String> diseases = gene2disease.get(id);
 			if(diseases!=null){

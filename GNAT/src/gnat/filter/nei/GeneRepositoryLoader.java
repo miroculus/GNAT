@@ -188,11 +188,8 @@ public class GeneRepositoryLoader implements Filter {
 //			grepper.verbosity = 1;
 //			//geneRepository = grepper.getGeneRepository(allCandidateIDs);
 //			// TODO be careful here: overwriting geneRepository won't work, add the genes using addGenes(Collection) instead!!!
-//			geneRepository = grepper.getGeneRepositoryFAST((Set<Integer>)allCandidateIDs);
-			
-			// TODO using a dummy method for now:
-			GeneRepositoryFromDatabase grepper = new GeneRepositoryFromDatabase(true);
-			//geneRepository.addGenes(grepper.getGeneRepositoryDUMMY((Set<Integer>)allCandidateIDs).getGenes());
+//			geneRepository = grepper.getGeneRepositoryFAST((Set<Integer>)allCandidateIDs);			
+			GeneRepositoryFromDatabase grepper = new GeneRepositoryFromDatabase();
 			geneRepository.addGenes(grepper.getGeneRepositoryFAST((Set<Integer>)allCandidateIDs));
 
 			

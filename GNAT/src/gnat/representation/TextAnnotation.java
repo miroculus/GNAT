@@ -9,13 +9,32 @@ public class TextAnnotation {
 
 	private TextRange textRange;
 
-	private int type;
+	private Type type;
 
-	public static final int TYPE_UNKNOWN = -1;
-	//public static final int TYPE_GO = 0;//split into CC,BP,MF?
-	public static final int TYPE_GENE = 1;
-	public static final int TYPE_PROTEIN = 2;
-	public static final int TYPE_SPECIES = 3;
+	public enum Type {UNKNOWN, GENE, PROTEIN, SPECIES, GOTERM, GOCODE, DISEASE, MESHTERM, MESHCODE;
+		public static Type getValue(String string) {
+			if (string.equals("gene"))
+				return GENE;
+			else if (string.equals("protein"))
+				return PROTEIN;
+			else if (string.equals("species"))
+				return SPECIES;
+			else if (string.equals("goterm"))
+				return GOTERM;
+			else if (string.equals("gocode"))
+				return GOCODE;
+			else if (string.equals("disease"))
+				return DISEASE;
+			else if (string.equals("meshterm"))
+				return MESHTERM;
+			else if (string.equals("meshcode"))
+				return MESHCODE;
+			//else if (string.equals("goterm"))
+			//	return GOTERM;
+			else
+				return UNKNOWN;
+		}
+	}
 
 
 	/**
@@ -33,7 +52,7 @@ public class TextAnnotation {
 	 * @param evidence
 	 * @param type
 	 */
-	public TextAnnotation(TextRange textRange, String evidence, int type) {
+	public TextAnnotation(TextRange textRange, String evidence, Type type) {
 		this.textRange = textRange;
 		this.evidence = evidence;
 		this.type = type;
@@ -74,7 +93,7 @@ public class TextAnnotation {
     }
 
 
-	public int getType()
+	public Type getType()
     {
     	return type;
     }
