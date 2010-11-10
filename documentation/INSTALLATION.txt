@@ -11,15 +11,14 @@
 1) Download several files
 -------------------------
 
-Download the following files from Sourceforge:
-- gnat.jar            - GNAT binaries for client and server
-                        should go into the lib/ directory
-- data.tar.gz         - data, scripts, test cases needed for GNAT
+Download the following files from Sourceforge into a new folder:
+- gnat.tar.gz         - GNAT binaries for client and server, configurations,
+                        data, scripts, test cases needed for GNAT
 - dictionaries.tar.gz - example dictionaries for human, mouse, and fruit fly,
                         genes; and for GeneOntology and MeSH term recognition
 - sql.tar.gz          - gene information for GNAT
 
-Unzip all *.gz files into the same directory. The following sub-directories
+Unzip all *.gz files into the same folder. The following sub-directories
 will be created:
 - config/         - various configuration files
 - data/           - static data required to run GNAT
@@ -90,6 +89,6 @@ c) You can also run the dictionary on a different machine; in this case, add
    the machine's address and port to the entry for 9606, in the format
    "server:port". Example:
      9606[TAB]myserver.com:5555[TAB]optional comment
-d) Run the test with scripts/runTest.sh
+d) Run the test with scripts/testLocalPipeline.sh
 e) The test should return the message "Test okay!" upon completion
 

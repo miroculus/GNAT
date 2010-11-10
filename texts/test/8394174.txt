@@ -1,0 +1,3 @@
+Recessive mutations in the gene encoding the beta-subunit of rod phosphodiesterase in patients with retinitis pigmentosa.
+
+We have found four mutations in the human gene encoding the beta-subunit of rod cGMP phosphodiesterase (PDE beta) that cosegregate with autosomal recessive retinitis pigmentosa, a degenerative disease of photoreceptors. In one family two affected siblings both carry allelic nonsense mutations at codons 298 and 531. Affected individuals have abnormal rod and cone electroretinograms. PDE beta is the second member of the phototransduction cascade besides rhodopsin that is absent or altered as a cause of retinitis pigmentosa, suggesting that other members of this pathway may be defective in other forms of this disease.
