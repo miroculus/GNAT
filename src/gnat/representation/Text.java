@@ -206,7 +206,9 @@ public class Text {
 		if (allNames == null)
 			allNames = new HashSet<String>();
 		
+		taxonIDs.add(taxon);
 		allNames.add(name);
+		
 		taxonIdsToNames.put(taxon, allNames);
 	}
 	
@@ -222,8 +224,10 @@ public class Text {
 				Set<String> oldNames = taxonIdsToNames.get(taxon);
 				oldNames.addAll(map.get(taxon));
 				taxonIdsToNames.put(taxon, oldNames);
+				taxonIDs.add(taxon);
 			} else {
 				taxonIdsToNames.put(taxon, map.get(taxon));
+				taxonIDs.add(taxon);
 			}
 		}
 	}

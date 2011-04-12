@@ -15,7 +15,7 @@ public class ConstantsNei {
 	 * output for SVM meta-learning, output in clear text,
 	 * full output for debugging.
 	 */
-	public static enum OUTPUT_LEVELS {NOOUTPUT, STATUS, SVM, CLEARTEXT, DEBUG};
+	public static enum OUTPUT_LEVELS {NOOUTPUT, WARNINGS, STATUS, SVM, CLEARTEXT, DEBUG};
 
 	/** 
 	 * Sets the current output level. Default: status.

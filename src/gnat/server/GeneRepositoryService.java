@@ -96,16 +96,13 @@ public class GeneRepositoryService extends HttpService {
 		
 		/** */
 		Connection connection = null;
-		Statement  statement = null;
-		ResultSet  resultset = null;
-		boolean openConnection = false;
 		
 		
 		/**
 		 * 
 		 */
 		GeneServiceHandler () {
-			openConnection = openConnection();
+			openConnection();
 		}
 
 		
@@ -474,7 +471,8 @@ public class GeneRepositoryService extends HttpService {
 
 			try {
 				StringBuffer geneIdBuffer = toIdBuffer(geneIds);
-				resultset = statement.executeQuery("SELECT ID, " +column + " FROM " + table + " WHERE ID IN ("+geneIdBuffer+")");
+				Statement statement = connection.createStatement();
+				ResultSet resultset = statement.executeQuery("SELECT ID, " +column + " FROM " + table + " WHERE ID IN ("+geneIdBuffer+")");
 				while (resultset.next()) {
 					int geneId   = resultset.getInt(1);
 					String value = resultset.getString(2);
@@ -487,6 +485,9 @@ public class GeneRepositoryService extends HttpService {
 
 					values.add(value);
 				}
+				
+				resultset.close();
+				statement.close();
 				
 			} catch (com.mysql.jdbc.exceptions.jdbc4.MySQLNonTransientConnectionException e) {
 				// if the connection has timed out, re-open it and try again
@@ -525,7 +526,9 @@ public class GeneRepositoryService extends HttpService {
 
 			try {
 				StringBuffer geneIdBuffer = toIdBuffer(geneIds);
-				resultset = statement.executeQuery("SELECT ID, " +column + " FROM " + table + " WHERE ID IN ("+geneIdBuffer+")");
+				Statement statement = connection.createStatement();
+				ResultSet resultset = statement.executeQuery("SELECT ID, " +column + " FROM " + table + " WHERE ID IN ("+geneIdBuffer+")");
+				
 				while (resultset.next()) {
 					int geneId   = resultset.getInt(1);
 					String value = resultset.getString(2);
@@ -538,6 +541,9 @@ public class GeneRepositoryService extends HttpService {
 
 					values.add(value);
 				}
+				
+				resultset.close();
+				statement.close();
 				
 			} catch (com.mysql.jdbc.exceptions.jdbc4.MySQLNonTransientConnectionException e) {
 				// if the connection has timed out, re-open it and try again
@@ -583,8 +589,6 @@ public class GeneRepositoryService extends HttpService {
 						ServiceProperties.get("dbUser"),
 						ServiceProperties.get("dbPass")
 				);
-				statement = connection.createStatement();
-				openConnection = true;
 				isOpen = true;
 			} catch (java.sql.SQLException sqle) {
 				sqle.printStackTrace();

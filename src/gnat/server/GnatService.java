@@ -11,6 +11,7 @@ import gnat.representation.TextRepository;
 import gnat.retrieval.PmcAccess;
 import gnat.retrieval.PubmedAccess;
 import gnat.server.dictionary.DictionaryServer;
+import gnat.utils.ArrayHelper;
 import gnat.utils.StringHelper;
 
 import java.io.BufferedInputStream;
@@ -35,6 +36,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.Executors;
+
+import martin.common.Misc;
 
 import com.sun.net.httpserver.Headers;
 import com.sun.net.httpserver.HttpExchange;
@@ -151,6 +154,7 @@ public class GnatService extends HttpService {
 			System.err.println("  <entry key=\"defaultTasks\">gner</entry>");
 			System.exit(2);
 		}
+		
 		for (String task: defaults.split("\\s*[\\;\\,]\\s*")) {
 			Tasks aTask = Tasks.getValue(task);
 			if (aTask != null)
@@ -413,6 +417,9 @@ class GnatServiceHandler extends ServiceHandler {
 		// set human=9606 as default species if none were given by the user
 		if (requestedSpecies.size() == 0)
 			requestedSpecies.add(9606);
+
+//		responseBody.write((Misc.implode(requestedSpecies.toArray(new String[0]), ",")).getBytes());
+		
 		// check if connections can be establised to each of the requested taxa
 		Set<Integer> failedTaxa = new HashSet<Integer>();
 		for (int taxon: requestedSpecies) {
@@ -424,13 +431,13 @@ class GnatServiceHandler extends ServiceHandler {
 				failedTaxa.add(taxon);
 			}
 		}
+		
 		requestedSpecies.removeAll(failedTaxa);
 		//
 		if (requestedSpecies.size() == 0) {
 			// TODO
 			responseBody.write(("<error>No valid species left for this request; removed the invalid taxa " + failedTaxa + ".</error>\n").getBytes());				
 		}
-		
 		
 		List<RequestedText> textsToAnnotate = new LinkedList<RequestedText>();
 
