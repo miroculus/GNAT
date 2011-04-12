@@ -1,5 +1,6 @@
 package gnat.filter.ner;
 
+import gnat.ConstantsNei;
 import gnat.ISGNProperties;
 import gnat.filter.Filter;
 import gnat.representation.Context;
@@ -98,10 +99,12 @@ public class GnatServiceNer implements Filter {
 			taxa.retainAll(limitedToTaxa);
 			
 			taxa.removeAll(excludeTaxa);
+
 			
 			// still 0? then there was an error with the default species
 			if (taxa == null || taxa.size() == 0) {
-				System.err.println("#GnatServiceNER: No valid species for this text (" + text.ID + "); skipping.");
+				if (ConstantsNei.OUTPUT_LEVEL.compareTo(ConstantsNei.OUTPUT_LEVELS.STATUS) >= 0)
+					System.out.println("#GnatServiceNER: No valid species for this text (" + text.ID + "); skipping.");
 				continue;
 			}
 			
@@ -179,6 +182,12 @@ public class GnatServiceNer implements Filter {
 		
 		String[] cols = annotation.split("\t");
 		//System.out.println("Annotation: " + annotation);
+		
+		if (cols.length < 8){
+			if (ConstantsNei.OUTPUT_LEVEL.compareTo(ConstantsNei.OUTPUT_LEVELS.WARNINGS) >= 0)
+				System.err.println("Warning: annotation '" + annotation + "' could not be split into at least 8 columns. [GnatServiceNER.java, addRecognizedEntity]");
+			return;
+		}
 		
 		//String textId   = cols[0];
 		//String textXref = cols[1];

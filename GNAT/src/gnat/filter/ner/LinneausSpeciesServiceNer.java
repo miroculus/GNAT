@@ -90,8 +90,9 @@ public class LinneausSpeciesServiceNer implements Filter {
 						String id = ids[i];
 						// IDs from Linnaeus are in the format 'species:ncbi:9606'
 						id = id.replaceFirst("^.*?(\\d+)$", "$1");
+						ids[i] = id;
 					}
-					String idString = StringHelper.joinStringArray(ids, ";");					
+					String idString = StringHelper.joinStringArray(ids, ";");
 					String annotation = "mention=\"" + mention.getText() + "\" ids=\"" + idString + "\" startIndex=\"" +
 					mention.getStart() + "\" endIndex=\"" + mention.getEnd() + "\"";
 					
@@ -145,6 +146,8 @@ public class LinneausSpeciesServiceNer implements Filter {
 		for (String id: ids) {
 			if (id.matches("\\d+"))
 				text.addTaxonWithName(Integer.parseInt(id), evidence);
+			else
+				System.err.println("The species ID " + id + " must be numeric.");
 		}
 		
 		RecognizedEntity recognizedGeneName = new RecognizedEntity(text, new TextAnnotation(position, evidence, eType));

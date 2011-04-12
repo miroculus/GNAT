@@ -159,7 +159,8 @@ public class DefaultSpeciesRecognitionFilter implements Filter {
 			//	System.out.println("  names for " + taxon + ": " + id2names.get(taxon));
 			//}
 			
-			taxonIDs = id2names.keySet();
+			taxonIDs.clear();
+			taxonIDs.addAll(id2names.keySet()); //can't just do taxonIDs = id2names.keySet() since we then can't add taxons afterwards if necessary
 
 			// assign default IDs if none where found in the text
 			if (taxonIDs.size() == 0) {

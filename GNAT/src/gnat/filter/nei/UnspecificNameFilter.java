@@ -42,7 +42,8 @@ public class UnspecificNameFilter implements Filter {
 			if (geneRepository != null) {
 				Set<String> geneIdCandidates = identificationStatus.getIdCandidates();
 				for (String gid: geneIdCandidates) {
-					speciesIDs.add(geneRepository.getGene(gid).getTaxon());
+					if (geneRepository.getGene(gid) != null)
+						speciesIDs.add(geneRepository.getGene(gid).getTaxon());
 				}
 			}
 

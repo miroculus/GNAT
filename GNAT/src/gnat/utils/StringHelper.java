@@ -64,9 +64,8 @@ public class StringHelper {
 	 * @return
 	 */
 	public static String espaceString (String string) {
-		return string.replaceAll("([\\+\\-\\*\\(\\)\\[\\]\\{\\}])", "\\\\$1");
+		return string.replaceAll("([\\+\\-\\*\\(\\)\\[\\]\\{\\}\\\\])", "\\\\$1");
 	}
-
 
 	/**
 	 * Goes through an array of strings and reduces every element to its first
@@ -741,9 +740,11 @@ public class StringHelper {
 		"with",
 		"would"
 	};
+
+	public static void main(String[] args){
+		System.out.println(StringHelper.espaceString("patient + abc - \\ "));		
+	}
 }
-
-
 
 /** Class implenting a StringLengthComparator provided by StringHeler. */
 class StringLengthComparatorDescending implements Comparator<String> {
@@ -791,5 +792,4 @@ class StringLengthComparatorAscending implements Comparator<String> {
 		int result = o1f.length() - o2f.length();
 		return result; 
 	}
-
 }

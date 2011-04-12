@@ -117,7 +117,7 @@ public class GenePubMedScorer {
 		LinkedList<Gene> orderedGenes = new LinkedList<Gene>();
 		orderedGenes.addAll(genes);
 
-//		LinkedList<HashMap<String, Float>> orderedAllScores = new LinkedList<HashMap<String, Float>>();
+		//		LinkedList<HashMap<String, Float>> orderedAllScores = new LinkedList<HashMap<String, Float>>();
 
 		LinkedList<Float> orderedScores = new LinkedList<Float>();
 
@@ -246,8 +246,8 @@ public class GenePubMedScorer {
 
 		// if we have only one single score (all others NaN or -1), then be careful!
 		if (count3 == 1 && //(allScores.containsKey("GO") || allScores.containsKey("LC")))
-		     ( (scores.get(3) != null && scores.get(3) >= 0.0f) || (scores.get(5) != null && scores.get(5) >= 0.0f) )
-		   )
+				( (scores.get(3) != null && scores.get(3) >= 0.0f) || (scores.get(5) != null && scores.get(5) >= 0.0f) )
+		)
 			score = -1.0f * score;
 
 		if(verbosity>0)
@@ -279,7 +279,7 @@ public class GenePubMedScorer {
 		float proteinLengthScore = getScore_ProteinLength(
 				gene.getContextModel().getContextVectorForType(GeneContextModel.CONTEXTTYPE_PROTEINLENGTHS),
 				text.plainText);
-				//text.getContextModel().getContextVectorForType(GeneContextModel.CONTEXTTYPE_TEXT));
+		//text.getContextModel().getContextVectorForType(GeneContextModel.CONTEXTTYPE_TEXT));
 		if (proteinLengthScore > 0.0f)
 			allScores.put("AA", proteinLengthScore);
 		scores.add(proteinLengthScore);
@@ -288,7 +288,7 @@ public class GenePubMedScorer {
 		float proteinMassScore = getScore_ProteinMass(
 				gene.getContextModel().getContextVectorForType(GeneContextModel.CONTEXTTYPE_PROTEINMASS),
 				text.plainText);
-				//text.getContextModel().getContextVectorForType(GeneContextModel.CONTEXTTYPE_TEXT));
+		//text.getContextModel().getContextVectorForType(GeneContextModel.CONTEXTTYPE_TEXT));
 		if (proteinMassScore > 0.0f)
 			allScores.put("MS", proteinMassScore);
 		scores.add(proteinMassScore);
@@ -297,7 +297,7 @@ public class GenePubMedScorer {
 		float proteinDomainScore = getScore_ProteinDomain(
 				gene.getContextModel().getContextVectorForType(GeneContextModel.CONTEXTTYPE_PROTEINDOMAINS),
 				text.plainText);
-				//text.getContextModel().getContextVectorForType(GeneContextModel.CONTEXTTYPE_TEXT));
+		//text.getContextModel().getContextVectorForType(GeneContextModel.CONTEXTTYPE_TEXT));
 		if (proteinDomainScore > 0.0f)
 			allScores.put("DO", proteinDomainScore);
 		scores.add(proteinDomainScore);
@@ -343,7 +343,7 @@ public class GenePubMedScorer {
 		float keywordScore = getScore_Keywords(
 				gene.getContextModel().getContextVectorForType(GeneContextModel.CONTEXTTYPE_KEYWORDS),
 				text.plainText);
-				//text.getContextModel().getContextVectorForType(GeneContextModel.CONTEXTTYPE_TEXT));
+		//text.getContextModel().getContextVectorForType(GeneContextModel.CONTEXTTYPE_TEXT));
 		if (keywordScore > 0.0f){
 			allScores.put("KW", keywordScore);
 		}
@@ -361,7 +361,7 @@ public class GenePubMedScorer {
 		float proteinMutationScore = getScore_ProteinMutation(
 				gene.getContextModel().getContextVectorForType(GeneContextModel.CONTEXTTYPE_PROTEINMUTATIONS),
 				text.plainText);
-				//text.getContextModel().getContextVectorForType(GeneContextModel.CONTEXTTYPE_TEXT));
+		//text.getContextModel().getContextVectorForType(GeneContextModel.CONTEXTTYPE_TEXT));
 		if (proteinMutationScore > 0.0f)
 			allScores.put("MT", proteinMutationScore);
 		scores.add(proteinMutationScore);
@@ -402,12 +402,12 @@ public class GenePubMedScorer {
 		scores.add(interactorScore);
 
 		// UniProt-interaction
-//		float uinteractionsScore = getScore_UInteractors(
-//				gene.getContextModel().getContextVectorForType(GeneContextModel.CONTEXTTYPE_PROTEININTERACTIONS),
-//				text.plainText);
-//		if (uinteractionsScore > 0.0f)
-//			allScores.put("UI", uinteractionsScore);
-//		scores.add(uinteractionsScore);
+		//		float uinteractionsScore = getScore_UInteractors(
+		//				gene.getContextModel().getContextVectorForType(GeneContextModel.CONTEXTTYPE_PROTEININTERACTIONS),
+		//				text.plainText);
+		//		if (uinteractionsScore > 0.0f)
+		//			allScores.put("UI", uinteractionsScore);
+		//		scores.add(uinteractionsScore);
 
 		// output scores if needed
 		if (ConstantsNei.OUTPUT_LEVEL.compareTo(ConstantsNei.OUTPUT_LEVELS.DEBUG) >= 0)
@@ -513,9 +513,9 @@ public class GenePubMedScorer {
 
 		sim = goTermScorer.getGOSimilarity(goCodes1, goCodes2);
 
-//		System.out.println("getScore_GOCodes: #codes1="+goCodes1.size());
-//		System.out.println("getScore_GOCodes: #codes2="+goCodes2.size());
-//		System.out.println("getScore_GOCodes: "+sim);
+		//		System.out.println("getScore_GOCodes: #codes1="+goCodes1.size());
+		//		System.out.println("getScore_GOCodes: #codes2="+goCodes2.size());
+		//		System.out.println("getScore_GOCodes: "+sim);
 
 		return sim;
 	}
@@ -612,8 +612,8 @@ public class GenePubMedScorer {
 				//if (cv2.contains("chromosome") && cv2.contains(chr))
 				if (sourceText.matches(".*chromosome\\s" + chr + "(\\D|$).*")
 						|| sourceText.matches(".*(^|\\D)" + chr + "\\schromosome.*"))
-				//if (cv2.containsSubsequent(new String[]{"chromosome", chr})
-						//|| cv2.containsSubsequent(new String[]{chr, "chromosome"}))
+					//if (cv2.containsSubsequent(new String[]{"chromosome", chr})
+					//|| cv2.containsSubsequent(new String[]{chr, "chromosome"}))
 					if (sim < 0.5f) sim = 0.5f;
 
 				//System.err.println();
@@ -698,38 +698,39 @@ public class GenePubMedScorer {
 		float score = -1.0f;
 		LinkedList<String> masses = cv1.getElementLabels();
 		for (String mass: masses) {
-			int dalton = Integer.parseInt(mass);
-			//System.out.println("# Checking for mass: '" + mass + "'");
-			//System.out.println("#-----Checking mass " + mass + " dalton");
-			if (sourceText.matches(".*(^|\\D)" + mass + "[\\s\\-]?[Dd](a(lton)?)?.*")) {
-				//System.out.println("#-----Found mass " + mass + " dalton");
-				return 1.0f;
+			if (!mass.equals("-")){
+				int dalton = Integer.parseInt(mass);
+				//System.out.println("# Checking for mass: '" + mass + "'");
+				//System.out.println("#-----Checking mass " + mass + " dalton");
+				if (sourceText.matches(".*(^|\\D)" + mass + "[\\s\\-]?[Dd](a(lton)?)?.*")) {
+					//System.out.println("#-----Found mass " + mass + " dalton");
+					return 1.0f;
+				}
+
+				float fdalton = (float)dalton;
+				float fkda = fdalton / 1000.0f;
+
+				// round to kDa, no floats
+				// 38200 => 38 kDa
+				int kda = Math.round(fkda);
+				//System.out.println("#-----Checking mass " + kda + " -- kda (was) " + mass + " da)");
+				if (sourceText.matches(".*(^|\\D)" + kda + "[\\s\\-]?[Kk][Dd][Aa].*")) {
+					//System.out.println("#-----Found mass " + kda + " -- kda (was) " + mass + " da)");
+					return 1.0f;
+				}
+
+				// round to kDa, one digit in floats
+				// 38200 => 38.2 kDa
+				fkda = fdalton / 100.0f;
+				kda = Math.round(fkda);
+				String skda = "" + kda;
+				skda = skda.replaceFirst("^(\\d+)(\\d)$", "$1.$2");
+				//System.out.println("#-----Checking mass " + skda + " -- skda (was) " + mass + " da)");
+				if (sourceText.matches(".*(^|\\D)" + skda + "[\\s\\-]?[Kk][Dd][Aa].*")) {
+					//System.out.println("#-----Found mass " + skda + " -- skda (was) " + mass + " da)");
+					return 1.0f;
+				}
 			}
-
-			float fdalton = (float)dalton;
-			float fkda = fdalton / 1000.0f;
-
-			// round to kDa, no floats
-			// 38200 => 38 kDa
-			int kda = Math.round(fkda);
-			//System.out.println("#-----Checking mass " + kda + " -- kda (was) " + mass + " da)");
-			if (sourceText.matches(".*(^|\\D)" + kda + "[\\s\\-]?[Kk][Dd][Aa].*")) {
-				//System.out.println("#-----Found mass " + kda + " -- kda (was) " + mass + " da)");
-				return 1.0f;
-			}
-
-			// round to kDa, one digit in floats
-			// 38200 => 38.2 kDa
-			fkda = fdalton / 100.0f;
-			kda = Math.round(fkda);
-			String skda = "" + kda;
-			skda = skda.replaceFirst("^(\\d+)(\\d)$", "$1.$2");
-			//System.out.println("#-----Checking mass " + skda + " -- skda (was) " + mass + " da)");
-			if (sourceText.matches(".*(^|\\D)" + skda + "[\\s\\-]?[Kk][Dd][Aa].*")) {
-				//System.out.println("#-----Found mass " + skda + " -- skda (was) " + mass + " da)");
-				return 1.0f;
-			}
-
 		}
 
 		return score;
@@ -932,7 +933,7 @@ public class GenePubMedScorer {
 				new boolean[]{true});
 		testcase.test();
 
-		*/
+		 */
 
 	}
 
@@ -1003,7 +1004,7 @@ public class GenePubMedScorer {
 		//System.out.println();
 		//System.out.println(mytext.getContextModel().getContextVectorForType(ContextModel.CONTEXTTYPE_TEXT));
 
-/*		System.out.println("Reading gene repository...");
+		/*		System.out.println("Reading gene repository...");
 		GeneRepository generep = GeneFactory.loadGeneRepositoryFromEntrezGeneObjectFiles(
 				"entrezGeneLexicon_oneSynPerLine.txt",
 				"entrezGeneObjects/geneRifs.object",
@@ -1021,11 +1022,11 @@ public class GenePubMedScorer {
 				"entrezGeneObjects/uDomains.object"
 				);*/
 
-//		GeneRepository generep = new GeneRepository();
-//		GeneFactory.dataDirectory = "data/entrezgenes/";
+		//		GeneRepository generep = new GeneRepository();
+		//		GeneFactory.dataDirectory = "data/entrezgenes/";
 		//LinkedList<Gene> allgenes = geneFactory.loadAllGenesFromDirectory();
 		//System.out.println("# Loaded " + allgenes.size() + " genes");
-//		generep.setGenes( GeneFactory.loadAllGenesFromDirectory() );
+		//		generep.setGenes( GeneFactory.loadAllGenesFromDirectory() );
 		/*for (int i = 1; i < args.length; i++) {
 			Gene gene = geneFactory.loadGeneForID(args[i]);
 			//genes.loadModelForID(args[i]);
@@ -1035,7 +1036,7 @@ public class GenePubMedScorer {
 
 
 
-//		GenePubMedScorer genePubMedScorer = new GenePubMedScorer();
+		//		GenePubMedScorer genePubMedScorer = new GenePubMedScorer();
 
 
 
@@ -1056,7 +1057,7 @@ public class GenePubMedScorer {
 					+ ", " + round((score - (gene.getContextModel().innerCoherence / 10.0f)))
 					+ ", " + round(gene.getContextModel().innerCoherence - score)
 					+ "]"*/
-/*					);
+		/*					);
 		}
 
 		System.out.println("17465228: 840;   1579499: 1656;   9694715: 2147, 2316, 2317, 2318, 7450");*/
