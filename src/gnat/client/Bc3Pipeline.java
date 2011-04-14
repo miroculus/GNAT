@@ -16,6 +16,7 @@ import gnat.filter.nei.UnspecificNameFilter;
 import gnat.filter.ner.GOFilter;
 import gnat.filter.ner.GnatServiceNer;
 import gnat.filter.ner.DefaultSpeciesRecognitionFilter;
+import gnat.filter.ner.LinnaeusSpeciesServiceNer;
 import gnat.preprocessing.NameRangeExpander;
 import gnat.representation.TextFactory;
 import gnat.server.GnatService;
@@ -35,7 +36,6 @@ import java.util.List;
  * @author J&ouml;rg Hakenberg &lt;jhakenberg@users.sourceforge.net&gt;
  */
 public class Bc3Pipeline {
-
 	public static void main (String[] args) {
 		Run run = new Run();
 		run.verbosity = 2;
@@ -57,35 +57,33 @@ public class Bc3Pipeline {
 		if (directoriesToProcess.size() > 0)
 			// load texts from the given directories
 			run.setTextRepository( TextFactory.loadTextRepositoryFromDirectories(directoriesToProcess));
-		//else {
-		//	System.err.println("Include at least one directory to read from as parameter!");
-		//	System.exit(2);
-		//}
-		else
-			// load some default texts
-			run.setTextRepository(
-					TextFactory.loadTextRepositoryFromDirectories("texts/pubmed/2009", "texts/pubmed/2010"));
+		else {
+			System.err.println("Include at least one directory to read from as parameter!");
+			System.exit(2);
+		}
 		
+		BasicExamplePipeline.addExampleTexts(run);
 		
 		// Pre-processing filter here:
-		run.addFilter(new NameRangeExpander());
+//		run.addFilter(new NameRangeExpander());
 
+		
 		
 		// NER filters here:
 		//
-		run.addFilter(new DefaultSpeciesRecognitionFilter());
+		run.addFilter(new LinnaeusSpeciesServiceNer());
 		// invoke the remote GnatService for NER, for species and gene names
 		// for all species that are supported
-		GnatServiceNer gnatServiceNer = new GnatServiceNer(GnatService.Tasks.SPECIES_NER, GnatService.Tasks.GENE_NER);
+		GnatServiceNer gnatServiceNer = new GnatServiceNer(GnatService.Tasks.GENE_NER);
 		gnatServiceNer.useDefaultSpecies = true;
 		run.addFilter(gnatServiceNer);
 		//
-		run.addFilter(new GOFilter(ISGNProperties.get("dbAccessUrl"), ISGNProperties.get("dbUser"), ISGNProperties.get("dbPass")));
+
+//		run.addFilter(new GOFilter(ISGNProperties.get("dbAccessUrl"), ISGNProperties.get("dbUser"), ISGNProperties.get("dbPass")));
 		
 		// NER post-processing filters here:
 		run.addFilter(new RecognizedEntityUnifier());
 
-		
 		// simple FP filters here (not depending on gene information):
 		//
 		//run.addFilter(new AbbreviationFilter()); not used in BC3
@@ -99,7 +97,7 @@ public class Bc3Pipeline {
 		run.addFilter(new UnambiguousMatchFilter());
 		//
 		run.addFilter(new UnspecificNameFilter());
-		
+
 		// TODO check these and remove or move to an appropriate position in the pipeline:
 		//run.addFilter(new HmmFilter(FP_HMM, TP_HMM, LEFT_CONTEXT, RIGHT_CONTEXT, HMM_TOKEN_INDICES_FILE)); not used in BC
 		//run.addFilter(new NearestCandidateFilter()); filter not used in BC
@@ -114,10 +112,10 @@ public class Bc3Pipeline {
 		// gene information-dependent FP filters here:
 		//
 		run.addFilter(new NameValidationFilter());
-		//
-		run.addFilter(new AlignmentFilter(AlignmentHelper.globalAlignment, 0.7f));
-		//
-		run.addFilter(new SpeciesValidationFilter());
+//		//
+//		run.addFilter(new AlignmentFilter(AlignmentHelper.globalAlignment, 0.7f));
+//		//
+//		run.addFilter(new SpeciesValidationFilter());
 
 		
 		// final ranking and disambiguation filters here:

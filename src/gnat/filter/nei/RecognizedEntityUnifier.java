@@ -131,7 +131,6 @@ public class RecognizedEntityUnifier implements Filter {
 	/**
 	 * Returns the overlap of two sets of strings.
 	 * */
-	@SuppressWarnings("unused")
     private Set<String> cut(Set<String> setA, Set<String> setB){
 		Set<String> overlapSet = new HashSet<String>();
 		for (String string : setA) {
