@@ -12,7 +12,7 @@ import gnat.filter.nei.StopWordFilter;
 import gnat.filter.nei.UnambiguousMatchFilter;
 import gnat.filter.nei.UnspecificNameFilter;
 import gnat.filter.ner.GnatServiceNer;
-import gnat.filter.ner.LinneausSpeciesServiceNer;
+import gnat.filter.ner.LinnaeusSpeciesServiceNer;
 import gnat.preprocessing.NameRangeExpander;
 import gnat.representation.TextFactory;
 import gnat.server.GnatService;
@@ -58,7 +58,7 @@ public class RemoteNerGeneRepTest extends PipelineTest {
 
 		// NER filters here:
 		// Linnaeus for species NER
-		run.addFilter(new LinneausSpeciesServiceNer());
+		run.addFilter(new LinnaeusSpeciesServiceNer());
 		// genes and GO terms via a GnatService
 		GnatServiceNer gnatServiceNer = new GnatServiceNer(GnatService.Tasks.GENE_NER, GnatService.Tasks.GO_TERMS);
 		// tell the remote service to run only for a few species:

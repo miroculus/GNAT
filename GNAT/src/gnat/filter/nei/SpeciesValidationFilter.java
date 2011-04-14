@@ -3,7 +3,7 @@ package gnat.filter.nei;
 import gnat.ConstantsNei;
 import gnat.ISGNProperties;
 import gnat.filter.Filter;
-import gnat.filter.ner.AliBabaSpeciesNer;
+import gnat.filter.ner.GnatServiceNer;
 import gnat.representation.Context;
 import gnat.representation.GeneRepository;
 import gnat.representation.IdentificationStatus;
@@ -11,6 +11,7 @@ import gnat.representation.RecognizedEntity;
 import gnat.representation.Text;
 import gnat.representation.TextAnnotation;
 import gnat.representation.TextRepository;
+import gnat.server.GnatService.Tasks;
 import gnat.utils.FileHelper;
 import gnat.utils.StringHelper;
 
@@ -50,7 +51,7 @@ public class SpeciesValidationFilter implements Filter {
 
 	/** */
 	private static Map<Integer, Integer> parentTable = new HashMap<Integer, Integer>();
-	
+	private GnatServiceNer speciesRecognizer;
 
 	/**
 	 * 
@@ -62,6 +63,8 @@ public class SpeciesValidationFilter implements Filter {
 			String[] cols = line.split("\t");
 			parentTable.put(Integer.parseInt(cols[0]), Integer.parseInt(cols[1]));
 		}
+		
+		this.speciesRecognizer = new GnatServiceNer(Tasks.SPECIES_NER);
 	}
 
 
@@ -76,13 +79,10 @@ public class SpeciesValidationFilter implements Filter {
 			return;
 		}
 		
-		AliBabaSpeciesNer speciesRecognizer = new AliBabaSpeciesNer();
-		
 		//if (true) return;
 		// get all yet unidentified genes
 		Iterator<RecognizedEntity> unidentifiedGeneNames = context.getUnidentifiedEntities().iterator();
 		while (unidentifiedGeneNames.hasNext()) {
-			
 			RecognizedEntity recognizedGeneName = unidentifiedGeneNames.next();
 			Text text = recognizedGeneName.getText();
 			TextAnnotation annotation = recognizedGeneName.getAnnotation();
@@ -196,17 +196,9 @@ public class SpeciesValidationFilter implements Filter {
 						
 					}
 				}
-				
 			}
-			
-			
-			
-			
 		}
-		
-		
 	}
-
 
 	/**
 	 * Returns the <tt>words</tt> words to the left of the given position. 
@@ -330,7 +322,6 @@ public class SpeciesValidationFilter implements Filter {
 	 * @param taxNames
 	 * @return
 	 */
-	@SuppressWarnings("unchecked")
 	public static Set<Integer> containsOnlyValidSpeciesAndConjunctions (String text, Map<Integer, Set<String>> taxNames) {
 		HashMap<String, Integer> name2tax = new HashMap<String, Integer>();
 		Vector<String> names = new Vector<String>();
@@ -375,14 +366,14 @@ public class SpeciesValidationFilter implements Filter {
 		//String sentence ="The two G-protein coupled prokineticin receptors, PK-R1 and PK-R2, were expressed in rat dorsal root ganglia (DRG) and in dorsal quadrants of spinal cord (DSC) and bound Bv8 and the mammalian orthologue, EG-VEGF, with high affinity.";
 		//String sentence = "The mice, mouse, and murine gene is here.";
 		//String sentence = "The recombinant cytokines such as interleukin-3 and thrombopoietin also activate prk mRNA expression in MO7e cells.";
-		AliBabaSpeciesNer recognizer = new AliBabaSpeciesNer();
 		//TreeSet<Integer> taxa = recognizer.textToTaxIDs(sentence);
 		//System.out.println(taxa);
 
+		GnatServiceNer speciesRecognizer = new GnatServiceNer(Tasks.SPECIES_NER);
 
 		String text = "The human amino-terminal portion has the feature of the catalytic domain of a serine/threonine kinase and shows strong homology to mouse fnk and other polo family kinases including mouse snk, HEL cell and murine plk, Drosophila polo, and yeast Cdc5.";
-		Map<Integer, Set<String>> taxNames = recognizer.textToTaxIDs(text);
-		Set<Integer> taxa = recognizer.textToTaxIDs(text).keySet();
+		Map<Integer, Set<String>> taxNames = speciesRecognizer.textToTaxIDs(text);
+		Set<Integer> taxa = speciesRecognizer.textToTaxIDs(text).keySet();
 		System.out.println("#SVF: found multiple species in sentence '" + text + "' " + taxa);
 		// check directly in front of name: mouse XYZ, human and mouse XYZ
 		// idea: go leftward until something other than a species name or a comman appears
