@@ -183,7 +183,7 @@ public class Dictionary {
 	/**
 	 *	Removes a set of strings from the given automaton's language.
 	 * */
-	private static Automaton pruneAutomaton(Automaton entryAutomaton, Set<String> excludeStrings)
+	public static Automaton pruneAutomaton(Automaton entryAutomaton, Set<String> excludeStrings)
     {
 		Automaton excludeAutomaton = new Automaton();
 	    for (String word : excludeStrings) {
