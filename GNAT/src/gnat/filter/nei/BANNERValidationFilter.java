@@ -50,10 +50,7 @@ public class BANNERValidationFilter implements Filter {
 
 			Map<String,List<Mention>> sentenceMentions = new HashMap<String,List<Mention>>();
 
-//			System.out.println("---------");
 			for (RecognizedEntity e : ents){
-//				System.out.println(text.ID + "\t" + e.getBegin() + "\t" + e.getEnd() + "\t" + e.getName());
-
 				String sent = e.getText().getSentenceAround(e.getBegin());
 
 				int sentStart = e.getText().getPlainText().indexOf(sent);
@@ -72,9 +69,6 @@ public class BANNERValidationFilter implements Filter {
 					List<Mention> mentions = sentenceMentions.get(sent);
 
 					boolean matchesBannerMention = false;
-
-					
-//					System.out.println("\t" + sentStart + "\t" + (sentStart + sent.length() + "\t" + sent));
 					
 					int s1 = e.getBegin();
 					int e1 = e.getEnd()+1;
@@ -93,21 +87,10 @@ public class BANNERValidationFilter implements Filter {
 					}
 					
 					if (!matchesBannerMention){
-//						System.out.println("\tXXX");
 						context.removeRecognizedEntity(e);
 					}
 				}
 			}
-
-
-
-
-
-
-			//			System.out.println("---------");
-			//			for (RecognizedEntity e : context.getRecognizedEntitiesInText(text))
-			//				System.out.println(text.ID + "\t" + e.getBegin() + "\t" + e.getName());
-			//			System.out.println("---------");
 		}
 	}
 }

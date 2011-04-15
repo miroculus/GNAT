@@ -9,6 +9,7 @@ import gnat.representation.Text;
 import gnat.representation.TextAnnotation;
 import gnat.representation.TextRange;
 import gnat.representation.TextRepository;
+import gnat.server.AnnotatedText;
 import gnat.utils.StringHelper;
 
 import java.io.BufferedInputStream;
@@ -34,91 +35,78 @@ import uk.ac.man.entitytagger.Mention;
  *
  */
 public class LinnaeusSpeciesServiceNer implements Filter {
-	
+
 	String serverAddr;
 	int serverPort;
-	
+
 	public LinnaeusSpeciesServiceNer () {
-		String addr  = ISGNProperties.get("linnaeusUrl");
-		if (addr.matches(".+\\:\\d+")) {
-			serverAddr   = addr.replaceFirst("^(.+)(\\:\\d+)$", "$1");
-			String sPort = addr.replaceFirst("^(.+)(\\:\\d+)$", "$2");
+		this(ISGNProperties.get("linnaeusUrl"));
+	}
+
+	public LinnaeusSpeciesServiceNer(String address){
+		if (address.matches(".+\\:\\d+")) {
+			serverAddr   = address.replaceFirst("^(.+)(\\:\\d+)$", "$1");
+			String sPort = address.replaceFirst("^(.+)(\\:\\d+)$", "$2");
 			serverPort = Integer.parseInt(sPort.replaceFirst("^\\:(\\d+)$", "$1"));
 		} else {
-			serverAddr = addr;
+			serverAddr = address;
 			serverPort = 80;
 		}
-		//System.out.println("sAddr=" + serverAddr + ", sPort="+serverPort);			
 	}
-	
+
+
+	private List<Mention> getMentions(String text){
+		try{
+			Socket socket = new Socket(serverAddr, serverPort);
+
+			ObjectOutputStream outputStream = new ObjectOutputStream(new BufferedOutputStream(socket.getOutputStream()));
+			outputStream.flush();
+
+			outputStream.writeObject(text);
+			outputStream.writeBoolean(false); // not a Document, otherwise: writeBoolean(doc != null)
+			outputStream.flush();
+
+			ObjectInputStream inputStream = new ObjectInputStream(new BufferedInputStream(socket.getInputStream()));
+			List<Mention> matches = (List<Mention>) inputStream.readObject();
+
+			inputStream.close();
+			socket.close();
+			return matches;
+		} catch (Exception e){
+			System.err.println(e);
+			e.printStackTrace();
+			System.exit(-1);
+		}
+		return null;
+	}
 
 	@Override
 	public void filter(Context context, TextRepository textRepository, GeneRepository geneRepository) {
 		// TODO should use the same socket + streams over and over instead of creating new ones
-		
-		try {
-			for (Text text: textRepository.getTexts()) {
-				
-				Socket socket = new Socket(serverAddr, serverPort);
-				//System.out.println("#LT has socket.");
-				
-				
-				ObjectOutputStream outputStream = new ObjectOutputStream(new BufferedOutputStream(socket.getOutputStream()));
-				outputStream.flush();
-				
-				String plainText = text.getPlainText();
-				//plainText = plainText.replaceAll("[\\r\\n]", " ");
-				//plainText = "This is a text about humans and mice.";
-				
-				outputStream.writeObject(plainText);
-				outputStream.writeBoolean(false); // not a Document, otherwise: writeBoolean(doc != null)
-				outputStream.flush();
-				
-				//System.out.println("#LSSN: sent '" + plainText.substring(0, 25) + " [..]'");
-				
-				//String annotations = (String) reader.readObject();
-				
-				ObjectInputStream inputStream = new ObjectInputStream(new BufferedInputStream(socket.getInputStream()));
-				List<Mention> matches = (List<Mention>) inputStream.readObject();
 
-				inputStream.close();
-				
-				//System.out.println("#LSSN: received " + matches.size() + " matches.");
-				for (Mention mention: matches) {
-					String[] ids = mention.getIds();
-					for (int i = 0; i < ids.length; i++) {
-						String id = ids[i];
-						// IDs from Linnaeus are in the format 'species:ncbi:9606'
-						id = id.replaceFirst("^.*?(\\d+)$", "$1");
-						ids[i] = id;
-					}
-					String idString = StringHelper.joinStringArray(ids, ";");
-					String annotation = "mention=\"" + mention.getText() + "\" ids=\"" + idString + "\" startIndex=\"" +
-					mention.getStart() + "\" endIndex=\"" + mention.getEnd() + "\"";
-					
-					addRecognizedSpecies(context, text, annotation);
+		for (Text text: textRepository.getTexts()) {
+
+			List<Mention> matches = getMentions(text.plainText);
+
+			//System.out.println("#LSSN: received " + matches.size() + " matches.");
+			for (Mention mention: matches) {
+				String[] ids = mention.getIds();
+				for (int i = 0; i < ids.length; i++) {
+					String id = ids[i];
+					// IDs from Linnaeus are in the format 'species:ncbi:9606'
+					id = id.replaceFirst("^.*?(\\d+)$", "$1");
+					ids[i] = id;
 				}
-				
-				//outputStream.close();
-				socket.close();
+				String idString = StringHelper.joinStringArray(ids, ";");
+				String annotation = "mention=\"" + mention.getText() + "\" ids=\"" + idString + "\" startIndex=\"" +
+				mention.getStart() + "\" endIndex=\"" + mention.getEnd() + "\"";
 
+				addRecognizedSpecies(context, text, annotation);
 			}
-			
-			
-		} catch (UnknownHostException e) {
-			e.printStackTrace();
-		} catch (java.net.SocketException e) {
-			e.printStackTrace();
-			System.err.println("#LT: - Remote server unreachable!");
-		} catch (IOException e) {
-			e.printStackTrace();
-		} catch (ClassNotFoundException e) {
-			e.printStackTrace();
 		}
-		
 	}
-	
-	
+
+
 	/**
 	 * Adds an entity described in <tt>annotation</tt> to the <tt>context</tt>.
 	 * <br>
@@ -131,15 +119,15 @@ public class LinnaeusSpeciesServiceNer implements Filter {
 	 */
 	void addRecognizedSpecies (Context context, Text text, String annotation) {
 		if (annotation.startsWith("<error")) return;
-		
+
 		String evidence   = annotation.replaceFirst("^.*(?:^|\\s)mention=\"([^\"]*)\".*$", "$1");
 		String idString   = annotation.replaceFirst("^.*(?:^|\\s)ids=\"([^\"]*)\".*$", "$1");
 		String s_startIndex = annotation.replaceFirst("^.*(?:^|\\s)startIndex=\"([^\"]*)\".*$", "$1");
 		String s_endIndex   = annotation.replaceFirst("^.*(?:^|\\s)endIndex=\"([^\"]*)\".*$", "$1");
-		
+
 		int startIndex = Integer.parseInt(s_startIndex);
 		int endIndex   = Integer.parseInt(s_endIndex);
-		
+
 		TextRange position = new TextRange(startIndex, endIndex);
 		TextAnnotation.Type eType = TextAnnotation.Type.SPECIES;
 		String[] ids = idString.split("\\s*[\\;\\,]\\s*");
@@ -149,9 +137,23 @@ public class LinnaeusSpeciesServiceNer implements Filter {
 			else
 				System.err.println("The species ID " + id + " must be numeric.");
 		}
-		
+
 		RecognizedEntity recognizedGeneName = new RecognizedEntity(text, new TextAnnotation(position, evidence, eType));
 		context.addRecognizedEntity1(recognizedGeneName, ids);
 	}
 
+	public void annotate(AnnotatedText text) {
+		String t = text.text;
+		List<Mention> mentions = getMentions(t);
+		for (Mention m : mentions){ 
+			text.addAnnotation("<entity type=\"species\" " +
+					"ids=\"" + m.getMostProbableID().substring(13) + "\" " +
+							"startIndex=\"" + m.getStart() + "\" " +
+									"endIndex=\"" + (m.getEnd()-1) + "\">" + m.getText() + "</entity>");
+					
+					
+					
+//"species\t-\t" + m.getMostProbableID().substring(13) + "\t" + m.getStart() + "\t" + (m.getEnd()-1) + "\t" + m.getText() + "\t-");
+		}
+	}
 }
