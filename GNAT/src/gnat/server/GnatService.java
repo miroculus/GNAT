@@ -533,29 +533,91 @@ class GnatServiceHandler extends ServiceHandler {
 
 
 	private void doHelp(OutputStream responseBody) throws IOException {
-		responseBody.write("This service accepts HTTP GET and POST requests to annotate texts with species and genes.\n\n".getBytes());
-		responseBody.write("Valid parameters (submitted as key=value pairs):\n".getBytes());
-		responseBody.write("  help        - print a list of supported parameters; will ignore other parameters\n".getBytes());
-		responseBody.write("  pmid        - get and annotate these PubMed abstracts (comma-separated list of PubMed IDs)\n".getBytes());
-		responseBody.write("  pmc         - get and annotate these full texts from PubMedCentral (comma-separated list of PMC IDs)\n".getBytes());
-		responseBody.write("  returntype  - xml: inline XML-style annotations in the submitted text\n".getBytes());
-		responseBody.write("                tsv: tab-separated list of annotations, with position, evidence, score; default\n".getBytes());
-		responseBody.write("  species     - taxon IDs for the species whose genes to annotate, comma separated; default: 9606\n".getBytes());
-		responseBody.write(("  task        - the task(s) to perform on the text, comma separated: speciesNER (sner), geneNER (gner), " +
-		"geneNormalization (gnorm), GO term recognition (gotrec)\n").getBytes());
-		responseBody.write("  taxa        - get a list of all supported taxa; will ignore other parameters\n".getBytes());
-		responseBody.write("  text        - the text to annotate\n".getBytes());
-		responseBody.write("  textid      - an ID that will be assigned to the text submitted via the 'text' parameter\n".getBytes());
-		responseBody.write("  textxref    - cross-reference/source for 'textid'\n\n".getBytes());
-		responseBody.write(("The parameters 'text', 'pmid', and 'pmc' can be used together. In the response, results for 'text' are displayed " +
-				"first, then for pmid, then for pmc. If 'pmid'/'pmc' had multiple IDs as their value, the results will appear in the " +
-		"same order these IDs were given.\n\n").getBytes());
-		responseBody.write(("A minimal request has at least one of 'pmid', 'pmc', or 'text'; with a corresponding value.\n\n").getBytes());
-		responseBody.write(("In TSV output, the fields for an entity annotation are text ID (e.g., PubMed ID), text cross-reference (source, " +
-				"e.g., PubMed), entity type (gene, goterm), entity subtype (species of the gene, GO branch), " +
-				"entity candidate ID(s) [semi-colon separated], start position, end position, mention as found in the text, " +
-		"and a score (optional).\n").getBytes());
-		responseBody.write("\n".getBytes());
+		
+		responseBody.write(
+				("This service accepts HTTP GET and POST requests to annotate texts with species and genes.\n" + 
+						"\n" + 
+						"Valid parameters for this service are:\n" + 
+						"\n" + 
+						"  help        - print a list of supported parameters (will ignore other parameters)\n" + 
+						"  taxa        - get a list of all supported taxa (will ignore other parameters)\n" + 
+						"  pmid        - ID(s) of PubMed record to get and annotate\n" + 
+						"  pmc         - ID(s) of PubMedCentral record to get and annotate\n" + 
+						"  text        - a text string to annotate\n" + 
+						"  textid      - ID that will be assigned to the text submitted via the 'text' parameter\n" + 
+						"  textxref    - the source or database cross-reference for the 'textid' parameter \n" + 
+						"  species     - NCBI taxon ID(s) for the species whose genes to annotate (default: 9606)\n" + 
+						"  task        - gner: perform the gene NER task on the text (default)\n" + 
+						"              - gnorm: perform the gene normalization task on the text\n" + 
+						"              - sner: perform the species NER task on the text\n" + 
+						"  returntype  - tsv: tab-separated list of annotations (default, see format below)\n" + 
+						"              - xml: XML-style list of annotations\n" + 
+						"\n" + 
+						"Parameters are submitted as key=value(s) pairs, beginning with a ? after the base URL. A \n" + 
+						"minimal request has at least one of 'pmid', 'pmc', or 'text'; with a corresponding value.\n" + 
+						"The parameters 'pmid', 'pmc' and 'species' can take a comma-separated list of PubMed, \n" + 
+						"PubMedCentral or NCBI taxonomy IDs, respectively. If 'pmid' or 'pmc' parameters have \n" + 
+						"multiple IDs as their value, the results will appear in the same order these IDs were \n" + 
+						"given. The parameters 'text', 'pmid', and 'pmc' can be used together. In the response, \n" + 
+						"results for 'text' are displayed first, then for pmid, then for pmc. Multiple  tasks can \n" + 
+						"be performed on the text by providing a comma separated list to the 'task' parameter. \n" + 
+						"\n" + 
+						"In TSV output, the fields for an entity annotation are text ID (e.g., PubMed ID), text \n" + 
+						"cross-reference (e.g., PubMed), entity type (e.g. gene, goterm), entity subtype (e.g. \n" + 
+						"species of the gene, GO branch), entity candidate ID(s) [semi-colon separated] (e.g. \n" + 
+						"Entrez gene ID, GO code), 0-based start position in the text, 0-based end position in \n" + 
+						"the text, mention as found in the text, and a confidence score (optional; higher is better).\n" + 
+						"\n" + 
+						"**Examples**\n" + 
+						"\n" + 
+						"1) Print this help menu:\n" + 
+						"http://bergmanlab.smith.man.ac.uk:8081/?help\n" + 
+						"\n" + 
+						"2) Annotate gene mentions in the abstracts of PMIDs 21483786 & 21483692:\n" + 
+						"http://bergmanlab.smith.man.ac.uk:8081/?pmid=21483786,21483692\n" + 
+						"\n" + 
+						"3) Annotate gene mentions in the full text of PMCID PMC3069089 & abstract of PMID \n" + 
+						"21483786:\n" + 
+						"http://bergmanlab.smith.man.ac.uk:8081/?pmc=PMC3069089&pmid=21483786\n" + 
+						"\n" + 
+						"4) Annotate gene mentions in the text string \"p53 gene\":\n" + 
+						"http://bergmanlab.smith.man.ac.uk:8081/?text=p53 gene\n" + 
+						"\n" + 
+						"5) Annotate gene mentions in the text string \"p53 gene\" using both human and mouse \n" + 
+						"Entrez gene IDs:\n" + 
+						"http://bergmanlab.smith.man.ac.uk:8081/?text=p53 gene&species=9606,10090\n" + 
+						"\n" + 
+						"6) Annotate species and gene mentions in the full text of PMCID PMC3069089:\n" + 
+						"http://bergmanlab.smith.man.ac.uk:8081/?pmc=PMC3069089&task=sner,gner\n" + 
+						"\n" + 
+						"7) Generate XML files of normalized gene mentions and associated data for PMCID\n" + 
+						"PMC3069089:\n" + 
+						"http://bergmanlab.smith.man.ac.uk:8081/?pmc=PMC3069089&task=gnorm&returntype=xml\n").getBytes());
+		
+		
+//		responseBody.write("This service accepts HTTP GET and POST requests to annotate texts with species and genes.\n\n".getBytes());
+//		responseBody.write("Valid parameters (submitted as key=value pairs):\n".getBytes());
+//		responseBody.write("  help        - print a list of supported parameters; will ignore other parameters\n".getBytes());
+//		responseBody.write("  pmid        - get and annotate these PubMed abstracts (comma-separated list of PubMed IDs)\n".getBytes());
+//		responseBody.write("  pmc         - get and annotate these full texts from PubMedCentral (comma-separated list of PMC IDs)\n".getBytes());
+//		responseBody.write("  returntype  - xml: inline XML-style annotations in the submitted text\n".getBytes());
+//		responseBody.write("                tsv: tab-separated list of annotations, with position, evidence, score; default\n".getBytes());
+//		responseBody.write("  species     - taxon IDs for the species whose genes to annotate, comma separated; default: 9606\n".getBytes());
+//		responseBody.write(("  task        - the task(s) to perform on the text, comma separated: speciesNER (sner), geneNER (gner), " +
+//		"geneNormalization (gnorm), GO term recognition (gotrec)\n").getBytes());
+//		responseBody.write("  taxa        - get a list of all supported taxa; will ignore other parameters\n".getBytes());
+//		responseBody.write("  text        - the text to annotate\n".getBytes());
+//		responseBody.write("  textid      - an ID that will be assigned to the text submitted via the 'text' parameter\n".getBytes());
+//		responseBody.write("  textxref    - cross-reference/source for 'textid'\n\n".getBytes());
+//		responseBody.write(("The parameters 'text', 'pmid', and 'pmc' can be used together. In the response, results for 'text' are displayed " +
+//				"first, then for pmid, then for pmc. If 'pmid'/'pmc' had multiple IDs as their value, the results will appear in the " +
+//		"same order these IDs were given.\n\n").getBytes());
+//		responseBody.write(("A minimal request has at least one of 'pmid', 'pmc', or 'text'; with a corresponding value.\n\n").getBytes());
+//		responseBody.write(("In TSV output, the fields for an entity annotation are text ID (e.g., PubMed ID), text cross-reference (source, " +
+//				"e.g., PubMed), entity type (gene, goterm), entity subtype (species of the gene, GO branch), " +
+//				"entity candidate ID(s) [semi-colon separated], start position, end position, mention as found in the text, " +
+//		"and a score (optional).\n").getBytes());
+//		responseBody.write("\n".getBytes());
 		responseBody.close();
 	}
 
