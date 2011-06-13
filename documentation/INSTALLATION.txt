@@ -57,7 +57,16 @@ c) load all the SQL files into that schema
 d) download a JDBC driver for that database from the respective website, such
    as mysql-connector-java-5.1.7-bin.jar, and move it to the lib/ directory
 e) change the database-related settings in isgn_properties.xml, see below
-
+f) The scripts provided assume a JDBC driver is stored as
+     lib/mysql-connector-java-5.1.7-bin.jar
+   If you are using a different version or a different driver, make sure to
+   change the startup and test scripts, for instance,
+     scripts/startGeneService.sh
+     scripts/testLocalPipeline.sh 
+   accordingly: change the "-cp ..." command line parameter from
+     "-cp lib/gnat.jar:lib/mysql-connector-java-5.1.7-bin.jar"
+   into 
+     "-cp lib/gnat.jar:<new-path>/<new-jdbc-driver>.jar"
 
 
 3) Edit property files
