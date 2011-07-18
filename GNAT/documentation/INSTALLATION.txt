@@ -33,8 +33,8 @@ will be created:
                     * you might need to change the class path in these scripts
 - sql/            - data that need to be loaded into a DB, see below
 - texts/          - example texts and tests to process by GNAT
-and two property files (isgn_ and service_properties.xml).
-
+as well as two property files (isgn_properties.xml and service_properties.xml).
+Make sure that all these sub-directories reside within the same folder.
 
 
 2) Create and fill a relational database
@@ -43,17 +43,26 @@ and two property files (isgn_ and service_properties.xml).
 Load the SQL data into a relational database, such as MySQL.
 a) set up a local database if none is already running
 b) create a schema for GNAT data, for instance, called "GNAT"
+   In the MySQL command prompt, for example, run
+   > create database GNAT;
 c) load all the SQL files into that schema
    Example in MySQL:
    - change to the sql/ directory
-   - start the MySQL command prompt
+   - start the MySQL command prompt, usually by entering something like
+     > mysql -h MY-DB-SERVER -u MY-USERNAME -p
+     where MY-DB-SERVER is the URL for you database server (could be 
+     'localhost' as well) and MY-USERNAME is your user name; you will then be
+     prompted for your password
+   - change into the new schema
+     > use GNAT;
    - run the command
      > source gr_goterm.sql;
-   to load the GOTerm table.
-   For MySQL, you can also run
+   to load the GOTerm table; and similar for all other *.sql import scripts.
+   For MySQL, you can simply run
      > source mysqlImportAll.sql;
    to import all SQL files at once.
    Again, you need to be in the sql/ directory!
+   This step will take several minutes to complete.
 d) download a JDBC driver for that database from the respective website, such
    as mysql-connector-java-5.1.7-bin.jar, and move it to the lib/ directory
 e) change the database-related settings in isgn_properties.xml, see below
@@ -78,6 +87,22 @@ Edit the properties file "isgn_properties.xml"
   Examples:
     dbAccessUrl: jdbc:mysql://localhost:3306/GNAT
     dbDriver:    org.gjt.mm.mysql.Driver
+- change the local and remote URLs for your services
+  entries:
+    dictionaryServer - the server URL (without port) or 'localhost' that hosts
+                       your remote dictionaries (if any); this would be, for
+                       instance, the server on which you launch step 4a) below;
+                       if you plan to use more than one server for different
+                       dictionaries, please adjust the settings in
+                         config/geneNerDictionaryServers.txt
+    dictionaryServerGO - the server that hosts the specific GO and MeSH term
+                       dictionary tagger (could be different from the other
+                       dictionaries)
+    gnatServiceUrl   - the URL to the GNAT remote services, if you plan to use
+                       those
+    geneRepositoryService - needed if using a gene repository rather than local
+                       DB to host information on genes
+    linnaeusUrl      - URL to an instance of LINNAEUS for species recognition 
 
 
 
@@ -85,7 +110,7 @@ Edit the properties file "isgn_properties.xml"
 -------------
 
 a) Start the human gene recognition dictionary locally
-   - see scripts/startHuman.sh for an example of how to start a dictionary
+   - see scripts/startHumanDict.sh for an example of how to start a dictionary
    - you need to provide the path to the human (9606) dictionary directory,
    - as well as a port on which the server will run
    - needs around 2GB of memory
