@@ -11,8 +11,13 @@
 # for 'OTHER', mapped to 'gnat.filter.ner.GnatServiceNer'; plus an entry for your own dictionary, mapping its species to a
 # server address:port or your own Filter class.
 #####
-#Comment lines starts with #
-#Tab-seprated entries for:
-#Taxon ID	Server address or filter class
+# Comment lines starts with #
+# Tab-separated entries for:
+# Taxon ID	Server address or filter class	Comment
 OTHER	gnat.filter.ner.GnatServiceNer	# handle all NER requests *except* for the ones below (if any) with GNAT
 7227	localhost:56008	# requests for fruit fly genes will be handled by a local DictionaryServer
+#
+#
+### an example that uses ALL:
+#ALL	http://myserver.com:56001	# run every text through this filter, regardless of which species where found
+#9606	http://myserver.com:56002	# for abstracts with a mention of 'human' (taxon ID 9606), also (!) run this filter, in addition to the one given by the ALL entry
