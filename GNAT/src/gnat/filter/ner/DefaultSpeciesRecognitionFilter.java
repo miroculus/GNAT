@@ -16,7 +16,7 @@ import java.util.TreeSet;
 
 /**
  * A filter that scans texts for species and assigns NCBI Taxonomy IDs; default implementation,
- * scans for human, mouse, rat, and fruit fly only.
+ * scans for human, mouse, rat, yeast (S.cer), and fruit fly only.
  * <br><br>
  * Taxon IDs will be stored in each text's {@link Text#taxonIDs} field 
  * and thus not be annotated with positions.<br>In addition, the names found in a text representing
@@ -56,6 +56,10 @@ public class DefaultSpeciesRecognitionFilter implements Filter {
 				continue;
 			}
 			
+			boolean debug = text.getID().matches(".*7498728.*");
+			
+			boolean foundAspecies = false;
+			
 			Map<Integer, Set<String>> id2names = new HashMap<Integer, Set<String>>();
 			String[] lines = text.getPlainText().split("[\r\n]+");
 			for (String line: lines) {
@@ -73,7 +77,8 @@ public class DefaultSpeciesRecognitionFilter implements Filter {
 					names.add(name);
 					id2names.put(9606, names);
 					
-					//System.err.println("###Found human: '" + name + "'###");
+					if (debug) System.err.println("###Found human: '" + name + "' in text " + text.getID() + " ###");
+					foundAspecies = true;
 				}
 				
 				if (line.matches(".*(?:^|[\\W])" +
@@ -90,7 +95,8 @@ public class DefaultSpeciesRecognitionFilter implements Filter {
 					names.add(name);
 					id2names.put(10090, names);
 					
-					//System.err.println("###Found mouse: '" + name + "'###");
+					if (debug) System.err.println("###Found mouse: '" + name + "'###");
+					foundAspecies = true;
 				}
 				
 				if (line.matches(".*(?:^|[\\W])" +
@@ -107,7 +113,8 @@ public class DefaultSpeciesRecognitionFilter implements Filter {
 					names.add(name);
 					id2names.put(10116, names);
 					
-					//System.err.println("###Found rat: '" + name + "'###");
+					if (debug) System.err.println("###Found rat: '" + name + "' ###");
+					foundAspecies = true;
 				}
 				
 				if (line.matches(".*(?:^|[\\W])" +
@@ -131,7 +138,8 @@ public class DefaultSpeciesRecognitionFilter implements Filter {
 					names.add(name);
 					id2names.put(10116, names);
 					
-					//System.err.println("###Found rodent: '" + name + "'###");
+					if (debug) System.err.println("###Found rodent: '" + name + "' ###");
+					foundAspecies = true;
 				}
 				
 				if (line.matches(".*(?:^|[\\W])" +
@@ -150,9 +158,57 @@ public class DefaultSpeciesRecognitionFilter implements Filter {
 					names.add(name);
 					id2names.put(7227, names);
 					
-					//System.err.println("###Found fly: '" + name + "'###");
+					if (debug) System.err.println("###Found fly: '" + name + "' in text " + text.getID() + " ###");
+					foundAspecies = true;
 				}
+				
+				
+				//Saccharomyces cerevisiae (OLD entry used by EntrezGene!!! was replaced by taxon ID 559292, referring to S. cer S288c)
+				//if (line.matches(".*(?:^|[\\W])" +
+				//		"([Yy]east|baker's yeast|Saccharomyces cerevisiae|[Ss]\\.\\s?[Cc]er(\\.|evisiae)?)" +
+				//		"(?:[\\W]|$).*")) {
+				//	String name = line.replaceFirst("^.*(?:^|[\\W])" +
+				//			"([Yy]east|baker's yeast|Saccharomyces cerevisiae|[Ss]\\.\\s?[Cc]er(\\.|evisiae)?)" +
+				//			"(?:[\\W]|$).*$", "$1");
+				//	Set<String> names;
+				//	if (id2names.containsKey(4932))
+				//		names = id2names.get(4932);
+				//	else
+				//		names = new TreeSet<String>();
+				//	names.add(name);
+				//	id2names.put(4932, names);
+				//	
+				//	if (debug) System.err.println("###Found yeast: '" + name + "' in text " + text.getID() + " ###");
+				//	foundAspecies = true;
+				//}
+				// Saccharomyces cerevisiae S288c
+				if (line.matches(".*(?:^|[\\W])" +
+						"(baker's yeast|[Yy]east" +
+						"|Saccharomyces cerevisiae S288c|Saccharomyces cerevisiae" +
+						"|[Ss]\\.\\s?[Cc]er(\\.|evisiae)?)" +
+						"(?:[\\W]|$).*")) {
+					String name = line.replaceFirst("^.*(?:^|[\\W])" +
+							"([Yy]east|baker's yeast|Saccharomyces cerevisiae|[Ss]\\.\\s?[Cc]er(\\.|evisiae)?)" +
+							"(?:[\\W]|$).*$", "$1");
+					Set<String> names;
+					if (id2names.containsKey(559292))
+						names = id2names.get(559292);
+					else
+						names = new TreeSet<String>();
+					names.add(name);
+					id2names.put(559292, names);
+					
+					if (debug) System.err.println("###Found yeast: '" + name + "' in text " + text.getID() + " ###");
+					foundAspecies = true;
+				}
+				
 			} // for each line
+			
+			if (!foundAspecies && debug) {
+				System.err.println("###No species found in text " + text.getID() + " ###");
+				for (String l: lines)
+					System.err.println(">>>" + l + "<<<");
+			}
 			
 			//System.out.println("Species IDs: " + id2names.keySet());
 			//for (int taxon: id2names.keySet()) {
