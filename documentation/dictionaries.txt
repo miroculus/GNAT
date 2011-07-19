@@ -41,18 +41,21 @@ steps.
 2) Extract the data relevant to a single species from gene_info, using 
    makeListFromGeneInfo.sh, into a file where each line starts with the gene's 
    ID, followed by names and synonyms, all tab-separated.
-   See class: gnat.server.ner.GeneInfo2Dictionary
+   - See class: gnat.server.ner.GeneInfo2Dictionary
 3) Convert this file into a format where every line contains only one name in
    addition to the gene ID, using makeDictFromList.sh.
-   See class gnat.server.ner.ConvertDictionaryToIDNamePairs
+   - See class gnat.server.ner.ConvertDictionaryToIDNamePairs
 4) Generate an MWT file from that dictionary file, which encodes each name as
    a regular expression covering common spelling variations, using makeMwt.sh.
-   See class gnat.server.ner.GeneNamesToMWT for gene names
+   - See class gnat.server.ner.GeneNamesToMWT for gene names
 5) Compile an automaton for that MWT file using makeAutomaton.sh.
-   See class gnat.server.dictionary.Dictionary
+   - See class gnat.server.dictionary.Dictionary
+   - To run makeAutomaton, you will need to store a copy of the JDOM library
+   in the lib/ folder (see link below; file name: jdom-1.0.jar, or change 
+   makeAutomaton.sh accordingly if you're using a newer version).
 6) Launch the dictionary as a webserver, see scripts/startHuman.sh for an 
    example.
-   See class gnat.server.dictionary.DictionaryServer
+   - See class gnat.server.dictionary.DictionaryServer
    
 A gnat.server.dictionary.DictionaryServer listens on a specified port and 
 accepts requests, where each text to annotate is wrapped in <text> XML tags.
@@ -71,7 +74,7 @@ NCBI FTP: ftp://ftp.ncbi.nih.gov/gene/DATA/
 Gene Ontology: http://www.geneontology.org
 MeSH: see http://www.nlm.nih.gov/mesh/MBrowser.html for a browser
 NCBI Taxonomy: http://www.ncbi.nlm.nih.gov/sites/entrez/?db=taxonomy
-
+JDOM: http://www.jdom.org/
 
 -----
 JH 5 Nov 2010
