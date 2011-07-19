@@ -126,20 +126,24 @@ public class UnspecificNameFilter implements Filter {
 				"|nonsyndromic|up\\-regulated|hematopoietic|retinal|macular|embryonic|myopia|catalytic subunits?|regulatory subunits?" +
 				"|T cell differentiation|processing of separase|chromosome|translocated to|mutated|bind|bind DNA|dendritic|repeats" +
 				"|autosomal recessive deafness|congenital deafness|tandem|lipid raft|[Ee]ndothelial cell|glucose|cadherin superfamily" +
+				"|cadherin family" +
 				"|.* domain|processing of separase|molecular weight|[Cc]\\-terminal|epithelial|immunodeficiency|inhibitor securin" +
 				"|[Ii]nhibitor binding|type I lissencephaly|antisense|secreted|high affinity|Collagen XVIII|transmembrane protease" +
 				"|transmembrane serine protease|regulatory subunit NEMO|interacting|autosomal dominant|retina|actin cytoskeleton" +
 				"|intestinal epithelial|juvenile|Rho family|.* chemokine|X\\-linked retinoschisis|secreted photoreceptor" +
 				"|putative secreted photoreceptor|soluble L1|Soluble CD2|loss of heterozygosity|Kv4.2 potassium channel|alpha1 AMPK" +
 				"|testis|K\\(\\+\\)|mm K\\(\\+\\)|Src homology|antiproliferative|focal|gamma IP-10|receptor trafficking|serine protease" +
-				"|homology|skin-derived|unknown function|lymphoid|EST|CNS"
+				"|homology|skin-derived|unknown function|lymphoid|EST|CNS" +
+				// added to SF-Gnat acc. "100-test"
+				"|body weight|bone mineral content|long bones|renal cystic disease severity|GAGA transcription factor" +
+				"|[Dd]ominant megacolon|sex-peptide|gamma\\(c\\)|Ames dwarf|arch"
 
 		)){
 			return true;
 		}
 
 		// units and some typical mistakes (and 1, or in) --> bp has to keep Bp50!
-		if (term.matches("^(aa|bp\\s[0-9]{1,2}|kd|mg|Ki|nM|CD|Sci|Proc|Acad" +
+		if (term.matches("^(aa|bp\\s[0-9]{1,2}|kd|mg|Ki|nM|CD|Sci|Proc|Acad|\\d+ h" +
 				"|[\\d\\.]+[\\s\\-]?[Kk][Dd][Aa]" +
 				"|or\\sin|and\\s[1Ii]|for\\s4|[Aa]\\sgene|[Aa]t\\s5|[Aa]\\sC|is\\s1|at\\s\\d" +
 				"|as a|a PS|or if|a [ACGTU]" +
@@ -169,16 +173,20 @@ public class UnspecificNameFilter implements Filter {
 
 		// a list of name parts that, in any combination, result in an unspecific name
 		// protein types and functions, cellular/tissue locations, processes
+		// latest add ons: polypetide release (factor), (growth) hormone, "lung cancer"   --in brackets: token was already included
 		if (term.matches("^([\\s\\,\\.\\-\\;\\:\\(\\)\\/]" +
 				"|isoform|subunit|ligand|complement|chain|site|form|domain|autoantigen|antigen|sequence|homolog|type" +
 				"|subtype|motif|group|candidate|molecule|superfamily|family|subfamily|transcript|[Ff]ragment" +
 				"|[fF]actor|regulator|inhibitor|suppressor|translocator|activator|[rR]eceptor|[lL]igand|adaptor|adapter" +
-				"|nucleoprotein|oncoprotein|phosphoprotein|glycoprotein|[Pp]rotein|RNA|DNA|dna|cDNA|rna|mRNA|mrna|mRna|tRNA|tRna|trna" +
+				"|nucleoprotein|oncoprotein|phosphoprotein|glycoprotein|[Pp]rotein|polypeptide" +
+				"|RNA|DNA|dna|cDNA|rna|mRNA|mrna|mRna|tRNA|tRna|trna" +
 				"|histone|collagen|neuron" +
 				"|caspase|kinase|phosphatase|polymerase|coactivator|activator|transporter" +
+				"|hormone" +
 				//"" +
 				"|[eE]xpression|activation|transduction|transcription|adhesion|interaction" +
-				"|[aA]ssociated|induced|coupled|related|linked|associated|conserved|mediated|expressed|advanced" +
+				"|release" +
+				"|[aA]ssociated|induced|coupled|related|linked|associated|conserved|mediated|expressed|advanced|localized" +
 				"|activating|regulating|signaling|binding|bound|containing|docking|transforming" +
 				"|export|trafficking" +
 				//"" +
@@ -186,7 +194,7 @@ public class UnspecificNameFilter implements Filter {
 				"|epidermal|ectodermal|vesicle|mitochondrial|pancreatic|ubiquitous|fetal" +
 				"|chicken|mammalian|human" +
 				//"" +
-				"|cancer|carcinoma|tumor|obesity" +
+				"|cancer|carcinoma|tumor|obesity|lung cancer" +
 				//"" +
 				"|apoptosis|death|growth|maturation|necrosis|signal|repair|survival|stress|division|adhesion" +
 				"|control|excision|fusion|cycle" +
@@ -296,7 +304,7 @@ public class UnspecificNameFilter implements Filter {
 		return name.toLowerCase().trim().matches("(for|in|of|at|an" +
 				"|milk|cycling|enabled|blast|lipase|golgi|fusion|proteins?|nuclear|and\\s1|sex" +
 				"|similar\\sto|rough\\sdeal|alternative\\ssplicing|membrane[\\s\\-]?bound" +
-				"|proton[\\s\\-]?pump|partial|macrophage)");
+				"|proton[\\s\\-]?pump|partial|macrophage|condensed)");
 	}
 
 

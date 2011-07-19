@@ -106,10 +106,10 @@ public class RunDictionaries implements Filter {
 		for (Text text : textRepository.getTexts()) {
 			Set<Integer> taxaForThisText = text.taxonIDs;
 			if (taxaForThisText == null || taxaForThisText.size() == 0) {
-				System.out.println("#RunDictionaries: No species assigned to text " + text.getID() + ", using default species " + ConstantsNei.DEFAULT_SPECIES);
+				System.err.println("#RunDictionaries: No species assigned to text " + text.getID() + ", using default species " + ConstantsNei.DEFAULT_SPECIES);
 				taxaForThisText = ConstantsNei.DEFAULT_SPECIES;
 			} else
-				System.out.println("#RunDictionaries: for text " + text.getPMID() + ", checking species " + taxaForThisText);
+				;//System.out.println("#RunDictionaries: for text " + text.getPMID() + ", checking species " + taxaForThisText);
 			
 			buffer.append("<text>");
 			buffer.append(text.getPlainText());
@@ -411,6 +411,23 @@ public class RunDictionaries implements Filter {
 		else
 			limitToTaxons.clear();
 		limitToTaxons.addAll(taxa);
+	}
+	
+	
+	/**
+	 * Set the filter to invoke dictionary servers only for the given taxa.<br>
+	 * <b>Note</b>: overwrites the previous setting. Use {@link #addLimitToTaxon(int)} to add a taxon.<br>
+	 * <b>Note</b>: the set {@link #excludeTaxons} overwrites the set {@link #limitToTaxons} - if a taxon
+	 * is contained in both sets, the dictionary for this taxon will <em>not be invoked</em>.
+	 * @param taxa
+	 */
+	public void setLimitToTaxons (int... taxa) {
+		if (limitToTaxons == null) 
+			limitToTaxons = new HashSet<Integer>();
+		else
+			limitToTaxons.clear();
+		for (int t: taxa)
+			limitToTaxons.add(t);
 	}
 	
 	

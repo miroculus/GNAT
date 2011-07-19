@@ -315,6 +315,7 @@ public class TextFactory {
 			String line;
 			while ((line = br.readLine()) != null) {
 				text.append(line);
+				text.append("\n");
 			}
 			br.close();
 		} catch (IOException ioe) {

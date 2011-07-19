@@ -78,6 +78,8 @@ public class Text {
 	public Text (String id, String plainText){
 		this(id);
 		setPlainText(plainText);
+		// TODO the text is read line-by-line, adding line breaks as there were -- for sentence splitting, these should be removed
+		// TODO however, a white space needs to be introduced, potentially setting off the positions that need to be reported for the final output
 		setSentences(splitter.split(plainText), false);
 
 		TextContextModel tcm = new TextContextModel();
