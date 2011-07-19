@@ -84,7 +84,7 @@ public class LocalPipelineTest extends PipelineTest {
 		run.addFilter(new NameRangeExpander());
 
 		// NER filters here:
-		// default species NER: spots human, mouse, rat, and fly only
+		// default species NER: spots human, mouse, rat, yeast, and fly only
 		run.addFilter(new DefaultSpeciesRecognitionFilter());
 		// genes via a GnatService
 //		GnatServiceNer gnatServiceNer = new GnatServiceNer(GnatService.Tasks.GENE_NER);
