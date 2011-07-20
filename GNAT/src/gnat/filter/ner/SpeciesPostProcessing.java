@@ -43,7 +43,7 @@ public class SpeciesPostProcessing implements Filter {
 	public void filter (Context context, TextRepository textRepository, GeneRepository geneRepository) {
 		for (Text text : textRepository.getTexts()) {
 			
-			Map<Integer, Set<String>> id2names = text.taxonIdsToNames;
+			Map<Integer, List<String>> id2names = text.taxonIdsToNames;
 			id2names = removeSpeciesWithAmbiguousNames(id2names);
 			
 			// normalize the taxon IDs (murinae -> M.mus etc.)
@@ -148,90 +148,90 @@ public class SpeciesPostProcessing implements Filter {
 	 * @param species
 	 * @return
 	 */
-	private Map<Integer, Set<String>> removeSpeciesWithAmbiguousNames (Map<Integer, Set<String>> species) {
-		Map<Integer, Set<String>> result = new HashMap<Integer, Set<String>>();
+	private Map<Integer, List<String>> removeSpeciesWithAmbiguousNames (Map<Integer, List<String>> species) {
+		Map<Integer, List<String>> result = new HashMap<Integer, List<String>>();
 		
 		for (int tax: species.keySet()) {
-			Set<String> names = species.get(tax);
-			boolean stop = false;
+			List<String> names = species.get(tax);
+			boolean remove = false;
 
 			// cancer 6754 => most of the time an FP (breast cancer, etc.)
 			if (tax == 6754) {
 				// assume it is a wrong annotation
-				stop = true;
+				remove = true;
 				for (String name: names) {
 					// but if any other than the ambiguous name was
 					// also found, the species is indeed correct
 					if (!name.matches("[Cc]ancers?"))
-						stop = false;
+						remove = false;
 				}
 			}
 			
 			// dito for codon
 			else if (tax == 79338) {
-				stop = true;
+				remove = true;
 				for (String name: names) {
 					if (!name.matches("codon"))
-						stop = false;
+						remove = false;
 				}
 			}
 			
 			// glycine
 			else if (tax == 3846) {
-				stop = true;
+				remove = true;
 				for (String name: names) {
 					if (!name.matches("glycine"))
-						stop = false;
+						remove = false;
 				}
 			}
 			
 			// bears
 			else if (tax == 9641) {
-				stop = true;
+				remove = true;
 				for (String name: names) {
 					if (!name.matches("bears"))
-						stop = false;
+						remove = false;
 				}
 			}
 			
 			// bears
 			else if (tax == 9855) {
-				stop = true;
+				remove = true;
 				for (String name: names) {
 					if (!name.matches("axis"))
-						stop = false;
+						remove = false;
 				}
 			}
 			
 			// monitors 8555
 			else if (tax == 8555) {
-				stop = true;
+				remove = true;
 				for (String name: names) {
 					if (!name.matches("monitors?"))
-						stop = false;
+						remove = false;
 				}
 			}
 			
 			// pan 9596
 			else if (tax == 9596) {
-				stop = true;
+				remove = true;
 				for (String name: names) {
 					if (!name.matches("pans?"))
-						stop = false;
+						remove = false;
 				}
 			}
 			
 			// thymus 8555
 			else if (tax == 49990) {
-				stop = true;
+				remove = true;
 				for (String name: names) {
 					if (!name.matches("thymus"))
-						stop = false;
+						remove = false;
 				}
 			}
 
 			// wrong annotation? don't put it in the answer
-			if (stop)
+			if (remove)
 				continue;
 			else
 				result.put(tax, names);
@@ -269,8 +269,8 @@ public class SpeciesPostProcessing implements Filter {
 	 * @param ids2names
 	 * @return
 	 */
-	public Map<Integer, Set<String>> normalizeTaxonIDs (Map<Integer, Set<String>> ids2names) {
-		Map<Integer, Set<String>> result = new HashMap<Integer, Set<String>>();
+	public Map<Integer, List<String>> normalizeTaxonIDs (Map<Integer, List<String>> ids2names) {
+		Map<Integer, List<String>> result = new HashMap<Integer, List<String>>();
 		
 		for (int tax: ids2names.keySet()) {
 			int taxa[] = normalizeTaxonID(tax);
@@ -281,15 +281,15 @@ public class SpeciesPostProcessing implements Filter {
 				if (tax == taxa[0])
 					result.put(tax, ids2names.get(tax));
 				else {
-					Set<String> copy = ids2names.get(tax);
-					Set<String> copy2 = ids2names.get(taxa[0]);
+					List<String> copy = ids2names.get(tax);
+					List<String> copy2 = ids2names.get(taxa[0]);
 					if (copy2 != null)
 						copy.addAll(copy2);
 					result.put(taxa[0], copy);
 					//result.remove(tax);
 				}
 			} else {
-				Set<String> copy = ids2names.get(tax);
+				List<String> copy = ids2names.get(tax);
 				//result.remove(tax);
 				for (int i = 0; i < taxa.length; i++) {
 					result.put(taxa[i], copy);

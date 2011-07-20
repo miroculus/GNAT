@@ -1,7 +1,6 @@
 package gnat.client;
 
 import gnat.ISGNProperties;
-import gnat.filter.PrintStatus;
 import gnat.filter.nei.AlignmentFilter;
 import gnat.filter.nei.GeneRepositoryLoader;
 import gnat.filter.nei.IdentifyAllFilter;
@@ -10,6 +9,7 @@ import gnat.filter.nei.LeftRightContextFilter;
 import gnat.filter.nei.MultiSpeciesDisambiguationFilter;
 import gnat.filter.nei.NameValidationFilter;
 import gnat.filter.nei.RecognizedEntityUnifier;
+import gnat.filter.nei.SpeciesFrequencyFilter;
 import gnat.filter.nei.StopWordFilter;
 import gnat.filter.nei.UnambiguousMatchFilter;
 import gnat.filter.nei.UnspecificNameFilter;
@@ -142,6 +142,9 @@ public class JustAnnotate {
 		run.addFilter(new AlignmentFilter(AlignmentHelper.globalAlignment, 0.7f));
 		//
 		run.addFilter(new NameValidationFilter());
+		
+		// filter by the number of occurrences of each organism
+		run.addFilter(new SpeciesFrequencyFilter());
 		
 		// Final disambiguation filter
 		run.addFilter(new MultiSpeciesDisambiguationFilter(

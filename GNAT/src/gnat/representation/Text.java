@@ -5,8 +5,8 @@ import gnat.preprocessing.sentences.SentenceSplitterRegex;
 
 import java.util.Collection;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.LinkedList;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.TreeSet;
@@ -51,7 +51,7 @@ public class Text {
 	/** All species that have been found in this text. */
 	public Set<Integer> taxonIDs = new TreeSet<Integer>();
 	/** */
-	public Map<Integer, Set<String>> taxonIdsToNames = new HashMap<Integer, Set<String>>();
+	public Map<Integer, List<String>> taxonIdsToNames = new HashMap<Integer, List<String>>();
 
 
 	public LinkedList<String> sentences = new LinkedList<String>();
@@ -204,26 +204,64 @@ public class Text {
 	
 	
 	public void addTaxonWithName (int taxon, String name) {
-		Set<String> allNames = taxonIdsToNames.get(taxon);
+		List<String> allNames = taxonIdsToNames.get(taxon);
 		if (allNames == null)
-			allNames = new HashSet<String>();
+			allNames = new LinkedList<String>();
 		
 		taxonIDs.add(taxon);
 		allNames.add(name);
 		
 		taxonIdsToNames.put(taxon, allNames);
 	}
+
+
+	/**
+	 * Returns a set of taxon IDs occurring with the highest frequency in
+	 * the text. The set can contain multiple IDs, if all these taxa occur
+	 * with the same frequency. Most often, it will contain only one ID.
+	 * @return
+	 */
+	public Set<Integer> getMostFrequentTaxons () {
+		Set<Integer> result = new TreeSet<Integer>();
+		
+		// determine most frequent taxon(s)
+		int max = 0;
+		for (int tax: taxonIdsToNames.keySet()) {
+			if (taxonIdsToNames.get(tax).size() > max) {
+				result.clear();
+				result.add(tax);
+				max = taxonIdsToNames.get(tax).size();
+			} else if (taxonIdsToNames.get(tax).size() == max) {
+				result.add(tax);
+			}
+		}
+		
+		return result;
+	}
 	
 	
+	/**
+	 * Returns the frequency with which one taxon was observed in this text
+	 * (number of occurrences of a name that refer to this taxon) .
+	 * @param taxon
+	 * @return
+	 */
+	public int getTaxonFrequency (int taxon) {
+		if (taxonIdsToNames.containsKey(taxon))
+			return taxonIdsToNames.get(taxon).size();
+		else return 0;
+	}
+
+
 	/**
 	 * Adds species and their names (as they occurred in this text) to the map
 	 * {@link #taxonIdsToNames}.
 	 * @param map
 	 */
-	public void addTaxonToNameMap (Map<Integer, Set<String>> map) {
+	public void addTaxonToNameMap (Map<Integer, List<String>> map) {
 		for (int taxon: map.keySet()) {
 			if (taxonIdsToNames.containsKey(taxon)) {
-				Set<String> oldNames = taxonIdsToNames.get(taxon);
+				List<String> oldNames = taxonIdsToNames.get(taxon);
 				oldNames.addAll(map.get(taxon));
 				taxonIdsToNames.put(taxon, oldNames);
 				taxonIDs.add(taxon);

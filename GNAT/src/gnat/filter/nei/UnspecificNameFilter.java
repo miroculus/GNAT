@@ -121,7 +121,7 @@ public class UnspecificNameFilter implements Filter {
 
 
 		// specifiers that often occurr in name field entries of databases (mostly in brackets) or are just too unspecific
-		if(term.matches("[Aa]utosomal recessive|splicing|protease|checkpoint|T cell|cytoskeleton|C\\-terminal fragments" +
+		if(term.matches("([Aa]utosomal recessive|splicing|protease|checkpoint|T cell|cytoskeleton|C\\-terminal fragments" +
 				"|skeletal muscle|liver|kidney|expressed in .*|endothelial|murine|gene product|polypeptide|deafness|congenital" +
 				"|nonsyndromic|up\\-regulated|hematopoietic|retinal|macular|embryonic|myopia|catalytic subunits?|regulatory subunits?" +
 				"|T cell differentiation|processing of separase|chromosome|translocated to|mutated|bind|bind DNA|dendritic|repeats" +
@@ -136,7 +136,7 @@ public class UnspecificNameFilter implements Filter {
 				"|homology|skin-derived|unknown function|lymphoid|EST|CNS" +
 				// added to SF-Gnat acc. "100-test"
 				"|body weight|bone mineral content|long bones|renal cystic disease severity|GAGA transcription factor" +
-				"|[Dd]ominant megacolon|sex-peptide|gamma\\(c\\)|Ames dwarf|arch"
+				"|[Dd]ominant megacolon|sex-peptide|gamma\\(c\\)|Ames dwarf|arch|obese)"
 
 		)){
 			return true;
@@ -146,7 +146,7 @@ public class UnspecificNameFilter implements Filter {
 		if (term.matches("^(aa|bp\\s[0-9]{1,2}|kd|mg|Ki|nM|CD|Sci|Proc|Acad|\\d+ h" +
 				"|[\\d\\.]+[\\s\\-]?[Kk][Dd][Aa]" +
 				"|or\\sin|and\\s[1Ii]|for\\s4|[Aa]\\sgene|[Aa]t\\s5|[Aa]\\sC|is\\s1|at\\s\\d" +
-				"|as a|a PS|or if|a [ACGTU]" +
+				"|as a|a PS|or if|a [ACGTU]|d or|a part" +
 
 				"|factor[\\s\\-]\\d|factor[\\s\\-](alpha|beta|gamma|delta)" +
 				"|receptor\\s\\d|[Ii]soforms?[\\s\\-]?\\d+|[Ii]sozymes?[\\s\\-]\\d+?" +
