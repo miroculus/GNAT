@@ -1,0 +1,17 @@
+The zinc finger protein Rme1p is a negative regulator of the meiotic
+activator IME1 in Saccharomyces cerevisiae . Prior studies have shown that
+Rme1p binds in vitro to a site near nt -2030 in the IME1 upstream region,
+but a genomic mutation in that site has little effect on repression of
+IME1 . To identify Rme1p binding sites in vivo , we have examined the
+binding of Rme1p to genomic sites through in vivo footprinting. We show
+that Rme1p binds to two sites in the IME1 upstream region, near nt -1950
+and -2030. Mutations in both binding sites abolish repression of
+chromosomal IME1 by Rme1p, whereas a mutation in either single site causes
+partial derepression. Therefore, both Rme1p binding sites are essential
+for repression of IME1 . Prior studies have shown that repression by Rme1p
+depends upon RGR1 and SIN4 , which specify RNA polymerase II mediator
+subunits that are required for normal nucleosome density. We find that
+RGR1 and SIN4 are not simply required for Rme1p to bind to DNA in vivo .
+These results suggest that Rme1p functions directly as a repressor of IME1
+and that Rgr1p and Sin4p are required for DNA-bound Rme1p to exert
+repression.

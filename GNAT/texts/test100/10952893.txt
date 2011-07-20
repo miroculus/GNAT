@@ -1,0 +1,20 @@
+The BMP-like signaling mediated by the ligands Dpp and Gbb is required to
+reinforce the development of most veins in the Drosophila wing. However,
+the formation of the cross veins is especially sensitive to reductions in
+BMP-like signaling. We show here that the formation of the definitive
+cross veins occurs after the initial specification of the longitudinal
+veins in a process that requires localized BMP-like activity. Since Dpp
+and Gbb levels are not detectably higher in the early phases of cross vein
+development, other factors apparently account for this localized activity.
+Our evidence suggests that the product of the crossveinless 2 gene is a
+novel member of the BMP-like signaling pathway required to potentiate Gbb
+of Dpp signaling in the cross veins. crossveinless 2 is expressed at
+higher levels in the developing cross veins and is necessary for local
+BMP-like activity. The Crossveinless 2 protein contains a putative signal
+or transmembrane sequence, and a partial Von Willebrand Factor D domain
+similar to those known to regulate the formation of intramolecular and
+intermolecular bonds. It also contains five cysteine-rich domains, similar
+to the cysteine-rich domains found in Chordin, Short Gastrulation and
+Procollagen that are known to bind BMP-like ligands. These features
+strongly suggest that Crossveinless 2 acts extracelluarly or in the
+secretory pathway to directly potentiate Dpp or Gbb signaling.

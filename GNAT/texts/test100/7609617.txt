@@ -1,0 +1,21 @@
+F3 is a 135 kDa neuronal cell surface adhesive glycoprotein belonging to
+the immunoglobulin supergene family (IgSF) which mediates heterophilic
+contact formation among neural cells and is involved in the control of
+neurite growth. F3 expression is regulated, during critical developmental
+periods, on neuronal subpopulations thus suggesting that control of F3
+gene expression could be of morphogenetic relevance. To shed light on the
+mechanism involved in the control of F3 gene expression we isolated clones
+covering about 50 kilobases of the F3 gene which also included the
+promoter region. The study of F3 gene exon/intron organization revealed
+that, like other neural IgSF molecules, each of the first two F3 C2
+domains is encoded by two exons while the N-terminus, the signal peptide
+and the 5' untranslated region are each encoded by distinct exons. A
+single transcription start site was identified, surrounded by a short 114
+bp sequence able to direct reporter gene expression in both F3-expressing
+and -non-expressing cells. In addition, a cell type-specific enhancer,
+only active in F3-expressing cells, was found immediately upstream to it.
+Structural analysis of the promoter region revealed consensus sequences
+for binding transcription factors involved in cell type-specific and/or
+developmental regulations. Most of them are homeobox containing
+transcription factors thus suggesting that regulation of F3 gene
+expression could be part of a large developmental program.

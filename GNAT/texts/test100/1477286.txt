@@ -1,0 +1,17 @@
+Shaker K+ channels are multimeric, probably tetrameric proteins.
+Substitution of a conserved leucine residue to valine (V2) at position 370
+in the Drosophila Shaker 29-4 sequence results in large alterations in the
+voltage dependence of gating in the expressed channels. In order to
+determine the effects of this mutation in hybrid channels with a fixed
+stoichiometry of V2 and wild-type (WT) subunits we generated cDNA
+constructs of two linked-monomeric subunits similar to the tandem
+constructs previously reported by Isacoff, E. Y., Y. N. Jan, and L. Y.
+Jan. (1990. Nature (Lond.). 345:530-534). In addition, we constructed a
+tandem cDNA containing a wild-type subunit and a truncated nonfunctional
+subunit (Sh102) that suppresses channel expression. We report that the
+voltage-dependence of the channels produced with WT and V2 subunits varied
+significantly with the order of the subunits in the construct (WT-V2 or
+V2-WT), while the WT-Sh102 construct yielded currents that were much
+larger than expected. These results suggest that the tandem linkage of
+Shaker subunits does not guarantee the stoichiometry of the expressed
+channel proteins.

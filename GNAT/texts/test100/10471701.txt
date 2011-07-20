@@ -1,0 +1,19 @@
+Rad23 is a member of a novel class of proteins that contain unprocessed
+ubiquitin-like (UbL) domains. We showed recently that a small fraction of
+Rad23 can form an interaction with the 26S proteasome. Similarly, a small
+fraction of Rpn10 is a component of the proteasome. Rpn10 can bind
+multiubiquitin chains in vitro, but genetic studies have not clarified its
+role in vivo. We report here that the loss of both Rad23 and Rpn10 results
+in pleiotropic defects that are not observed in either single mutant.
+rad23Delta rpn10Delta displays slow growth, cold sensitivity, and a
+pronounced G2/M phase delay, implicating overlapping roles for Rad23 and
+Rpn10. Although rad23Delta rpn10Delta displays similar sensitivity to DNA
+damage as a rad23Delta single mutant, deletion of RAD23 in rpn10Delta
+significantly increased sensitivity to canavanine, a phenotype associated
+with an rpn10Delta single mutant. A mutant Rad23 that is unable to bind
+the proteasome ((DeltaUbL)rad23) does not suppress the canavanine or
+cold-sensitive defects of rad23Delta rpn10Delta, demonstrating that
+Rad23/proteasome interaction is related to these effects. Finally, the
+accumulation of multiubiquitinated proteins and the stabilization of a
+specific proteolytic substrate in rad23Delta rpn10Delta suggest that
+proteasome function is altered.

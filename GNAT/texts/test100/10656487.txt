@@ -1,0 +1,28 @@
+The role of a defect for nucleotide excision repair (NER) in oocytes on
+the repair of DNA ethyl adducts induced by diethyl sulfate (DES) in male
+germ cells of Drosophila was analysed. Frequencies of mutations at
+multiple loci (recessive lethal mutations) and at the vermilion gene
+induced in NER+ conditions (cross NER+ x NER+) were compared with those
+fixed in a NER- background (NER- x NER+). The M(NER-)/M(NER+) mutability
+ratios for two DES concentrations, 10 mM and 15 mM, were 2.21 and 1.49,
+respectively, indicating that NER repairs part of the DES-induced damage.
+The majority of 28 fertile vermilion mutations produced by DES in NER- are
+transitions, both GC-AT (46.4%) and AT-GC (21.4%) transitions are found,
+the consequences of O6-ethylguanine and O4-ethylthymine, respectively.
+Transversions (21.5%), one +1 frameshift mutation (3.6%) and two deletions
+(7.1%) are most likely the result of N-alkylation damage. Furthermore, the
+DES-induced mutation spectra show interesting differences in relation to
+the exposure dose. All 10 mutants isolated in this and a previous [L.M.
+Sierra, A. Pastink, M.J.M. Nivard, E.W. Vogel, DNA base sequence changes
+induced by DES in postmeiotic male germ cells of Drosophila melanogaster,
+Mol. Gen. Genet. 237 (1993) 370-374] study from experiments with low
+DES-effectiveness are exclusively transitions, independent whether the
+females were of the NER+ or NER-genotype. This indicates that at lower DES
+effectiveness only O-alkylation damage is relevant, and that N-alkylation
+damage is repaired. In experiments revealing high DES-effectiveness,
+vermilion mutations representing N-alkylation damage reached 43% (9/21)
+with NER- and 26% (7/27) with NER+ females, suggesting (i) that NER
+becomes involved at high adduct levels because then the base excision
+repair (BER) may be saturated, and (ii) that this involvement of NER
+causes the relative decrease from 43% to 26% N-alkylation mediated
+sequence changes.

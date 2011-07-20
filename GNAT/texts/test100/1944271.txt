@@ -1,0 +1,19 @@
+Genes for small heat shock proteins (hsp27 to hsp22) are activated in late
+third-instar larvae of Drosophila melanogaster in the absence of heat
+stress. This regulation has been simulated in cultured Drosophila cells in
+which the genes are activated by the addition of ecdysterone. Sequence
+elements (HERE) involved in ecdysterone regulation of the hsp27 and hsp23
+genes have been defined by transfection studies and have recently been
+identified as binding sites for ecdysterone receptor. We report here that
+the hsp27 and hsp23 genes are regulated differently by ecdysterone. The
+hsp27 gene is activated rapidly by ecdysterone, even in the absence of
+protein synthesis. In contrast, high-level expression of the hsp23 gene
+begins only after a lag of about 6 h, is dependent on the continuous
+presence of ecdysterone, and is sensitive to low concentrations of protein
+synthesis inhibitors. Transfection experiments with reporter constructs
+show that this difference in regulation is at the transcriptional level.
+Synthetic hsp27 or hsp23 HERE sequences confer hsp27- or hsp23-type
+ecdysterone regulation on a basal promoter. These findings indicate that
+the hsp27 gene is a primary, and the hsp23 gene is mainly a secondary,
+hormone-responsive gene. Ecdysterone receptor is implied to play a role in
+the regulation of both genes.

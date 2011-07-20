@@ -1,0 +1,17 @@
+DPB11, a gene that suppresses mutations in two essential subunits of
+Saccharomyces cerevisiae DNA polymerase II(epsilon) encoded by POL2 and
+DPB2, was isolated on a multicopy plasmid. The nucleotide sequence of the
+DPB11 gene revealed an open reading frame predicting an 87-kDa protein.
+This protein is homologous to the Schizosaccharomyces pombe rad4+/cut5+
+gene product that has a cell cycle checkpoint function. Disruption of
+DPB11 is lethal, indicating that DPB11 is essential for cell
+proliferation. In thermosensitive dpb11-1 mutant cells, S-phase
+progression is defective at the nonpermissive temperature, followed by
+cell division with unequal chromosomal segregation accompanied by loss of
+viability.dpb11-1 is synthetic lethal with any one of the dpb2-1, pol2-11,
+and pol2-18 mutations at all temperatures. Moreover, dpb11 cells are
+sensitive to hydroxyurea, methyl methanesulfonate, and UV irradiation.
+These results strongly suggest that Dpb11 is a part of the DNA polymerase
+II complex during chromosomal DNA replication and also acts in a
+checkpoint pathway during the S phase of the cell cycle to sense stalled
+DNA replication.

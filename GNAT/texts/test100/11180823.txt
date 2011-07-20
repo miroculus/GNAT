@@ -1,0 +1,10 @@
+We have isolated and sequenced a cDNA encoding a predicted 524 amino acid
+protein from a Drosophila melanogaster ovarian library. Sequence
+comparisons suggest that this protein encodes a sodium-dependent inorganic
+phosphate co-transporter similar to a sequence isolated from a rat brain
+library. In situ hybridisation to messenger RNA in ovaries shows strong
+expression in germarium at stage 2 of oogenesis. Expression is then weak
+in follicle cells until stage 10, when high transcript levels are seen in
+the nurse cells and transferred to the oocyte. This presumably reflects
+functions in oogenesis and the production of stored mRNAs for use in
+embryogenesis.

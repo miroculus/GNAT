@@ -1,0 +1,12 @@
+Region 26A of the second chromosome of Drosophila melanogaster has been
+extensively characterized at the genetic level. We report here the cloning
+of virtually the entire 26A region via a bidirectional chromosome walk.
+Deletion and translocation breakpoints in the 26A interval have been
+localized at the molecular level by both chromosomal in situ hybridization
+and Southern analysis. The locations of the genetically defined loci in
+this chromosomal region have also been correlated with transcriptional
+units mapped onto the DNA of the proximal region of the chromosomal walk.
+The position of the alpha-glycerophosphate dehydrogenase (alpha-Gpdh) gene
+in 26A5-7 has been confirmed and a putative transcriptional unit for the
+beta-galactosidase-1 (beta-Gal-1) gene has been identified in the 26A7-9
+interval.

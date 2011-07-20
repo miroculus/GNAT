@@ -1,0 +1,18 @@
+In virtually all eukaryotes the centromeric regions of chromosomes are
+composed of heterochromatin, a specialized form of chromatin that is rich
+in repetitive DNA sequences and is transcriptionally relatively silent.
+The Drosophila GAGA transcription factor binds to GA/CT-rich sequences in
+many Drosophila promoters, where it activates transcription, apparently by
+locally altering chromatin structure and allowing other transcription
+factors access to the DNA. Here we report the paradoxical finding that
+GAGA factor is associated with specific regions of heterochromatin at all
+stages of the cell cycle. A subset of the highly repetitive DNA sequences
+that make up the bulk of heterochromatin in D. melanogaster are GA/CT-rich
+and we find a striking correlation between the distribution of GAGA factor
+and this class of repeat. We propose that GAGA factor binds directly to
+these repeats and may thereby play a role in modifying heterochromatin
+structure in these regions. Our observations demonstrate for the first
+time that a transcriptional regulator can associate with specific DNA
+sequences in a fully condensed mitotic chromosome. This may help explain
+how the distinctive character of a committed or differentiated cell can be
+maintained during cell proliferation.

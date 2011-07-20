@@ -1,0 +1,16 @@
+A novel olfactory gene, OS9, has been identified in Drosophila by
+subtractive hybridization. OS9 transcripts have been detected in the third
+antennal segment, the primary olfactory organ in Drosophila, and in the
+maxillary palp, which has recently been shown to have olfactory function.
+The OS9 gene thus represents a molecular link between two distinct
+olfactory tissues in Drosophila. Little if any OS9 expression has been
+detected in other segments of the antenna or in other tissues examined.
+The gene is located in region 38AB on the cytogenetic map. OS9 encodes a
+protein of 159 amino acids, which contains a putative leucine zipper.
+Polyclonal antibodies raised against the C-terminal half of the encoded
+protein react with a 24 kD antennal protein. Antisera raised against both
+C-terminal and N-terminal halves of the OS9 protein appear to react with
+cell nuclei in both the third antennal segment and the maxillary palp;
+interestingly, both antisera also stain cells in the head, including
+photoreceptor nuclei, as if OS9 were an olfactory-specific member of a
+family of nuclear proteins, possibly transcription factors.

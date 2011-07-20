@@ -1,0 +1,12 @@
+We present a physical and molecular genetic characterization of Drosophila
+melanogaster TFIIE (dTFIIE), a component of the basal RNA polymerase II
+transcription apparatus. We have purified dTFIIE to near homogeneity from
+nuclear extracts of Drosophila embryos and found that it is composed of
+two subunits with apparent molecular weights of 55 and 38 kDa. Peptide
+sequence information derived from the two subunits was used to isolate the
+corresponding cDNA clones, revealing that dTFIIE and human TFIIE share
+extensive amino acid similarity. Functional conservation was demonstrated
+by the ability of bacterially expressed dTFIIE to substitute for human
+TFIIE in an in vitro transcription assay reconstituted from purified
+components. Cytological mapping analysis shows that both subunits are
+encoded by single copy genes located on chromosome III.

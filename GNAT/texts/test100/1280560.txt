@@ -1,0 +1,12 @@
+hedgehog is a segment polarity gene necessary to maintain the proper
+organization of each segment of the Drosophila embryo. We have identified
+the physical location of a number of rearrangement breakpoints associated
+with hedgehog mutations. The corresponding hh RNA is expressed in a series
+of segmental stripes starting at cellular blastoderm in the posterior
+portion of each segment. This RNA is localized predominantly within nuclei
+until stage 10, when the localization becomes primarily cytoplasmic.
+Expression of hh RNA in the posterior compartment is independent of most
+other segment polarity genes, including en, until the late extended
+germ-band stage (stage 11). Sequence analysis of the hedgehog locus
+suggests the protein product is a transmembrane protein, which may,
+therefore, be directly involved in cell-cell communication.

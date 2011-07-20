@@ -1,0 +1,20 @@
+The polypeptide release factor (eRF1) gene was cloned from rabbit and its
+overexpression and purification system was established in parallel with
+that of the eRF1 gene of Tetrahymena thermophila that has been cloned
+recently in this laboratory. The rabbit eRF1 (Ra-eRF1) is composed of 437
+amino acids and is completely identical to human eRF1 though 3% distinct
+in the nucleotide sequence. This is in sharp contrast to Tetrahymena eRF1
+(Tt-eRF1) that is only 57% identical to human eRF1. The recombinant
+Ra-eRF1 was marked with a histidine tag, overexpressed, and purified to
+homogeneity by two-step chromatography using Ni-NTA-agarose and Mono Q
+columns. In contrast to Ra-eRF1, Tt-eRF1 formed aggregates upon
+overexpression in Escherichia coli, hence it was purified under denaturing
+conditions, and used to raise rabbit antibody. The resulting anti-Tt-eRF1
+antibody proved useful for examining conditions for soluble Tt-eRF1 in
+test cells. Finally, a soluble Tt-eRF1 fraction was purified from
+Saccharomyces cerevisiae transformed with the Tt-eRF1 expression plasmid
+by three steps of affinity and anion exchange chromatography. The cloned
+Ra-eRF1 gene complemented a temperature-sensitive allele in the eRF1 gene,
+sup45 (ts), of S. cerevisiae, though the complementation activity was
+significantly impaired by the histidine tag, whereas Tt-eRF1 failed to
+complement the sup45 (ts) allele.

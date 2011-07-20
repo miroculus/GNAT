@@ -1,0 +1,23 @@
+Numerous mouse models of polycystic kidney disease (PKD) have been
+described in which the mutant phenotypes closely resemble human PKD with
+regard to morphology, cyst localization, and disease progression. As in
+human PKD, genetic background affects the disease phenotype in mouse PKD
+models. Using experimental crosses, these modifying effects can be
+dissected into discrete genetic factors referred to as quantitative trait
+loci. The locus for the mouse bpk model was recently mapped to chromosome
+(Chr) 10. In the course of these studies, marked variability was observed
+in the renal cystic disease expressed in F2 bpk/bpk homozygotes of a
+(BALB/c-+/bpk x CAST/Ei)F1 intercross. The current study was undertaken to
+further characterize the renal cystic disease as quantitative trait in
+this F2 cohort and to map the genetic modifiers that modulate this
+phenotype. Whole-genome scans revealed a CAST-derived locus on distal Chr
+6, near D6Mit14, that affects renal cystic disease severity. Additional
+analyses identified loci on Chr 1, Chr 2, and Chr 4, as well as a possible
+interaction between the Chr 6 locus and a locus on distal Chr 1, near
+D1Mit17. Interestingly, the gene encoding RGS7, a regulator of G protein
+signaling that binds to polycystin-1, was mapped to the same Chr 1
+interval. It is concluded that the severity of the bpk renal cystic
+disease phenotype is modulated by multiple loci and possibly by epistatic
+interaction among them. It is hypothesized that the gene encoding the
+polycystin-binding partner RGS7 is a candidate for the Chr 1 genetic
+modifier.

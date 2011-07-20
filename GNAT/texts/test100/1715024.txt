@@ -1,0 +1,16 @@
+The primary structures of interferon (IFN)-induced guanylate-binding
+proteins (GBPs) were deduced from cloned human and murine cDNAs. These
+proteins contained only two of the three sequence motifs typically found
+in GTP/GDP-binding proteins. The N(T)KXD motif, which is believed to
+confer guanine specificity in other nucleotide-binding proteins, was
+absent. Nevertheless, the IFN-induced GBPs exhibited a high degree of
+selectivity for binding to agarose-immobilized guanine nucleotides. An
+interesting feature of IFN-induced GBPs is that they strongly bound to GMP
+agarose in addition to GDP and GTP agaroses but failed to bind to ATP
+agarose and all other nucleotide agaroses tested. Both GTP and GMP, but
+not ATP, competed for binding of murine GBP-1 to agarose-immobilized GMP.
+The IFN-induced GBPs thus define a distinct novel family of proteins with
+GTP-binding activity. We further demonstrate that human and murine cells
+contain at least two genes encoding IFN-induced GBPs. The cloned murine
+cDNA codes for GBP-1, an IFN-induced protein previously shown to be absent
+from mice of Gbp-1b genotype.

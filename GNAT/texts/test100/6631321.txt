@@ -1,0 +1,11 @@
+The mutations at the bithorax locus produce a transformation of anterior
+haltere into anterior wing. The bx1 allele presents unusual features when
+compared with other bx alleles. The phenotype of bx1 homozygotes is
+temperature sensitive but only with regard to the distal and not to the
+proximal transformation, thus suggesting two different components in the
+bithorax transformation. The phenotype of bx1 homozygotes is stronger than
+that of bx1 over the deletion of the gene, suggesting a trans interaction
+of the bx1 chromosomes which results in mutual partial inactivation. We
+show by temperature shift and clonal analysis experiments that the
+decision on whether to differentiate haltere or wing structures is taken
+at the end of the proliferation period of the mutant disc.

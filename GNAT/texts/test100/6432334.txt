@@ -1,0 +1,12 @@
+We have surveyed expression of the six Drosophila actin genes during
+ontogeny. Unique portions of cloned actin genes were used to monitor
+levels of respective mRNAs in developmentally staged whole organisms and
+dissected body parts. We find that each gene is transcribed to form
+functional mRNA, which accumulates with a distinct pattern. Two of the
+genes, act5C and act42A, are expressed in undifferentiated cells and
+probably encode cytoplasmic actins. Act57A and act87E are expressed
+predominantly in larval, pupal, and adult intersegmental muscles; act88F
+in muscles of the adult thorax; and act79B in the thorax and leg muscles.
+These composite data define three main patterns of actin gene expression
+which are correlated with changing Drosophila morphology, particularly
+muscle differentiation and reorganization.

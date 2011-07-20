@@ -1,0 +1,26 @@
+Tottering mice inherit a recessive mutation of the calcium channel alpha1A
+subunit that causes ataxia, polyspike discharges, and intermittent
+dystonic episodes. The calcium channel alpha1A subunit gene encodes the
+pore-forming protein of P/Q-type voltage-dependent calcium channels and is
+predominantly expressed in cerebellar granule and Purkinje neurons with
+moderate expression in hippocampus and inferior colliculus. Because
+calcium misregulation likely underlies the tottering mouse phenotype,
+calcium channel blockers were tested for their ability to block the motor
+episodes. Pharmacologic agents that specifically block L-type
+voltage-dependent calcium channels, but not P/Q-type calcium channels,
+prevented the inducible dystonia of tottering mutant mice. Specifically,
+the dihydropyridines nimodipine, nifedipine, and nitrendipine, the
+benzothiazepine diltiazem, and the phenylalkylamine verapamil all
+prevented restraint-induced tottering mouse motor episodes. Conversely,
+the L-type calcium channel agonist Bay K8644 induced stereotypic tottering
+mouse dystonic at concentrations significantly below those required to
+induce seizures in control mice. In situ hybridization demonstrated that
+L-type calcium channel alpha1C subunit mRNA expression was up-regulated in
+the Purkinje cells of tottering mice. Radioligand binding with
+[3H]nitrendipine also revealed a significant increase in the density of
+L-type calcium channels in tottering mouse cerebellum. These data suggest
+that although a P/Q-type calcium channel mutation is the primary defect in
+tottering mice, L-type calcium channels may contribute to the generation
+of the intermittent dystonia observed in these mice. The susceptibility of
+L-type calcium channels to voltage-dependent facilitation may promote this
+abnormal motor phenotype.

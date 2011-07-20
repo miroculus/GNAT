@@ -1,0 +1,22 @@
+Saccharomyces cerevisiae strains with a disrupted RAS1 gene and with an
+intact RAS2 gene (ras1- RAS2 strains) grew well on both fermentable and
+nonfermentable carbon sources. By constructing isogenic mutants having a
+disrupted RAS1 locus and a randomly mutagenized chromosomal RAS2 gene, we
+obtained yeast strains with specific growth defects. The strain TS1 was
+unable to grow on nonfermentable carbon sources and galactose at 37
+degrees C, while it could grow on glucose at the same temperature. The
+mutated RAS2 gene in TS1 cells encoded a protein with the glycines at
+positions 82 and 84 replaced by serine and arginine respectively. Both
+mutations were necessary for temperature sensitivity. We also isolated a
+mutant yeast that was unable to grow on nonfermentable carbon sources both
+at 30 and 37 degrees C, while growing on glucose at both temperatures.
+This phenotype was caused by a single chromosomal mutation, leading to the
+replacement of aspartic acid 40 of the RAS2 protein by asparagine. A ras1-
+yeast strain with a chromosomal RAS2 gene harbouring the three mutations
+together did not grow at any temperature using non-fermentable carbon
+sources, but it was able to grow on glucose at 30 degrees C, and not at 37
+degrees C. The mutated proteins were much less effective than the
+wild-type RAS2 protein in the stimulation of adenylate cyclase, but were
+efficiently expressed in vivo. The possible roles of residues 40, 82 and
+84 of the RAS2 protein in the regulation of adenylate cyclase are
+discussed.

@@ -1,0 +1,25 @@
+The removal of oxidative damage from Saccharomyces cerevisiae DNA is
+thought to be conducted primarily through the base excision repair
+pathway. The Escherichia coli endonuclease III homologs Ntg1p and Ntg2p
+are S. cerevisiae N-glycosylase-associated apurinic/apyrimidinic (AP)
+lyases that recognize a wide variety of damaged pyrimidines (H. J. You, R.
+L. Swanson, and P. W. Doetsch, Biochemistry 37:6033-6040, 1998). The
+biological relevance of the N-glycosylase-associated AP lyase activity in
+the repair of abasic sites is not well understood, and the majority of AP
+sites in vivo are thought to be processed by Apn1p, the major AP
+endonuclease in yeast. We have found that yeast cells simultaneously
+lacking Ntg1p, Ntg2p, and Apn1p are hyperrecombinogenic (hyper-rec) and
+exhibit a mutator phenotype but are not sensitive to the oxidizing agents
+H2O2 and menadione. The additional disruption of the RAD52 gene in the
+ntg1 ntg2 apn1 triple mutant confers a high degree of sensitivity to these
+agents. The hyper-rec and mutator phenotypes of the ntg1 ntg2 apn1 triple
+mutant are further enhanced by the elimination of the nucleotide excision
+repair pathway. In addition, removal of either the lesion bypass
+(Rev3p-dependent) or recombination (Rad52p-dependent) pathway specifically
+enhances the hyper-rec or mutator phenotype, respectively. These data
+suggest that multiple pathways with overlapping specificities are involved
+in the removal of, or tolerance to, spontaneous DNA damage in S.
+cerevisiae. In addition, the fact that these responses to induced and
+spontaneous damage depend upon the simultaneous loss of Ntg1p, Ntg2p, and
+Apn1p suggests a physiological role for the AP lyase activity of Ntg1p and
+Ntg2p in vivo.

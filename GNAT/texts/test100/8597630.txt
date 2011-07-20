@@ -1,0 +1,6 @@
+Dominant megacolon (Dom) is one of four mutations in the mouse that can
+produce a phenotype similar to Hirschsprung disease in human. The Dom gene
+product is not known, and no candidate region has been defined for a
+possible human homolog. In this publication we report mapping the Dom
+locus with high definition, using several intra-and interspecific crosses
+and a set of 16 Chr 15-specific microsatellites flanking this locus.

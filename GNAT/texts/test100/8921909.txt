@@ -1,0 +1,29 @@
+'In-out' gene targeting using a hypoxanthine phosphoribosyltransferase
+(HPRT) minigene was applied to generate two new alleles in the gene (Apob)
+coding for apolipoprotein B (apo B) in murine embryonic stem (ES) cells.
+Homologous integration of the targeting vector during the 'in step'
+disrupted the Apob gene leading to an allele encoding apo B81, having a
+19% carboxyl-terminal truncation. All six targeted cells obtained had more
+than one insert at the locus, and the chromosomal target sequence in four
+of them was changed during the recombination. These results suggest that
+concatenation of the targeting vector prior to insertion was needed to
+generate sufficient gene product to yield the HPRT+ phenotype, and that
+recombination between the concatenated DNA and endogenous DNA was a gene
+replacement more frequently than a simple insertion. The 'out step'
+recombination event which occurs between sequences duplicated in the 'in
+step', was planned to replace the sequences encoding the putative LDL
+receptor-binding domains of apo B100 with sequences encoding human
+beta-globin peptides (designated apo B100-beta). 6-Thioguanine (6-TG)
+resistant colonies were obtained from all the 'in-step' cell lines tested
+at frequencies of 10(-5) to 10(-4), but the frequency of physical loss of
+the HPRT sequences accompanied by retention of the modified Apob sequence
+was variable, indicating that mechanisms other than a simple excision are
+responsible for the generation of 6-TG resistance. Mice from the 'in-step'
+produce apo B81 and display characteristics of familial
+hypobetalipoproteinemia; some homozygotes develop hydrocephaly or
+exencephaly. Mice from the 'out-step' produce apo B100-beta and secrete
+lipoprotein particles containing the modified protein; their phenotypic
+changes are subtle, suggesting the lack of the putative LDL
+receptor-binding domains is not sufficient to increase the steady-state
+level of apo B100-beta particles above that of apo B100 particles in
+control mice.

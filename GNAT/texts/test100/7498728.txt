@@ -1,0 +1,21 @@
+Schizosaccharomyces pombe regulates intracellular cAMP levels, and thus
+cAMP-dependent protein kinase (PKA) activity, in response to changes in
+nutrient conditions. Mutations in any of eight git genes inhibit glucose
+repression of fbp1 transcription, alter the cell morphology, and cause a
+reduction in the growth rate. The eight git genes encode components of an
+adenylate cyclase activation pathway, adenylate cyclase itself, and the
+catalytic subunit of PKA. Three of these genes have been identified in
+other studies as regulators of meiosis. Here we show that the sck1 gene,
+cloned as a high copy number suppressor of a mutation in git3, is able to
+suppress the defects conferred by a mutation in any of these git genes.
+Sequence analysis suggests that sck1 encodes a protein most closely
+related to the Saccharomyces cerevisiae SCH9 protein kinase that had
+previously been identified as a high copy number suppressor of mutations
+in S. cerevisiae that reduce or eliminate PKA activity. Disruption of the
+sck1 gene causes a significant delay in exit from stationary phase when
+combined with a disruption of the pka1 (git6) gene encoding the catalytic
+subunit of PKA. However, the sck1 disruption by itself has little or no
+effect upon fbp1 transcription, meiosis, or exit from stationary phase,
+and does not enhance the constitutive fbp1 transcription observed in a
+pka1 mutant. Therefore, sck1 appears to function in a redundant fashion to
+pka1, but to varying degrees, in the pathways regulated by pka1.

@@ -1,0 +1,8 @@
+The recently described murine homeobox genes, Six1 and Six2, which are
+expressed during development in limb tendons, have also been shown to be
+expressed in skeletal and smooth muscle, respectively. We have cloned and
+sequenced a human SIX1 cDNA and shown by Northern blotting that it is
+expressed in adult skeletal muscle. The cDNA sequence and predicted
+protein sequence of SIX1 and Six1 are highly homologous, with 98%
+similarity over the entire predicted amino acid sequence. SIX1 was mapped
+to human chromosome 14 using a rodent/human somatic cell hybrid panel.

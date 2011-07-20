@@ -1,0 +1,20 @@
+Caspase-3 is one of the cystein proteases that play essential roles in
+programmed cell death. As such, brain development is profoundly affected
+by caspase-3-deficiency, resulting in hyperplasia and abnormal cell
+organization (Kuida et al., Nature 1996;384:368-372). In the present
+study, we used caspase-3 (-/-) mice to show that caspase-3 deficiency
+results in severe hearing loss, hyperplasia of supporting cells and
+degeneration of sensory hair cells. The greater epithelial ridge, a
+remnant of the primordial organ of Corti, persists throughout all of the
+turns of cochlea in 2-week-old caspase-3 (-/-) mice, which indicates that
+the morphology of the cochlea is immature. The number of border cells,
+that develop from the greater epithelial ridge and are one of the
+supporting cells of the inner hair cell, increase significantly in both 2-
+and 5-week-old caspase-3 (-/-) mice. On the other hand, abnormal fused
+stereocilia can be seen in both 2- and 5-week-old caspase-3 (-/-) mice,
+and disarrangement and loss of sensory hair cells are observed in
+5-week-old caspase-3 (-/-) mice. Taken together, both hyperplasia and
+degeneration occur simultaneously in the inner ear of the caspase-3 (-/-)
+mice, suggesting that caspase-3-dependent apoptosis is necessary for the
+development and formation of a properly functioning auditory system in
+mammals.

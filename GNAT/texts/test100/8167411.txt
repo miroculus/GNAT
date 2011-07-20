@@ -1,0 +1,24 @@
+The Saccharomyces cerevisiae Cdc42 protein, a member of the Ras
+superfamily of low-molecular-weight GTP-binding proteins, is involved in
+the control of cell polarity during the yeast cell cycle. This protein has
+a consensus sequence (CAAX) for geranylgeranyl modification and is likely
+to be associated, at least in part, with cell membranes. Using cell
+fractionation and immunolocalization techniques, we have investigated the
+subcellular localization of Cdc42p. Cdc42p was found in both soluble and
+particulate pools, and neither its abundance nor its distribution varied
+through the cell cycle. The particulate form of Cdc42p could be
+solubilized with detergents but not with NaCl or urea, suggesting that it
+is tightly associated with membranes. An increase in soluble Cdc42p was
+observed in a geranylgeranyltransferase mutant strain (cdc43-2ts) grown at
+the restrictive temperature. In addition, Cdc42p from a cdc42C188S mutant
+strain (that has an alteration at the prenylation consensus site) was
+almost exclusively in the soluble fraction, suggesting that membrane
+localization is dependent on geranylgeranyl modification at Cys-188.
+Immunofluorescence and immunoelectron microscopy experiments demonstrated
+that Cdc42p localizes to the plasma membrane in the vicinity of secretory
+vesicles that were found at the site of bud emergence, at the tips and
+sides of enlarging buds, and within mating projections (shmoo tips) in
+alpha-factor-arrested cells. These results indicate that Cdc42p is
+localized to the bud site early in the cell cycle and suggest that this
+localization is critical for the selection of the proper site for bud
+emergence and for polarized cell growth.

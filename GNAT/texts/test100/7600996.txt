@@ -1,0 +1,23 @@
+The adult ovaries and testes contain several specialized somatic cell
+types that support the differentiation of germ cells into mature gametes.
+Each of these cell types arise from mesodermal cells that constitute the
+embryonic gonad. To explore the mechanisms governing the development and
+differentiation of these cells, we focus on the formation of the gonad
+during Drosophila development. Using markers for the precursors of the
+somatic cells of the gonad, we identify discrete steps in the development
+of the gonad. Our results suggest the existence of different populations
+of gonadal precursors at early stages in gonadogenesis that represent
+precursors of cell types found within the adult gonad. The functions of
+the homeotic genes abdominal A and Abdominal B are required for the
+development of gonadal precursors, however, here we provide evidence that
+each plays a distinct role. abd A activity alone specifies anterior
+gonadal precursor fates, whereas abd A and Abd B act together to specify a
+posterior subpopulation of gonadal precursors. Once specified, gonadal
+precursors born within posterior parasegments must move to the site of
+gonad formation. Here, we show that the proper regional identities, as
+established by homeotic gene function, are required for the arrest of
+migration at the correct position. Finally, our analysis of late stages of
+gonadogenesis suggests that abd A is required in a population of cells
+within parasegments 10 and 11 that partially ensheath the coalescing
+gonad. Mutations in iab-4 abolish expression of abd A within these cells,
+and as a result block the coalescence of the gonad.

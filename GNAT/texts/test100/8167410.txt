@@ -1,0 +1,23 @@
+To further elucidate the functions of actin in budding yeast and to relate
+actin structure to specific roles and interactions in vivo, we determined
+the phenotypes caused by 13 charged-to-alanine mutations isolated
+previously in the single Saccharomyces cerevisiae actin gene. Defects in
+actin organization, morphogenesis, budding pattern, chitin deposition,
+septation, nuclear segregation, and mitochondrial organization were
+observed. In wild-type cells, mitochondria were found to be aligned along
+actin cables. Many of the amino acid substitutions that had the most
+severe effects on mitochondrial organization are located under the myosin
+"footprint" on the actin monomer, suggesting that actin-myosin
+interactions might underlie mitochondrial organization in yeast. In
+addition, one mutant (act1-129; R177A, D179A) produced an actin that
+assembled into cables and patches that could be visualized by anti-actin
+immunofluorescence in situ and that assembled into microfilaments of
+normal appearance in vitro as judged by electron microscopy but which
+could not be labeled by rhodamine-phalloidin in situ or in vitro.
+Rhodamine-phalloidin could label actin filaments assembled from all of the
+other mutant actins, including one (act1-119; R116A, E117A, K118A) that is
+altered at a residue (E117) that can be chemically cross-linked to
+phalloidin. The implication of residues R177 and/or D179 in phalloidin
+binding is in close agreement with a recently reported molecular model in
+which the phalloidin-binding site is proposed to be at the junction of two
+or three actin monomers in the filament.

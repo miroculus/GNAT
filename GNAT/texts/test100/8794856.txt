@@ -1,0 +1,24 @@
+Previous efforts have shown that mutations in the Drosophila ZW10 gene
+cause massive chromosome missegregation during mitotic divisions in
+several tissues. Here we demonstrate that mutations in ZW10 also disrupt
+chromosome behavior in male meiosis I and meiosis II, indicating that ZW10
+function is common to both equational and reductional divisions. Divisions
+are apparently normal before anaphase onset, but ZW10 mutants exhibit
+lagging chromosomes and irregular chromosome segregation at anaphase.
+Chromosome missegregation during meiosis I of these mutants is not caused
+by precocious separation of sister chromatids, but rather the
+nondisjunction of homologs. ZW10 is first visible during prometaphase,
+where it localizes to the kinetochores of the bivalent chromosomes (during
+meiosis I) or to the sister kinetochores of dyads (during meiosis II).
+During metaphase of both divisions, ZW10 appears to move from the
+kinetochores and to spread toward the poles along what appear to be
+kinetochore microtubules. Redistributions of ZW10 at metaphase require
+bipolar attachments of individual chromosomes or paired bivalents to the
+spindle. At the onset of anaphase I or anaphase II, ZW10 rapidly
+relocalizes to the kinetochore regions of the separating chromosomes. In
+other mutant backgrounds in which chromosomes lag during anaphase, the
+presence or absence of ZW10 at a particular kinetochore predicts whether
+or not the chromosome moves appropriately to the spindle poles. We propose
+that ZW10 acts as part of, or immediately downstream of, a tension-sensing
+mechanism that regulates chromosome separation or movement at anaphase
+onset.

@@ -1,0 +1,17 @@
+The role of intercellular adhesion molecule-1 (ICAM-1) in murine lung
+inflammation was examined in vivo. Ovalbumin (Ova)-sensitized and
+-challenged ICAM-1-deficient (KO) mice had decreased accumulation of
+leukocytes in the bronchoalveolar lavage fluid compared with wild-type
+(WT) mice. Lung tissue inflammation was also attenuated. Ova immunization
+and challenge produced equivalent plasma levels of Ova-specific
+immunoglobulin (Ig) G1 and higher concentrations of IgE in KO versus WT
+mice. Ova-dependent induction of cytokines in vitro, as measured by
+enzyme-linked immunosorbent assay, was impaired in splenocytes from KO
+mice compared with the comparable release of interleukin (IL)-5 and IL-10
+from anti-CD3-stimulated WT and KO splenocytes. Methacholine-induced
+increases in trapped gas in lungs of Ova-sensitized and -challenged WT
+mice were greater than those of KO mice. The activation of lung tissue
+nuclear factor-kappa B was diminished in KO mice after Ova provocation.
+This suggests that ICAM-1 was important for activation of the inflammatory
+cascade leading to the recruitment of leukocytes but was not critical for
+the generation of antibody responses in vivo.

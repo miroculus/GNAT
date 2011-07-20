@@ -1,0 +1,13 @@
+Bone morphogenetic proteins (BMPs) are members of the transforming growth
+factor-beta (TGF-beta) superfamily. Many BMPs are produced in bone and
+show osteogenic activity, suggesting that they may be determinants of bone
+mass. BMP3 was originally purified from bone as osteogenin, which induces
+osteogenic differentiation. Recombinant BMP3 (rhBMP3) has no biological
+activity, however, leaving its role in skeletal growth unclear. Here we
+show that BMP3 is an antagonist of osteogenic BMPs: BMP3 dorsalizes
+Xenopus laevis embryos, inhibits BMP2-mediated induction of Msx2 and
+blocks BMP2-mediated differentiation of osteoprogenitor cells into
+osteoblasts. These effects appear to be mediated through activin
+receptors. Finally, Bmp3(-/-) mice have twice as much trabecular bone as
+wild-type littermates, indicating that BMP3, the most abundant BMP in
+adult bone, is a negative determinant of bone density.

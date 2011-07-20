@@ -1,0 +1,12 @@
+Some cases of Alzheimer's disease are inherited as an autosomal dominant
+trait. Genetic linkage studies have mapped a locus (AD3) associated with
+susceptibility to a very aggressive form of Alzheimer's disease to
+chromosome 14q24.3. We have defined a minimal cosegregating region
+containing the AD3 gene, and isolated at least 19 different transcripts
+encoded within this region. One of these transcripts (S182) corresponds to
+a novel gene whose product is predicted to contain multiple transmembrane
+domains and resembles an integral membrane protein. Five different
+missense mutations have been found that cosegregate with early-onset
+familial Alzheimer's disease. Because these changes occurred in conserved
+domains of this gene, and are not present in normal controls, they are
+likely to be causative of AD3.
