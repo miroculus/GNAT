@@ -1,0 +1,21 @@
+Centromere binding factor 1 (Cbf1p or CP1) binds to the CDEI region of
+Saccharomyces cerevisiae centromeres and is a member of the basic
+helix-loop-helix (bHLH) class of proteins. Deletion of the gene encoding
+Cbf1p results in an increased frequency of chromosome loss,
+hypersensitivity to low levels of microtubule disrupting drugs (such as
+thiabendazole and benomyl) and methionine auxotrophy. By polymerase chain
+reaction-based random mutagenesis of the CBF1 gene we have obtained a
+number of mutant alleles that make full-length protein with impaired
+function. The mutations in these alleles are clustered in or just
+downstream from the bHLH domain. Among the alleles obtained was a class
+that was more compromised for transcriptional activation and a class that
+was more compromised for chromosome loss and thiabendazole
+hypersensitivity. These results indicate that at least some aspects of the
+role of Cbf1p in chromosome segregation and transcriptional activation are
+distinct. In contrast, increased chromosome loss and thiabendazole
+hypersensitivity were not separated in any of the alleles, suggesting that
+these phenotypes reflect the same mechanistic defect. These observations
+are consistent with a model that suggests that one role of Cbf1p in
+chromosome segregation may be to improve the efficiency with which contact
+between the kinetochore and spindle microtubules is established or
+maintained.

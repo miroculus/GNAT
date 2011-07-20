@@ -1,0 +1,16 @@
+Genes influencing body weight and composition and serum concentrations of
+leptin, insulin, and insulin-like growth factor I (IGF-I) in nonfasting
+animals were mapped in an intercross of the extreme high-growth mouse line
+DU6i and the inbred line DBA/2. Significant loci with major effects (F >
+7.07) for body weight, obesity, and muscle weight were found on
+chromosomes 1, 4, 5, 7, 11, 12, 13, and 17, for leptin on chromosome 14,
+for insulin on chromosome 4, and for IGF-I on chromosome 10 at the Igf1
+gene locus itself and on chromosome 18. Significant interaction between
+different quantitative trait loci (QTL) positions was observed (P < 0.01).
+Evidence was found that loci having small direct effect on growth or
+obesity contribute to the obese phenotype by gene-gene interaction. The
+effects of QTLs, epistasis, and pleiotropy account for 64% and 63% of the
+phenotypic variance of body weight and fat accumulation and for over 32%
+of muscle weight and serum concentrations of leptin, and IGF-I in the F(2)
+population of DU6i x DBA/2 mice. [The quantitative trait loci described in
+this paper have been submitted to the Mouse Genome Database.]

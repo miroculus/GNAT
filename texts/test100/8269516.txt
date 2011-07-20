@@ -1,0 +1,13 @@
+Yeast RNA polymerase II initiation factor b, homolog of human TFIIH, is a
+protein kinase capable of phosphorylating the C-terminal repeat domain of
+the polymerase; it possesses a DNA-dependent ATPase activity as well. The
+85 kd and 50 kd subunits of factor b are now identified as RAD3 and SSL1
+proteins, respectively; both are known to be involved in DNA repair.
+Factor b interacts specifically with another DNA repair protein, SSL2. The
+ATPase activity of factor b may be due entirely to that associated with a
+helicase function of RAD3. Factor b transcriptional activity was
+unaffected, however, by amino acid substitution at a conserved residue in
+the RAD3 nucleotide-binding domain, suggesting that the ATPase/helicase
+function is not required for transcription. These results identify factor
+b as a core repairosome, which may be responsible for the preferential
+repair of actively transcribed genes in eukaryotes.

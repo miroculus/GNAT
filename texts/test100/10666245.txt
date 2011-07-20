@@ -1,0 +1,20 @@
+The murine retrovirus SL3-3 is a potent inducer of T-cell lymphomas when
+inoculated into susceptible newborn mice. Previously, DNAs from twenty
+SL3-3-induced tumors were screened by PCR for provirus integration sites.
+Two out of 20 tumors demonstrated clonal provirus insertion into a common
+region. This region has now been isolated and characterized. The region,
+named SL3-3 integration site 1 (Sint1), maps to the distal end of mouse
+chromosome 11, corresponding to human chromosome 17q25, and may be
+identical to a mouse mammary tumor virus integration site in a T-cell
+lymphoma, Pad3. Two overlapping genomic lambda clones spanning about 35 kb
+were isolated and used as a starting point for a search for genes in the
+neighborhood of the virus integration sites. A genomic fragment was used
+as a hybridization probe to isolate a 3-kb cDNA clone, the expression of
+which was upregulated in one of two tumors harboring a provirus in Sint1.
+The cDNA clone is predicted to encode a protein which shows 97.0% identity
+to a human septin-like protein encoded by a gene which has been found as a
+fusion partner gene of MLL in an acute myeloid leukemia with a
+t(11;17)(q23;q25). Together these findings raise the possibility that a
+proto-oncogene belonging to the septin family, and located about 15 kb
+upstream of the provirus integration sites, is involved in murine leukemia
+virus-induced T-cell lymphomagenesis.

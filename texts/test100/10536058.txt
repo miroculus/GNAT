@@ -1,0 +1,22 @@
+Cholecystokinin (CCK) is a regulatory peptide that is primarily expressed
+in two adult cell types: endocrine cells of the intestine and neurons of
+the central nervous system. To determine the ontogeny of CCK expression
+during intestinal organogenesis, we created a mouse strain in which the
+CCK gene was replaced by a lacZ reporter cassette using homologous
+recombination in embryonic stem cells. Initially, CCK expression in the
+developing intestine was limited to the myenteric plexus of the enteric
+nervous system. This expression pattern was widespread, extending from the
+proximal stomach into the colon, yet transient, being detected soon after
+gut tube closure [embryonic day 10.5 (E10.5)] through E15.5. Since enteric
+neurons are derived from the neural crest, we examined earlier (E8.5-9.5)
+embryos and concluded that lacZ was expressed in subpopulations of neural
+tube and neural crest cells. Endocrine cell expression in the intestinal
+epithelium occurred later, beginning at E15.5 as enteric neuronal
+expression was dwindling. This expression persisted to yield the adult
+pattern of scattered single endocrine cells in the upper small intestine.
+The data show that CCK is a very early marker of both neuronal and
+endocrine cell lineages in the developing gastrointestinal tract.
+Furthermore, reverse transcriptase polymerase chain reaction (RT-PCR)
+analysis showed that CCK receptor transcripts were detected in embryos as
+early as E10.5, suggesting that CCK signaling is established early in
+mouse development. Dev Dyn 1999;216:190-200.

@@ -1,0 +1,19 @@
+DNA damage induced mutations arising during the course of translesion
+replication are likely to be an important contributory cause in the
+development of many cancers. In budding yeast, Saccharomyces cerevisiae, a
+good model system with which to investigate this process, mutagenesis is
+associated with the RAD6 repair pathway and depends on the functions of
+the REV1, REV3 and REV7 genes. The Rev3 and Rev7 proteins are subunits of
+a new type of DNA polymerase, called DNA polymerase zeta, that appears to
+carry out translesion replication, but no other repair, recombination or
+replication function. Pol zeta replicates past a T-T cyclobutane dimer
+with a higher efficiency than yeast pol alpha, is less prone than this
+enzyme to insert an incorrect nucleotide and is more efficient at
+elongating from a mismatched terminus. Rev1 protein is a terminal
+nucleotidyl transferase that inserts dCMP opposite template G, A and
+abasic sites. Types of mutations induced during translesion replication
+appear to depend largely on lesion structure, but the frequency and
+accuracy of bypass also depend on replication conditions. Inhibition of
+the activity or expression of pol zeta may be clinically useful for
+patients undergoing cancer therapy or for those with a familial
+predisposition to cancer.

@@ -1,0 +1,7 @@
+A SMT3 cDNA encoding ubiquitin-like protein from Drosophila melanogaster
+was isolated and sequenced. Drosophila SMT3 genomic DNA was amplified by
+polymerase chain reaction, and its nucleotide sequence was found to be
+identical to that of the cDNA, indicating the absence of intron in its
+protein coding region. The sequence of 90 amino acids of Drosophila SMT3
+exhibited 55%, 73%, 70% and 52% identity to yeast SMT3, human SMT3A, SMT3B
+and SMT3C protein.

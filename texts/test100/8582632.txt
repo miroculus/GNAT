@@ -1,0 +1,13 @@
+Saccharomyces cerevisiae mutations that cause a requirement for SSD1-v for
+viability were isolated, yielding one new gene, LAS1, and three previously
+identified genes, SIT4, BCK1/SLK1, and SMP3. Three of these genes, LAS1,
+SIT4, and BCK1/SLK1, encode proteins that have roles in bud formation or
+morphogenesis. LAS1 is essential and loss of LAS1 function causes the
+cells to arrest as 80% unbudded cells and 20% large budded cells that
+accumulate many vesicles at the mother-daughter neck. Overexpression of
+LAS1 results in extra cell surface projections in the mother cell,
+alterations in actin and SPA2 localization, and the accumulation of
+electron-dense structures along the periphery of both the mother cell and
+the bud. The nuclear localization of LAS1 suggests a role of LAS1 for
+regulating bud formation and morphogenesis via the expression of
+components that function directly in these processes.

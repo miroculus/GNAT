@@ -1,0 +1,20 @@
+Glycosylphosphatidylinositol (GPI) anchors are attached to newly
+synthesized proteins in the ER by a transamidation reaction during which a
+C-terminal GPI attachment signal is replaced by a preformed GPI precursor
+lipid. This reaction depends on GAA1 and GPI8, the latter belonging to a
+novel cysteine protease family. Homologies between this family and other
+Cys proteinases, such as caspases, pointed to Cys199 and His157 as
+potential active site residues. Indeed, gpi8 alleles mutated at Cys199 or
+His157 are nonfunctional, i.e., they are unable to suppress the lethality
+of Deltagpi8 mutants. The overexpression of these nonfunctional alleles in
+wild-type cells leads to the accumulation of the free GPI precursor lipid
+CP2, delays the maturation of the GPI protein Gas1p, and arrests cell
+growth. The dominant negative effect of the Cys199 mutant cannot be
+overcome by the simultaneous overexpression of Gaa1p. Most GPI8 alleles
+mutated in other conserved regions of the protein can complement the
+growth defect of Deltagpi8, but nevertheless accumulate CP2. CP2
+accumulation, a delay in Gas1p maturation and a slowing of cell growth can
+also be observed when Gpi8p is depleted to 50% of its normal level in
+wild-type cells. The dominant negative effect of nonfunctional and
+partially functional mutant alleles can best be explained by assuming that
+Gpi8p works as part of a homo- or heteropolymeric complex.

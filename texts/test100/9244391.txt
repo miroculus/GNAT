@@ -1,0 +1,23 @@
+During a screen for respiration competent yeast mutants that were unable
+to grow with acetate as a carbon source, two idh2 cit1 double mutants were
+identified. These strains were defective in the catalytic subunit of the
+NAD(+)-dependent isocitrate dehydrogenase and citrate synthase of the
+tricarboxylic acid (TCA) cycle. The strains harboring the idh2 alleles
+from these strains had two unusual phenotypes. First, their growth on many
+nonfermentable carbon sources was much poorer than strains containing
+other idh2 mutations. Second, the poor growth phenotype could be
+suppressed by the presence of mutations in CIT1 and other genes encoding
+oxidative functions. Spontaneous suppressor mutants that restore fast
+growth on glycerol medium to strains harboring two idh2 alleles were
+isolated, and a large percentage of the suppressor mutations have been
+identified within the CIT1 gene and at several other loci. Elevated levels
+of several TCA cycle proteins were observed in these idh2 mutants that
+were not observed in the presence of suppressing cit1 mutations. Citrate
+and isocitrate concentrations were also elevated in the idh2 mutants, but
+probably not to toxic levels. Five idh2 alleles were sequenced to
+understand the defects of the two classes of mutations. Sequence analysis
+indicated that the poor growth phenotype was caused by the loss of Idh2p
+protein. Similarly, eight cit1 alleles were sequenced to understand their
+characteristics as glycerol suppressors of idh2. These and other studies
+indicate that any mutation within CIT1 was capable of suppressing the idh2
+mutations. Several models to explain these interactions are discussed.

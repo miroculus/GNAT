@@ -1,0 +1,24 @@
+The ATP binding cassette (ABC) transporter protein Yor1p was identified on
+the basis of its ability to elevate oligomycin resistance when it was
+overproduced from a high-copy-number plasmid. Analysis of the predicted
+amino acid sequence of Yor1p indicated that this protein was a new member
+of a subfamily of ABC transporter proteins defined by the multidrug
+resistance protein (MRP). In this work, Yor1p is demonstrated to localize
+to the Saccharomyces cerevisiae plasma membrane by both indirect
+immunofluorescence and biochemical fractionation studies. Several
+mutations were generated in the amino-terminal nucleotide binding domain
+(NBD1) of Yor1p to test if the high degree of sequence conservation in
+this region of the protein was important for function. Deletion of a
+phenylalanine residue at Yor1p position 670 led to a mutant protein that
+appeared to be retained in the endoplasmic reticulum (ER) and that was
+unstable. As shown by others, deletion of the analogous residue from a
+second mammalian MRP family member, the cystic fibrosis transmembrane
+conductance regulator (CFTR), also led to retention of this normally
+plasma membrane-localized protein in the ER. Changes in the spacing
+between or the sequences flanking functional motifs of Yor1p NBD1 led to
+defective trafficking or decreased activity of the mutant proteins.
+Analyses of the degradation of wild-type and DeltaF670 Yor1p indicated
+that the half-life of DeltaF670 Yor1p was dramatically shortened. While
+the vacuole was the primary site for turnover of wild-type Yor1p,
+degradation of DeltaF670 Yor1p was found to be more complex with both
+proteasomal and vacuolar contributions.

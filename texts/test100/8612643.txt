@@ -1,0 +1,20 @@
+Glutathione (L-gamma-glutamyl-L-cysteinylglycine, GSH) plays an important
+role in the protection of plants against various types of stress caused by
+reactive oxygen species, gazeous pollutants, heavy metals and xenobiotics.
+A cDNA fragment containing the entire coding unit for glutathione
+synthetase (GSH2) of Arabidopsis thaliana was cloned by complementation of
+the methylglyoxal sensitivity of a gsh2 mutant of the yeast Saccharomyces
+cerevisiae. The cDNA encodes a protein of 478 amino acids (deduced Mr:
+53783), bearing clear sequence similarities to GSH2 products from frog
+embryos (Xenopus laevis), rat kidney (Rattus norvegicus) and from the
+fission yeast (Schizosaccharomyces pombe). A highly conserved glycine-rich
+domain close to the carboxy-terminus was found in the GSH2 product and
+appears to be typical for eukaryotic glutathione synthetases. The Mr is
+similar to those of soluble animal enzymes, suggesting that the
+Arabidopsis gene also codes for a cytosolic protein. Genomic DNA-blot
+analysis indicates the presence of a single GSH2 gene. The yeast gsh2
+mutant becomes resistant to methylglyoxal and cadmium after transformation
+with the plasmid bearing the Arabidopsis GSH2 cDNA. Moreover, this
+increased resistance is correlated to the restoration of GSH content from
+below detectability in mutants to about 50% of the wild-type levels in
+transformed cells.

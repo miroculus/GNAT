@@ -1,0 +1,21 @@
+In Drosophila, the dorsoventral asymmetry of the egg chamber depends on a
+dorsalizing signal that emanates from the oocyte. This signal is supplied
+by the TGF alpha-like gurken protein whose RNA is localized to the
+dorsal-anterior corner of the oocyte, gurken protein is the potential
+ligand of the Drosophila EGF receptor homolog (torpedo), which is
+expressed in the follicular epithelium surrounding the oocyte. Here, we
+describe how changes in the dorsalizing germ-line signal affect the
+embryonic dorsoventral pattern. A reduction in strength of the germ-line
+signal as produced by mutations in gurken or torpedo does not change the
+slope of the embryonic dorsoventral morphogen gradient, but causes a
+splitting of the gradient ventrally. This leads to embryos with two
+partial dorsoventral axes. A change in distribution of the germ-line
+signal as caused by fs(1)K10, squid and orb mutations leads to a shift in
+the orientation of the embryonic dorsoventral axis relative to the
+anterior-posterior axis. In extreme cases, this results in embryos with a
+dorsoventral axis almost parallel to the anterior-posterior axis. These
+results imply that gurken, unlike other localized cytoplasmic
+determinants, is not directly responsible for the establishment of cell
+fates along a body axis, but that it restricts and orients an active
+axis-forming process which occurs later in the follicular epithelium or in
+the early embryo.

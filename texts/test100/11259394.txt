@@ -1,0 +1,24 @@
+The complete AIF cDNA comprising the amino-terminal mitochondrial
+localization sequence (MLS) and the oxidoreductase domain has been fused
+in its carboxyl terminus to enhanced green fluorescent protein (GFP),
+thereby engineering an AIF-GFP fusion protein that is selectively targeted
+to the mitochondrial intermembrane space. Upon induction of apoptosis, the
+AIF-GFP protein translocates together with cytochrome c (Cyt-c) to the
+extramitochondrial compartment. Microinjection of recombinant AIF leads to
+the release of AIF-GFP and Cyt-c-GFP, indicating that ectopic AIF can
+favor permeabilization of the outer mitochondrial membrane. These
+mitochondrial effects of AIF are caspase independent, whereas the
+Cyt-c-microinjection induced translocation of AIF-GFP and Cyt-c-GFP is
+suppressed by the pan-caspase inhibitor Z-VAD.fmk. Upon prolonged culture,
+transfection-enforced overexpression of AIF results in spontaneous
+translocation of AIF-GFP from mitochondria, nuclear chromatin
+condensation, and cell death. These effects are caspase independent and do
+not rely on the oxidoreductase function of AIF. Spontaneous AIF-GFP
+translocation and subsequent nuclear apoptosis can be retarded by
+overexpression of a Bcl-2 protein selectively targeted to mitochondria,
+but not by a Bcl-2 protein targeted to the endoplasmic reticulum.
+Overexpression of a mutant AIF protein in which the MLS has been deleted
+(AIF Delta 1-100) results in the primary cytosolic accumulation of AIF.
+AIF Delta 1-100-induced cell death is suppressed by neither Z-VAD.fmk or
+by Bcl-2. Thus, extramitochondrially targeted AIF is a dominant cell death
+inducer.

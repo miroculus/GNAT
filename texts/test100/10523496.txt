@@ -1,0 +1,14 @@
+During the past five years, a growing number of serine-threonine kinases
+highly homologous to the Saccharomyces cerevisiae Ipl1p kinase have been
+isolated in various organisms. A Drosophila melanogaster homologue,
+aurora, was the first to be isolated from a multicellular organism. Since
+then, several related kinases have been found in mammalian cells. They
+localise to the mitotic apparatus: in the centrosome, at the poles of the
+bipolar spindle or in the midbody. The kinases are necessary for
+completion of mitotic events such as centrosome separation, bipolar
+spindle assembly and chromosome segregation. Extensive research is now
+focusing on these proteins because the three human homologues are
+overexpressed in various primary cancers. Furthermore, overexpression of
+one of these kinases transforms cells. Because of the myriad of kinases
+identified, we suggest a generic name: Aurora/Ipl1p-related kinase (AIRK).
+We denote AIRKs with a species prefix and a number, e.g. HsAIRK1.

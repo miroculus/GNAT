@@ -1,0 +1,14 @@
+We describe here genetic interactions between mutant alleles of
+Actin-NonComplementing (ANC) genes and actin (ACT1) or actin-binding
+protein (SAC6, ABP1, TPM1) genes. The anc mutations were found to exhibit
+allele-specific noncomplementing interactions with different act1
+mutations. In addition, mutant alleles of four ANC genes (ANC1, ANC2, ANC3
+and ANC4) were tested for interactions with null alleles of actin-binding
+protein genes. An anc1 mutant allele failed to complement null alleles of
+the SAC6 and TPM1 genes that encode yeast fimbrin and tropomyosin,
+respectively. Also, synthetic lethality between anc3 and sac6 mutations,
+and between anc4 and tpm1 mutations was observed. Taken together, the
+above results strongly suggest that the ANC gene products contribute to
+diverse aspects of actin function. Finally, we report the results of tests
+of two models previously proposed to explain extragenic
+noncomplementation.

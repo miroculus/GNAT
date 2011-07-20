@@ -1,0 +1,11 @@
+To investigate the role of the receptor-type tyrosine kinase, c-kit and
+its ligand, stem cell factor (SCF) in T cell development, we analyzed
+c-kit (W/W) and SCF (SI/SI) deficient mice. We also engrafted wild-type or
+SCF-deficient fetal thymi onto wild-type recipient mice and analyzed the
+rate of proliferation by in vivo bromodeoxyuridine labeling. The results
+show that the most immature thymocyte compartment defined as CD3-CD4-CD8-
+is significantly reduced in SI/SI grafts and W/W thymi compared with
+wild-type counterparts. Also, the expansion rate of these immature
+thymocytes in SI/SI graft is reduced by -50%. These experiments provide
+direct evidence for an important role for c-kit-SCF interactions in
+expansion of very early thymocytes.

@@ -1,0 +1,16 @@
+The Raf kinases play a key role in relaying signals elicited by mitogens
+or oncogenes. Here, we report that c-raf-1(-/-) embryos are growth
+retarded and die at midgestation with anomalies in the placenta and in the
+fetal liver. Although hepatoblast proliferation does not appear to be
+impaired, c-raf-1(-/-) fetal livers are hypocellular and contain numerous
+apoptotic cells. Similarly, the poor proliferation of Raf-1(-/-)
+fibroblasts and hematopoietic cells cultivated in vitro is due to an
+increase in the apoptotic index of these cultures rather than to a cell
+cycle defect. Furthermore, Raf-1- deficient fibroblasts are more sensitive
+than wild- type cells to specific apoptotic stimuli, such as actinomycin D
+or Fas activation, but not to tumor necrosis factor-alpha. MEK/ERK
+activation is normal in Raf-1-deficient cells and embryos, and is probably
+mediated by B-RAF. These results indicate that the essential function of
+Raf-1 is to counteract apoptosis rather than to promote proliferation, and
+that effectors distinct from the MEK/ERK cascade must mediate the
+anti-apoptotic function of Raf-1.

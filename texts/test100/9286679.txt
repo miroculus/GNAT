@@ -1,0 +1,17 @@
+In Drosophila the products of the seminal fluid stimulate oviposition and
+suppress remating in the female. Of all the accessory gland peptides
+(Acp's) involved in these two responses, the sex-peptide (coded by the
+Acp70A gene) is among the best characterized at the functional level. A
+1.2-kb fragment encompassing the Acp70A gene of nine lines from a natural
+population of D. melanogaster and one allele of D. sechellia was sequenced
+to study the forces shaping nucleotide variation within and between
+species. The coding region of D. simulans and D. mauritiana was also
+sequenced. A Ser to Ala replacement polymorphism at the last position of
+the signal peptide was detected in D. melanogaster. The Ser and Ala
+alleles are at intermediate frequencies. The level of nucleotide variation
+is lower for the derived Ala allele, which is compatible with a recent
+origin and an increase in frequency due to positive selection. Variation
+at the 5' flanking region is structured in two major highly differentiated
+haplotypes, whose distribution does not conform to neutral expectations.
+Selective and/or historical factors could contribute to the observed
+overall patterning of nucleotide variation at the Acp70A region.

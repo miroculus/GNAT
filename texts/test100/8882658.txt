@@ -1,0 +1,13 @@
+The developmental analysis of the inducibility of the Drosophila
+diptericin gene promoter as a response to septic injury shows an important
+increase in the response during the third larval instar leading to a
+maximum in late larvae and early prepupae. This increase, or maturation,
+is temporally correlated with known ecdysone induced events of the
+salivary gland and we now present evidence, using wild type and mutant
+larvae, that it does indeed depend upon ecdysone. The response remains
+minimal in larvae carrying either the temperature sensitive ecdysone
+deficient late larval lethal allele ecd1, or l(1)t187, a deep orange
+allele known to be deficient in the ecdysone response. However,
+experiments with the late larval lethal Broad-Complex mutant l(1)t435 show
+that the regulation of this response is distinct from the developmental
+ecdysone regulated hierarchies.

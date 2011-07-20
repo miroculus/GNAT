@@ -1,0 +1,30 @@
+The Leu3 protein (Leu3p) of Saccharomyces cerevisiae is a pleiotropic
+transregulator that can function both as an activator and as a repressor
+of transcription. It binds to upstream promoter elements (UASLEU) with the
+consensus sequence 5'-GCCGGNNCCGGC-3'. The DNA-binding motif of Leu3p
+belongs to the family of Zn(II)2-Cys6 clusters. The motif is located
+between amino acid residues 37 and 67 of the 886-residue protein. In this
+study, we used a recombinant peptide consisting of residues 17 to 147 to
+explore the interaction between Leu3p and its cognate DNA. We found that
+the Leu3p(17-147) peptide is a monomer in the absence of UASLEU but
+assumes a dimeric structure when the DNA is present. Results of
+protein-DNA cross-linking and methylation and ethylation interference
+footprinting experiments show that the Leu3p(17-147) dimer interacts
+symmetrically with two contact triplets separated by 6 bp and suggest that
+the peptide approaches its target DNA in such a way that each subunit is
+positioned closer to one DNA strand than to the other. The binding of
+Leu3p is strongly affected by the spacing between the contact triplets of
+the UASLEU and by the type of triplet. Binding occurs when the triplets
+are 6 bp apart (normal spacing) but fails to occur when the triplets are
+0, 5, or 8 bp apart. Weak binding occurs when the triplets are 7 bp apart.
+Binding does not occur when the UASLEU triplets (GCC....GGC) are replaced
+with triplets found in the UAS elements for Gal4p, Put3p, and Ppr1p
+(CGG....CCG). The apparent Kd for the normal Leu3p(17-147)-UASLEU complex
+is about 3 nM. A mutant form of Leu3p(17-147) in which the histidine at
+position 50 has been replaced with cysteine binds UASLEU with
+significantly greater affinity (apparent Kd of about 0.7 nM), even though
+the interaction between the mutant peptide and target DNA appears to be
+unchanged. Interestingly, repression of basal-level transcription, which
+is a hallmark property of the wild-type Leu3p(17-147) peptide, is largely
+lost with the mutant peptide, indicating that there is no direct
+correlation between strength of binding and repression.

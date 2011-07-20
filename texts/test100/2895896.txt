@@ -1,0 +1,16 @@
+A member of a small group of genes in Drosophila that define the
+segmentation pattern of the early embryo even-skipped (eve), which plays a
+key role in a network of interactions among segmentation genes. It appears
+to control morphogenesis by regulating the expression of the segmentation
+gene engrailed (en), and by autoregulating its own expression (M. Frasch
+and M.L., in preparation). Here we show that these regulatory interactions
+could occur at the level of transcription as a full-length eve protein
+binds with high affinity to specific sequences located near the 5' ends of
+the eve and en genes. The en binding sites contain at least one copy of a
+10-base pair consensus sequence: T-C-A-A-T-T-A-A-A-T. In contrast, the 5'
+eve binding sites are relatively G-C rich and do not share obvious
+similarities with the 10-base pair consensus sequence associated with en.
+Other homeo box proteins can recognize both classes of eve binding sites,
+lending support to the proposal that regulatory interactions among homeo
+box genes involve a competition of different homeo box proteins for
+similar cis regulatory sequences.

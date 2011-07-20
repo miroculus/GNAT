@@ -1,0 +1,5 @@
+Cyclin-dependent kinase inhibitors (CKIs) are crucial regulators of
+cell-cycle progression. The CKI Sic1 controls the timing of DNA
+replication by inhibiting Clb-Cdc28 kinase. Phosphorylation of Sic1 by
+CIn-Cdc28 kinase alleviates this inhibition by targeting Sic1 for
+degradation through the ubiquitin-mediated proteolytic pathway.

@@ -1,0 +1,23 @@
+The detection of inactivating mutations in tumor suppressor genes is
+critical to their characterization, as well as to the development of
+diagnostic testing. Most approaches for mutational screening of germ-line
+specimens are complicated by the fact that mutations are heterozygous and
+that missense mutations are difficult to interpret in the absence of
+information about protein function. We describe a novel method using
+Saccharomyces cerevisiae for detecting protein-truncating mutations in any
+gene of interest. The PCR-amplified coding sequence is inserted by
+homologous recombination into a yeast URA3 fusion protein, and
+transformants are assayed for growth in the absence of uracil. The high
+efficiency of homologous recombination in yeast ensures that both alleles
+are represented among transformants and achieves separation of alleles,
+which facilitates subsequent nucleotide sequencing of the mutated
+transcript. The specificity of translational initiation of the URA3 gene
+leads to minimal enzymatic activity in transformants harboring an inserted
+stop codon, and hence to reliable distinction between specimens with
+wild-type alleles and those with a heterozygous truncating mutation. This
+yeast-based stop codon assay accurately detects heterozygous truncating
+mutations in the BRCA1 gene in patients with early onset of breast cancer
+and in the APC gene in patients with familial adenomatous polyposis. This
+approach offers a rapid and reliable method for genetic diagnosis in
+individuals at high risk for germ-line mutations in cancer susceptibility
+genes.

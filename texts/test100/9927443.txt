@@ -1,0 +1,19 @@
+The completion of DNA synthesis in yeast is monitored by a checkpoint that
+requires MEC1 and RAD53. Here we show that deletion of the Saccharomyces
+cerevisiae G1 cyclins CLN1 and CLN2 suppressed the essential requirement
+for MEC1 function. Wild-type levels of CLN1 and CLN2, or overexpression of
+CLN1, CLN2, or CLB5, but not CLN3, killed mec1 strains. We identified
+RNR1, which encodes a subunit of ribonucleotide reductase, as a high-copy
+suppressor of the lethality of mec1 GAL1-CLN1. Northern analysis
+demonstrated that RNR1 expression is reduced by CLN1 or CLN2
+overexpression. Because limiting RNR1 expression would be expected to
+decrease dNTP pools, CLN1 and CLN2 may cause lethality in mec1 strains by
+causing initiation of DNA replication with inadequate dNTPs. In contrast
+to mec1 mutants, MEC1 strains with low dNTPs would be able to delay S
+phase and thereby remain viable. We propose that the essential function
+for MEC1 may be the same as its checkpoint function during hydroxyurea
+treatment, namely, to slow S phase when nucleotides are limiting. In a
+cln1 cln2 background, a prolonged period of expression of genes turned on
+at the G1-S border, such as RNR1, has been observed. Thus deletion of CLN1
+and CLN2 could function similarly to overexpression of RNR1 in suppressing
+mec1 lethality.

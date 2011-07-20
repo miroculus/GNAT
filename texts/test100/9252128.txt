@@ -1,0 +1,12 @@
+The common cytokine receptor gamma chain (gamma(c)) is an indispensable
+subunit for the formation of lymphoid-related cytokine receptors,
+including IL-7 and IL-15 receptors, that mediate nonredundant or critical
+signals for the differentiation of T and B cells and natural killer (NK)
+cells, respectively. We introduced the bcl-2 transgene driven by E mu or
+H-2K promoters into gamma(c)-deficient mice that lack all three lymphoid
+subclasses. The forced expression of Bcl-2 restored all stages of T
+lymphopoiesis, but not B or NK cell development, indicating that a primary
+function of gamma(c)-mediated signals in the T lineage might be to
+maintain cell survival. Therefore, the development of T, B, and NK cells
+may be influenced by distinct intracytoplasmic signaling cascades that are
+activated by coupling of gamma(c)-related receptors.

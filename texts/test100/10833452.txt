@@ -1,0 +1,18 @@
+We have cloned a cDNA that codes for mouse liver-specific transporter-1,
+mouse lst-1. The cDNA is comprised of 3296 base pairs and it contains a
+coding sequence for a protein of 689 amino acids with 12 putative
+transmembrane domains. The deduced amino acid sequence of the mouse lst-1
+shares 64 and 77% identities with the reported human and rat lsts,
+respectively. Northern blot analysis demonstrates that mouse lst-1 mRNA is
+expressed exclusively in liver. We also report here the structural
+organization of the mouse lst-1 gene as the first evidence for the
+structure of a gene encoding an lst. The mouse lst-1 gene spans
+approximately 60 kbp in length and consists of 16 exons, including two
+noncoding exons. All the introns are flanked by GT-AG consensus splice
+sequences. 5'-Rapid Amplification of cDNA Ends (RACE) analyses demonstrate
+three splice variant mRNAs involving the noncoding exon 2 and exon 3. The
+5'-flanking region of the gene contains consensus CAAT and TATA boxes and
+several potential binding sites for transcription factors for CAAT
+enhancer binding protein (C/EBP) and hepatocyte nuclear factors
+(HNF-3beta, HFH-1, and HFH-2), transcription factors important for
+liver-specific gene expression.

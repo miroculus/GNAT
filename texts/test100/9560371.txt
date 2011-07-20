@@ -1,0 +1,11 @@
+Recombinational repair of a site-specific, double-strand DNA break (DSB)
+results in increased reversion frequency for nearby mutations. Although
+some models for DSB repair predict that newly synthesized DNA will be
+inherited equally by both the originally broken chromosome and the
+chromosome that served as a template, the DNA synthesis errors are almost
+exclusively found on the chromosome that had the original DSB (introduced
+by the HO endonuclease). To determine whether mismatch repair acts on the
+template chromosome in a directed fashion to restore mismatches to the
+initial sequence, these experiments were repeated in mismatch
+repair-defective (pms1, mlh1, and msh2) backgrounds. The results suggest
+that mismatch repair is not responsible for the observed bias.

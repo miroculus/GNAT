@@ -1,0 +1,7 @@
+A gene (pkt1) was isolated from the filamentous fungus Trichoderma reesei,
+which exhibits high homology with the yeast YPK1 and YKR2 (YPK2) genes. It
+contains a 2123-bp ORF that is interrupted by two introns, and it encodes
+a 662-amino-acid protein with a calculated M(r) of 72,820. During active
+growth, pkt1 is expressed as two mRNAs of 3.1 and 2.8 kb which differ in
+the 3' untranslated region due to the use of two different polyadenylation
+sites.
