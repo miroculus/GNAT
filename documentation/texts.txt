@@ -1,13 +1,27 @@
 Contains some exemplary texts to run pipelines on.
 
 
+Folder "test"
+-------------
+
 The texts/test directory contains five PubMed abstracts that can be used to 
 test a local installation. They come together with the gold standard solution
 from the BioCreative 2 GN community challenge (see below) in test.solution. An
 expected output for running the test in gnat.client.Test is given in test.out.
 
-
-
 [1] BioCreative 2 GN data
     http://biocreative.sourceforge.net/biocreative_2_dataset.html
+
+
+Folder "test100"
+----------------
+
+Contains 100 PubMed abstracts originating from the BioCreative I Task 1B and
+BioCreative II, GN task, data sets. While for these original tasks, each 
+abstract was annotated for the genes on one species only (human, mouse, fly,
+yeast), these 100 abstracts have been re-annotated to include all genes
+mentioned therein [2]. The gold standard is in "test100.genelist", the script
+"bc2scoring.py" is the official BioCreative II GN task scoring script [1]. 
+
+[2] Hakenberg et al., Bioinformatics, 24(16):i126-132, 2008.
 
