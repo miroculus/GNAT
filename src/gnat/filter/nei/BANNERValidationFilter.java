@@ -22,6 +22,20 @@ import gnat.representation.RecognizedEntity;
 import gnat.representation.Text;
 import gnat.representation.TextRepository;
 
+/**
+ * This filter uses BANNER [1] to validate a recognized gene candidate. If the candidate mention
+ * overlaps with a gene mention found by Banner, it will be kept, and thrown out otherwise.
+ * 
+ * <br><br>
+ * <b>Note:</b> The API changed drastically for the latest version of BANNER.
+ * This filter uses the latest version from the Sourceforge SVN, which differs
+ * from the Jar found on Banner's project page.
+ * 
+ * <br>
+ * [1] http://banner.sourceforge.net
+ *
+ */
+
 public class BANNERValidationFilter implements Filter {
 	private Tokenizer tokenizer;
 	private PostProcessor postProcessor;
@@ -79,9 +93,9 @@ public class BANNERValidationFilter implements Filter {
 						
 //						System.out.println("\t" + s2 + "\t" + e2 + "\t" + m.getStart() + "\t" + m.getEnd() + "\t" + m.getText());
 
+						// if the candidate overlaps with a mention found by Banner, keep it
 						if ((s1 >= s2 && s1 < e2) || (s2 >= s1 && s2 < e1)){
 							matchesBannerMention = true;
-//							System.out.println("\t" + m.getText());
 							break;
 						}						
 					}
