@@ -304,7 +304,7 @@ public class UnspecificNameFilter implements Filter {
 		return name.toLowerCase().trim().matches("(for|in|of|at|an" +
 				"|milk|cycling|enabled|blast|lipase|golgi|fusion|proteins?|nuclear|and\\s1|sex" +
 				"|similar\\sto|rough\\sdeal|alternative\\ssplicing|membrane[\\s\\-]?bound" +
-				"|proton[\\s\\-]?pump|partial|macrophage|condensed)");
+				"|proton[\\s\\-]?pump|partial|macrophage|condensed|proteins?)");
 	}
 
 
@@ -338,6 +338,7 @@ public class UnspecificNameFilter implements Filter {
 				"|[a-z]+(phil)" +
 				"|[a-z]+(cytes?)|[a-z]+ic cell" +
 				"|[a-z]ial|[a-z]ic" +
+				"|[Ss]tem cells?" + 
 				")"
 		);
 	}
