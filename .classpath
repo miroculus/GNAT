@@ -10,5 +10,6 @@
 	<classpathentry kind="lib" path="banner/libs/junit-4.4.jar"/>
 	<classpathentry kind="lib" path="banner/libs/mallet.jar"/>
 	<classpathentry kind="lib" path="banner/libs/medpost.jar"/>
+	<classpathentry kind="lib" path="lib/jaxen-1.1.3.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>
