@@ -150,7 +150,7 @@ public class PmcAccess {
 	 * TODO Not fully implemented! Returns the title and abstract only.
 	 * @return
 	 */
-	@SuppressWarnings("unchecked") // for List<Element> titles = xpArticleTitle.selectNodes(document);
+	@SuppressWarnings("unchecked")
 	public static String getPlaintext (Document document) {
 		StringBuffer plain = new StringBuffer();
 		
@@ -170,6 +170,13 @@ public class PmcAccess {
 			for (Element abs: abstracts) {
 				plain.append(augmentPlaintext(abs));
 				break; // get only the first abstract if there are multiple
+			}
+			
+			// get all sections
+			XPath xpSections = XPath.newInstance("/OAI-PMH//record/metadata/article//article-meta//body//sec");
+			List<Element> sections = xpSections.selectNodes(document);
+			for (Element sec: sections) {
+				plain.append(augmentPlaintext(sec));
 			}
 			
 		} catch (JDOMException jde) {
