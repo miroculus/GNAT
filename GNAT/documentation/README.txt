@@ -118,24 +118,35 @@ Configuration files
 
 
 Publications:
+[1] Jörg Hakenberg, Martin Gerner, Maximilian Haeussler, Illés Solt, Conrad
+    Plake, Michael Schroeder, Graciela Gonzalez, Goran Nenadic, and Casey M. 
+    Bergman: "The GNAT library for local and remote gene mention normalization"
+    Bioinformatics, 2011, Advance access 3 August 2011
+    DOI: 10.1093/bioinformatics/btr455
 
-[1] Jšrg Hakenberg, Conrad Plake, Loic Royer, Hendrik Strobelt, Ulf Leser, 
-Michael Schroeder: "Gene mention normalization and interaction extraction with 
-context models and sentence motifs". Genome Biology 2008, 9:S14.
+[2] Jörg Hakenberg, Conrad Plake, Loic Royer, Hendrik Strobelt, Ulf Leser, 
+    Michael Schroeder: "Gene mention normalization and interaction extraction
+    with context models and sentence motifs". Genome Biology 2008, 9:S14.
     Abstract: http://genomebiology.com/2008/9/S2/S14/abstract
     PubMed:   http://www.ncbi.nlm.nih.gov/sites/entrez/18834492
 
-[2] Jšrg Hakenberg, Conrad Plake, Robert Leaman, Michael Schroeder, and 
-Graciela Gonzalez: "Inter-species normalization of gene mentions with GNAT".
+[3] Jörg Hakenberg, Conrad Plake, Robert Leaman, Michael Schroeder, and 
+    Graciela Gonzalez: "Inter-species normalization of gene mentions with
+    GNAT".
     Bioinformatics (2008) 24 (16):i126-i132.
     DOI:    10.1093/bioinformatics/btn299
     PubMed: http://www.ncbi.nlm.nih.gov/pubmed/18689813
 
 More on gene mention normalization:
-[3] Florian Leitner et al.: "Overview of BioCreative II gene normalization".
+[4] Florian Leitner et al.: "Overview of BioCreative II gene normalization".
     Genome Biology 2008, 9:S3.
     Abstract: http://genomebiology.com/2008/9/S2/S3/abstract
     PubMed: http://www.ncbi.nlm.nih.gov/sites/entrez/18834494
 
-[4] Genome Biology's Special Issue on BioCreative II:
+[5] Genome Biology's Special Issue on BioCreative II:
     http://genomebiology.com/supplements/9/S2
+
+[6] Minlie Huang, Jingchen Liu, and Xiaoyan Zhu: "GeneTUKit: a software for 
+    document-level gene normalization".
+	Bioinformatics, 2011, 27(7):1032-1033
+	DOI: 10.1093/bioinformatics/btr042 

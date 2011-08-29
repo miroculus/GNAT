@@ -1,0 +1,12 @@
+Notes for developers
+--------------------
+
+
+1) GNAT and BANNER
+
+GNAT provides a filter to validate gene candidate comparing them to mentions
+recognized by BANNER (banner.sourceforge.net). Apparently there are some
+inconsistencies (=changes in the BANNER's API), which can be resolved by
+downloading the latest BANNER code from Sourceforge, instead of the latest JAR
+that is distributed.
+
