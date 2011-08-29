@@ -173,7 +173,7 @@ public class PmcAccess {
 			}
 			
 			// get all sections
-			XPath xpSections = XPath.newInstance("/OAI-PMH//record/metadata/article//article-meta//body//sec");
+			XPath xpSections = XPath.newInstance("/OAI-PMH//record/metadata/article//body//sec");
 			List<Element> sections = xpSections.selectNodes(document);
 			for (Element sec: sections) {
 				plain.append(augmentPlaintext(sec));
