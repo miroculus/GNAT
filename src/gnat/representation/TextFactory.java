@@ -18,6 +18,9 @@ import java.util.Map;
 import java.util.Set;
 import java.util.TreeSet;
 
+import uk.ac.man.documentparser.dataholders.Document;
+import uk.ac.man.documentparser.input.DocumentIterator;
+
 /**
  * A text factory reads input from files and generates Text objects from them.
  * This includes extracting the TextContextModel for each text.
@@ -205,6 +208,18 @@ public class TextFactory {
 		return textRepository;
 	}
 
+	public static TextRepository loadTextRepository(DocumentIterator documents) {
+		TextRepository textRepository = new TextRepository();
+
+		for (Document d : documents){
+			Text t = new Text(d.getID(), d.toString());
+			textRepository.addText(t);
+		}
+		
+		return textRepository;
+	}
+
+
 
 	/*/*
 	 * Loads a text repository from the given directory. Also loads GO terms
@@ -334,5 +349,4 @@ public class TextFactory {
 
 		return aText;
 	}
-
 }

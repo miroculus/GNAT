@@ -5,6 +5,7 @@ import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.util.InvalidPropertiesFormatException;
 import java.util.LinkedHashSet;
 import java.util.Properties;
@@ -47,6 +48,18 @@ public class ISGNProperties {
 			//System.err.println("Creating an emtpy properties file.");
 		} catch (InvalidPropertiesFormatException e) {
 			System.err.println("Property file " + file.getAbsolutePath() + " has invalid format.");
+			System.exit(2);
+		} catch (IOException ioe) {
+			System.err.println(ioe.getMessage());
+			System.exit(2);
+		}
+	}
+	
+	public static void loadProperties(InputStream is){
+		try {
+			myProperties.loadFromXML(is);
+		} catch (InvalidPropertiesFormatException e) {
+			System.err.println("Property file has invalid format.");
 			System.exit(2);
 		} catch (IOException ioe) {
 			System.err.println(ioe.getMessage());

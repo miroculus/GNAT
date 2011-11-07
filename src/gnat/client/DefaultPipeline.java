@@ -15,13 +15,22 @@ import gnat.filter.nei.UnambiguousMatchFilter;
 import gnat.filter.nei.UnspecificNameFilter;
 import gnat.filter.ner.GnatServiceNer;
 import gnat.preprocessing.NameRangeExpander;
+import gnat.representation.IdentifiedGene;
 import gnat.representation.TextFactory;
 import gnat.server.GnatService;
 import gnat.server.GnatService.Tasks;
 
+import java.io.BufferedWriter;
 import java.io.File;
+import java.io.FileWriter;
 import java.util.LinkedList;
 import java.util.List;
+
+import javax.swing.text.html.parser.DocumentParser;
+
+import uk.ac.man.documentparser.input.DocumentIterator;
+
+import martin.common.ArgParser;
 
 /**
  * Pipeline for performing Gene Mention Normalization, which runs a fixed set of filters.
@@ -43,34 +52,25 @@ public class DefaultPipeline {
 	 * @param args
 	 */
 	public static void main (String[] args) {
+		ArgParser ap = new ArgParser(args);
+		ap.addAlternate("verbosity", "v");
+
+		if (args.length == 0 || ap.containsKey("help")){
+			System.out.println("Usage: [--text <text file>] [--textDir <.txt file directory] [--recursirve] --out <output file> [--verbosity <level>]");
+			System.exit(0);
+		}
+
+		DocumentIterator documents = uk.ac.man.documentparser.DocumentParser.getDocuments(ap, null);
+
 		Run run = new Run();
-		run.verbosity = 2;
-		
-		List<String> directoriesToProcess = new LinkedList<String>();
-		for (String arg: args) {
-			if (arg.matches("\\-\\-?v(erbosity)?\\=\\d+")) {
-				run.verbosity = Integer.parseInt(arg.replaceFirst("^\\-\\-?v(erbosity)?\\=(\\d+)$", "$2"));
-			} else {
-				File DIR = new File(arg);
-				if (DIR.exists() && DIR.canRead())
-					directoriesToProcess.add(arg);
-				else
-					System.out.println("Parameter '" + arg + "' is not a valid/readable file or directory; skipping.");
-			}
-		}
-		
-		// load all texts from the given directory/ies:
-		if (directoriesToProcess.size() == 0) {
-			System.err.println("Provide at least one file or directory with files (*.txt) to annotate.");
-			System.exit(2);
-		}
-		
+		run.verbosity = ap.getInt("verbosity", 2);
+
 		// load texts from the given directories
-		run.setTextRepository(TextFactory.loadTextRepositoryFromDirectories(directoriesToProcess));
-		
+		run.setTextRepository(TextFactory.loadTextRepository(documents));
+
 		// Pre-processing filter here:
 		run.addFilter(new NameRangeExpander());
-		
+
 		// invoke the remote GnatService for NER, for species and gene names
 		// - can be used together with RunDictionaries, see above
 		// - normally, the DictionaryServers would be run for species that GnatServiceNer does not
@@ -80,7 +80,7 @@ public class DefaultPipeline {
 		gnatServiceNer.useDefaultSpecies = true;
 		run.addFilter(gnatServiceNer);
 		run.addFilter(new RecognizedEntityUnifier());
-				
+
 		// load the gene repository to obtain information on each gene (if only the species)
 		// not loading gene repository will produce an empty result at the end
 		run.addFilter(new GeneRepositoryLoader(GeneRepositoryLoader.RetrievalMethod.SERVICE));
@@ -99,22 +99,44 @@ public class DefaultPipeline {
 		run.addFilter(new MultiSpeciesDisambiguationFilter(
 				Integer.parseInt(ISGNProperties.get("disambiguationThreshold")),
 				Integer.parseInt(ISGNProperties.get("maxIdsForCandidatePrediction"))));
-		
+
 		// include all Filters that are specified in data/runAdditionalFilters.txt
 		// this setting (file name) can be changed in ISGNProperties, key=runAdditionalFilters
 		// good for adding Filters at run-time
 		// the current data/runAdditionalFilters.txt contains a DummyFilter that does nothing
 		run.addFilter(new RunAdditionalFilters());
-		
+
 		// set all remaining genes as 'identified' so they will be reported in the result
 		run.addFilter(new IdentifyAllFilter());
-		
+
 		// run all filters, changing run.context, run.textRepository, and run.geneRepository
 		run.runFilters();
-		
+
 		// print the results for each text, in BioCreative tab-separated format
 		List<String> result = run.context.getIdentifiedGeneList_SortedByTextAndId();
-		for (String res: result)
-			System.out.println(res);
+
+		try{
+			File outFile = new File(ap.getRequired("out"));
+			BufferedWriter outStream = new BufferedWriter(new FileWriter(outFile));
+
+//			for (String res: result)
+//				outStream.write(res + "\n");
+			
+			for (IdentifiedGene ig : run.context.getEntitiesIdentifiedAsGene()){
+				outStream.write(ig.getRecognizedEntity().getText().getID() + "\t");
+				outStream.write(ig.getGene().getID() + "\t");
+				outStream.write(""+ig.getRecognizedEntity().getBegin() + "\t");
+				outStream.write(""+ig.getRecognizedEntity().getEnd() + "\t");
+				outStream.write(ig.getRecognizedEntity().getName() + "\t");
+				outStream.write(ig.getGene().getTaxon());
+				outStream.write("\n");
+			}
+			
+			outStream.close();
+		} catch (Exception e){
+			System.err.println(e);
+			e.printStackTrace();
+			System.exit(-1);
+		}
 	}
 }

@@ -20,6 +20,9 @@
 
 <entry key="defaultSpecies">9606</entry>
 
+<entry key="bannerProps">banner/banner.properties</entry>
+<entry key="bannerModel">banner/gene_model_v02.bin</entry>
+
 <!-- Format of the filenames in input/test directories. Valid: {pmcid,pmid,doi,any} as base filename, plus extension. -->
 <!-- pmcid allows for either "pmc12345" or "12345" -->
 <entry key="filenameFormat">pmid.txt</entry>

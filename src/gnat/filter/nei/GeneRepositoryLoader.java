@@ -141,8 +141,12 @@ public class GeneRepositoryLoader implements Filter {
 				// + "&" + URLEncoder.encode("text", "UTF-8")       + "=" + URLEncoder.encode(text.getPlainText(), "UTF-8");
 
 				// Send data
+				if (!ISGNProperties.getProperty("geneRepositoryService").startsWith("http://"))
+					throw new IllegalStateException("The geneRepositoryService need to start with http://");
+				
 				URL url = new URL(ISGNProperties.getProperty("geneRepositoryService"));
 				URLConnection conn = url.openConnection();
+				
 				conn.setDoOutput(true);
 				OutputStreamWriter wr = new OutputStreamWriter(conn.getOutputStream());
 				wr.write(data);
