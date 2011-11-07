@@ -36,6 +36,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.Executors;
+import java.util.concurrent.Semaphore;
 
 import martin.common.ArgParser;
 
@@ -246,7 +247,7 @@ class GnatServiceHandler extends ServiceHandler {
 	 * Handles HTTP requests (only GET and POST are implemented).
 	 * @param exchange
 	 */
-	public void handle (HttpExchange exchange) throws IOException {
+	public synchronized void handle (HttpExchange exchange) throws IOException {
 		String requestMethod = exchange.getRequestMethod();
 
 		// Not a GET/POST request? We're not handling these here.
@@ -280,7 +281,6 @@ class GnatServiceHandler extends ServiceHandler {
 			doHelp(responseBody);
 			return;
 		}
-
 
 		// print a list of all supported taxa if requested
 		if (userQuery.hasParameter("taxa")) {
@@ -322,7 +322,7 @@ class GnatServiceHandler extends ServiceHandler {
 			}
 		}
 
-		responseBody.close();	    
+		responseBody.close();
 	}
 
 	private void speciesNer(List<AnnotatedText> annotatedTexts) {
