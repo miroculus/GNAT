@@ -1,0 +1,230 @@
+<PubmedArticle>
+    <MedlineCitation Owner="NLM" Status="MEDLINE">
+        <PMID Version="1">18393776</PMID>
+        <DateCreated>
+            <Year>2008</Year>
+            <Month>04</Month>
+            <Day>08</Day>
+        </DateCreated>
+        <DateCompleted>
+            <Year>2008</Year>
+            <Month>05</Month>
+            <Day>15</Day>
+        </DateCompleted>
+        <DateRevised>
+            <Year>2011</Year>
+            <Month>11</Month>
+            <Day>17</Day>
+        </DateRevised>
+        <Article PubModel="Print">
+            <Journal>
+                <ISSN IssnType="Print">1574-8871</ISSN>
+                <JournalIssue CitedMedium="Print">
+                    <Volume>1</Volume>
+                    <Issue>1</Issue>
+                    <PubDate>
+                        <Year>2006</Year>
+                        <Month>Jan</Month>
+                    </PubDate>
+                </JournalIssue>
+                <Title>Reviews on recent clinical trials</Title>
+                <ISOAbbreviation>Rev Recent Clin Trials</ISOAbbreviation>
+            </Journal>
+            <ArticleTitle>Epidermal growth factor receptor (EGFR) targeted therapies in non-small cell lung cancer (NSCLC).</ArticleTitle>
+            <Pagination>
+                <MedlinePgn>1-13</MedlinePgn>
+            </Pagination>
+            <Abstract>
+                <AbstractText>The Epidermal Growth Factor Receptor (EGFR) family, including EGFR, HER2, HER3, and HER4, is implicated in the development and progression of cancer, and is expressed in many human epithelial malignancies, including Non-Small Cell Lung Cancer (NSCLC). Several molecules were synthesized to inhibit the extracellular domain of EGFR, such as cetuximab (Erbitux), the extracellular domain of HER2, such as trastuzumab (Herceptin) or the EGFR tyrosine kinase domain, such as gefitinib (Iressa) and erlotinib (Tarceva). Gefitinib and erlotinib are orally active, selective EGFR tyrosine-kinase inhibitors (EGFR-TKI) that produce objective response rates in about 10% of advanced NSCLC. More recently, erlotinib produced a significant improvement in survival when compared to placebo in pretreated NSCLCs. Among clinical characteristics, although female gender, and adenocarcinoma histology, showed to be significantly associated to TKI sensitivity, never smoking history is probably the most relevant factor. Presence of specific EGFR gene mutations or EGFR gene amplification confer a particularly sensitive phenotype, and patients with activation of the anti-apoptotic protein Akt are more sensitive, when Akt activation is sustained by a EGFR dependent mechanism. Cetuximab is a human-murine chimeric anti-EGFR IgG monoclonal antibody that has demonstrated both in vitro and in vivo antitumor activity in tumor cell lines expressing EGFR. It has shown impressive activity when combined with radiation by increasing the antitumor effect of radiation therapy. Cetuximab has a synergistic effect with cisplatin and may play a role in reversing resistance to chemotherapy. Cetuximab demonstrated to be active in pretreated NSCLCs, and its activity as first-line therapy in combination with chemotherapy is currently under evaluation. Efforts should be made for the identification of biological mechanism underlying cetuximab sensitivity and emerging data suggest that the drugs is more active in patients with EGFR gene amplification. In NSCLC, trastuzumab produced disappointing results when combined with chemotherapy, but probably patients were not properly selected. Recent findings in gefitinib treated patients support HER2 analysis by fluorescence in situ hybridization as a complementary test for selection of patient candidate for EGFR targeted therapies. Combination of EGFR targeting agents with other biological drugs is under investigation.</AbstractText>
+            </Abstract>
+            <Affiliation>Bellaria Hospital-Department of Medical Oncology, Via Altura 3, 40139-Bologna-Italy.</Affiliation>
+            <AuthorList CompleteYN="Y">
+                <Author ValidYN="Y">
+                    <LastName>Metro</LastName>
+                    <ForeName>Giulio</ForeName>
+                    <Initials>G</Initials>
+                </Author>
+                <Author ValidYN="Y">
+                    <LastName>Finocchiaro</LastName>
+                    <ForeName>Giovanna</ForeName>
+                    <Initials>G</Initials>
+                </Author>
+                <Author ValidYN="Y">
+                    <LastName>Toschi</LastName>
+                    <ForeName>Luca</ForeName>
+                    <Initials>L</Initials>
+                </Author>
+                <Author ValidYN="Y">
+                    <LastName>Bartolini</LastName>
+                    <ForeName>Stefania</ForeName>
+                    <Initials>S</Initials>
+                </Author>
+                <Author ValidYN="Y">
+                    <LastName>Magrini</LastName>
+                    <ForeName>Elisabetta</ForeName>
+                    <Initials>E</Initials>
+                </Author>
+                <Author ValidYN="Y">
+                    <LastName>Cancellieri</LastName>
+                    <ForeName>Alessandra</ForeName>
+                    <Initials>A</Initials>
+                </Author>
+                <Author ValidYN="Y">
+                    <LastName>Trisolini</LastName>
+                    <ForeName>Rocco</ForeName>
+                    <Initials>R</Initials>
+                </Author>
+                <Author ValidYN="Y">
+                    <LastName>Castaldini</LastName>
+                    <ForeName>Luciano</ForeName>
+                    <Initials>L</Initials>
+                </Author>
+                <Author ValidYN="Y">
+                    <LastName>Tallini</LastName>
+                    <ForeName>Giovanni</ForeName>
+                    <Initials>G</Initials>
+                </Author>
+                <Author ValidYN="Y">
+                    <LastName>Crino</LastName>
+                    <ForeName>Lucio</ForeName>
+                    <Initials>L</Initials>
+                </Author>
+                <Author ValidYN="Y">
+                    <LastName>Cappuzzo</LastName>
+                    <ForeName>Federico</ForeName>
+                    <Initials>F</Initials>
+                </Author>
+            </AuthorList>
+            <Language>eng</Language>
+            <PublicationTypeList>
+                <PublicationType>Journal Article</PublicationType>
+                <PublicationType>Review</PublicationType>
+            </PublicationTypeList>
+        </Article>
+        <MedlineJournalInfo>
+            <Country>United Arab Emirates</Country>
+            <MedlineTA>Rev Recent Clin Trials</MedlineTA>
+            <NlmUniqueID>101270873</NlmUniqueID>
+        </MedlineJournalInfo>
+        <ChemicalList>
+            <Chemical>
+                <RegistryNumber>0</RegistryNumber>
+                <NameOfSubstance>Antibodies, Monoclonal</NameOfSubstance>
+            </Chemical>
+            <Chemical>
+                <RegistryNumber>0</RegistryNumber>
+                <NameOfSubstance>Antibodies, Monoclonal, Humanized</NameOfSubstance>
+            </Chemical>
+            <Chemical>
+                <RegistryNumber>0</RegistryNumber>
+                <NameOfSubstance>Antineoplastic Agents</NameOfSubstance>
+            </Chemical>
+            <Chemical>
+                <RegistryNumber>0</RegistryNumber>
+                <NameOfSubstance>Quinazolines</NameOfSubstance>
+            </Chemical>
+            <Chemical>
+                <RegistryNumber>0</RegistryNumber>
+                <NameOfSubstance>cetuximab</NameOfSubstance>
+            </Chemical>
+            <Chemical>
+                <RegistryNumber>0</RegistryNumber>
+                <NameOfSubstance>erlotinib</NameOfSubstance>
+            </Chemical>
+            <Chemical>
+                <RegistryNumber>0</RegistryNumber>
+                <NameOfSubstance>trastuzumab</NameOfSubstance>
+            </Chemical>
+            <Chemical>
+                <RegistryNumber>184475-35-2</RegistryNumber>
+                <NameOfSubstance>gefitinib</NameOfSubstance>
+            </Chemical>
+            <Chemical>
+                <RegistryNumber>EC 2.7.10.1</RegistryNumber>
+                <NameOfSubstance>Receptor, Epidermal Growth Factor</NameOfSubstance>
+            </Chemical>
+        </ChemicalList>
+        <CitationSubset>IM</CitationSubset>
+        <MeshHeadingList>
+            <MeshHeading>
+                <DescriptorName MajorTopicYN="N">Antibodies, Monoclonal</DescriptorName>
+                <QualifierName MajorTopicYN="N">pharmacology</QualifierName>
+                <QualifierName MajorTopicYN="N">therapeutic use</QualifierName>
+            </MeshHeading>
+            <MeshHeading>
+                <DescriptorName MajorTopicYN="N">Antibodies, Monoclonal, Humanized</DescriptorName>
+            </MeshHeading>
+            <MeshHeading>
+                <DescriptorName MajorTopicYN="N">Antineoplastic Agents</DescriptorName>
+                <QualifierName MajorTopicYN="Y">pharmacology</QualifierName>
+                <QualifierName MajorTopicYN="Y">therapeutic use</QualifierName>
+            </MeshHeading>
+            <MeshHeading>
+                <DescriptorName MajorTopicYN="N">Carcinoma, Non-Small-Cell Lung</DescriptorName>
+                <QualifierName MajorTopicYN="Y">therapy</QualifierName>
+            </MeshHeading>
+            <MeshHeading>
+                <DescriptorName MajorTopicYN="N">Female</DescriptorName>
+            </MeshHeading>
+            <MeshHeading>
+                <DescriptorName MajorTopicYN="N">Genes, ras</DescriptorName>
+            </MeshHeading>
+            <MeshHeading>
+                <DescriptorName MajorTopicYN="N">Humans</DescriptorName>
+            </MeshHeading>
+            <MeshHeading>
+                <DescriptorName MajorTopicYN="N">In Situ Hybridization, Fluorescence</DescriptorName>
+            </MeshHeading>
+            <MeshHeading>
+                <DescriptorName MajorTopicYN="N">Lung Neoplasms</DescriptorName>
+                <QualifierName MajorTopicYN="Y">therapy</QualifierName>
+            </MeshHeading>
+            <MeshHeading>
+                <DescriptorName MajorTopicYN="N">Male</DescriptorName>
+            </MeshHeading>
+            <MeshHeading>
+                <DescriptorName MajorTopicYN="N">Quinazolines</DescriptorName>
+                <QualifierName MajorTopicYN="N">pharmacology</QualifierName>
+                <QualifierName MajorTopicYN="N">therapeutic use</QualifierName>
+            </MeshHeading>
+            <MeshHeading>
+                <DescriptorName MajorTopicYN="N">Receptor, Epidermal Growth Factor</DescriptorName>
+                <QualifierName MajorTopicYN="Y">antagonists &amp; inhibitors</QualifierName>
+                <QualifierName MajorTopicYN="N">drug effects</QualifierName>
+            </MeshHeading>
+            <MeshHeading>
+                <DescriptorName MajorTopicYN="N">Treatment Outcome</DescriptorName>
+            </MeshHeading>
+        </MeshHeadingList>
+        <NumberOfReferences>97</NumberOfReferences>
+    </MedlineCitation>
+    <PubmedData>
+        <History>
+            <PubMedPubDate PubStatus="pubmed">
+                <Year>2008</Year>
+                <Month>4</Month>
+                <Day>9</Day>
+                <Hour>9</Hour>
+                <Minute>0</Minute>
+            </PubMedPubDate>
+            <PubMedPubDate PubStatus="medline">
+                <Year>2008</Year>
+                <Month>5</Month>
+                <Day>16</Day>
+                <Hour>9</Hour>
+                <Minute>0</Minute>
+            </PubMedPubDate>
+            <PubMedPubDate PubStatus="entrez">
+                <Year>2008</Year>
+                <Month>4</Month>
+                <Day>9</Day>
+                <Hour>9</Hour>
+                <Minute>0</Minute>
+            </PubMedPubDate>
+        </History>
+        <PublicationStatus>ppublish</PublicationStatus>
+        <ArticleIdList>
+            <ArticleId IdType="pubmed">18393776</ArticleId>
+        </ArticleIdList>
+    </PubmedData>
+</PubmedArticle>
