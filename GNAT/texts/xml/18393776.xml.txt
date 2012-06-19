@@ -1,0 +1,11 @@
+<PubmedArticle>
+    <MedlineCitation Owner="NLM" Status="MEDLINE">
+        <PMID Version="1">18393776</PMID>
+        <Article PubModel="Print">
+            <ArticleTitle>Epidermal growth factor receptor (EGFR) targeted therapies in non-small cell lung cancer (NSCLC).</ArticleTitle>
+            <Abstract>
+                <AbstractText>The Epidermal Growth Factor Receptor (EGFR) family, including EGFR, HER2, HER3, and HER4, bla bla bla... .</AbstractText>
+            </Abstract>
+        </Article>
+    </MedlineCitation>
+</PubmedArticle>
