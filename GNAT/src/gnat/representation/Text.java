@@ -44,6 +44,10 @@ public class Text {
 	/** */
 	public String plainText = "";
 
+	
+	/** */
+	public String originalXml = "";
+	
 
 	public int PMID = -1;
 
@@ -61,7 +65,8 @@ public class Text {
 
 	SentenceSplitter splitter = new SentenceSplitterRegex();
 
-	/** */
+	/** If this flag is set, treats every incoming sentence as XML-formatted. {@link #getSurroundingPlainText(int))} 
+	 *  will then strip the sentence off all XML tags. Flag can be set using the constructor {@link #Text(String, List, boolean)}. */
 	public boolean sentencesInXML = false;
 
 
@@ -94,7 +99,7 @@ public class Text {
 	 * @param sentences
 	 * @param xml
 	 */
-	public Text (String id, Vector<String> sentences, boolean xml) {
+	public Text (String id, List<String> sentences, boolean xml) {
 		this(id);
 		setSentences(sentences, xml);
 		sentencesInXML = xml;
@@ -454,7 +459,7 @@ public class Text {
 	 * @param xmlSentence
 	 * @return
 	 */
-	public String xmlToPlainSentence (String xmlSentence) {
+	public static String xmlToPlainSentence (String xmlSentence) {
 		//System.err.println("Xml2plain: '" + xmlSentence + "'");
 		xmlSentence = xmlSentence.replaceAll("<([A-Za-z0-9\\_\\:]+)(\\s[^>]*)?>(.*?)</\\1>", "$3");
 		xmlSentence = xmlSentence.replaceAll("<([A-Za-z0-9\\_\\:]+)(\\s[^>]*)?>(.*?)</\\1>", "$3");

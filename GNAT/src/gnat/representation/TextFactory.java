@@ -190,6 +190,8 @@ public class TextFactory {
 							Text text = loadTextFromFile(dir + filename);
 							textRepository.addText(text);
 							//textIds.add(text.ID);
+						} else if (filename.endsWith(".xml")) {
+							
 						}
 					}
 
@@ -339,6 +341,53 @@ public class TextFactory {
 		
 		// finally construct the Text to be returned
 		Text aText = new Text(id, text.toString());
+
+		// every Text needs a context model
+		TextContextModel tcm = new TextContextModel(aText.ID);
+		tcm.addPlainText(aText.getPlainText());
+
+		// add the extracted context model to the text
+		aText.setContextModel(tcm);
+
+		return aText;
+	}
+	
+	
+	/**
+	 * Gets a {@link Text} from the given filename. The {@link Text}'s ID will be the filename minus
+	 * its extension.
+	 * 
+	 * @param filename
+	 * @return
+	 */
+	public static Text loadTextFromXml (String filename) {
+		// remove the extension from the filename to get an ID
+		String id = filename.replaceFirst("^(.+)\\..*?$", "$1");
+		
+		//System.out.println("id: "+ id);
+		
+		StringBuilder plaintext = new StringBuilder();
+		StringBuilder xmltext   = new StringBuilder();
+		
+		try {
+			BufferedReader br = new BufferedReader(new FileReader(filename));
+			String line;
+			while ((line = br.readLine()) != null) {
+				xmltext.append(line);
+				xmltext.append("\n");
+				
+				plaintext.append(Text.xmlToPlainSentence(line));
+				plaintext.append("\n");
+			}
+			br.close();
+		} catch (IOException ioe) {
+			ioe.printStackTrace();
+		}
+		
+		// finally construct the Text to be returned
+		Text aText = new Text(id, plaintext.toString());
+		aText.originalXml = xmltext.toString();
+		aText.sentencesInXML = true;
 
 		// every Text needs a context model
 		TextContextModel tcm = new TextContextModel(aText.ID);

@@ -23,14 +23,10 @@ import gnat.server.GnatService.Tasks;
 import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileWriter;
-import java.util.LinkedList;
 import java.util.List;
 
-import javax.swing.text.html.parser.DocumentParser;
-
-import uk.ac.man.documentparser.input.DocumentIterator;
-
 import martin.common.ArgParser;
+import uk.ac.man.documentparser.input.DocumentIterator;
 
 /**
  * Pipeline for performing Gene Mention Normalization, which runs a fixed set of filters.
