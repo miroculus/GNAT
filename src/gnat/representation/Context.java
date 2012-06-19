@@ -559,6 +559,24 @@ public class Context {
 	    return result;
     }
 
+	
+	
+	/**
+	 * 
+	 * @param text
+	 * @return
+	 */
+	public String getInlineAnnotations (Text text) {
+		StringBuilder result = new StringBuilder();
+		
+		// <src:GNAT ENREZGENE=“2064“ pt=“ERBB2“>her-2</src:GNAT>
+		
+		//text.plainText
+		
+		
+		return result.toString();
+	}
+	
 
 	/**
 	 * Writes all currently identified genes in this context to a file; the file will be 
@@ -658,7 +676,7 @@ public class Context {
 	
 	/**
 	 * Writes a file with all currently identified genes in BioCreative-tab-delimited-format:
-	 * text ID, gene ID, gene name as mentioned, confidence score.
+	 * text ID, gene ID, gene name as mentioned in the text, confidence score.
 	 * 
 	 * @throws IOException
 	 * */
