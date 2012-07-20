@@ -21,7 +21,7 @@ public class ConstantsNei {
 	 * Sets the current output level. Default: status.
 	 * @see enum OUTPUT_LEVELS
 	 */
-	public static OUTPUT_LEVELS OUTPUT_LEVEL = OUTPUT_LEVELS.STATUS;
+	public static OUTPUT_LEVELS OUTPUT_LEVEL = OUTPUT_LEVELS.DEBUG;//STATUS;
 
 	/** 
 	 * The dictionary can run as a remove host. Use RemoteEntityRecogntion

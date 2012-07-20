@@ -35,23 +35,44 @@ public class TextRepository {
 
 
 	/**
-	 * Adds a text to this repository. If another Text with the same ID
-	 * exists alread, overwrites the old Text.
+	 * Adds a text to this repository.
+	 * <br>If another Text with the same ID exists already, overwrites the old Text.
 	 * @param text
 	 */
 	public void addText (Text text) {
 		textMap.put(text.getID(), text);
 	}
+	
+	
+	/**
+	 * Adds a collection of texts to this repository.
+	 * <br>If another Text with the same ID exists already, overwrites the old Text.
+	 * @param text
+	 */
+	public void addTexts (Collection<Text> texts) {
+		for (Text text: texts)
+			textMap.put(text.getID(), text);
+	}
 
 
 	/**
-	 * Adds all the text from the specified repository to this repository.
+	 * Adds all the texts from the specified repository to this repository.
 	 * */
 	public void addAll(TextRepository textRepository){
 		for (Text text : textRepository.getTexts()) {
 	        addText(text);
         }
 	}
+
+	
+	/**
+	 * Returns a collection of all text IDs in this repository.
+	 * @return
+	 */
+	public Collection<String> getTextIDs () {
+		return textMap.keySet();
+	}
+
 
 	/**
 	 * Returns all Text objects currently in the repository

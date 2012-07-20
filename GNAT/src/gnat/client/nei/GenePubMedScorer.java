@@ -1,6 +1,7 @@
 package gnat.client.nei;
 
 import gnat.ConstantsNei;
+import gnat.ISGNProperties;
 import gnat.comparison.CompareContextVectors;
 import gnat.comparison.GOTermSimilarity;
 import gnat.database.go.GOAccess;
@@ -17,6 +18,7 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.LinkedList;
+import java.util.List;
 
 /**
  * Scores one or more genes given their occurrence in a particular piece of text. Its main use
@@ -367,12 +369,19 @@ public class GenePubMedScorer {
 		scores.add(proteinMutationScore);
 
 		// PMIDs
-		float pmidScore = getScore_PubMedID(
-				gene.getContextModel().getContextVectorForType(GeneContextModel.CONTEXTTYPE_PMIDS),
-				text.getPMID());
-		if (pmidScore > 0.0f)
-			allScores.put("PM", pmidScore);
-		scores.add(pmidScore);
+		if (ISGNProperties.get("useGenePubmed") != null
+				&& ISGNProperties.get("useGenePubmed").toLowerCase().matches("(true|1|y|yes)")) {
+			float pmidScore = getScore_PubMedID(
+					gene.getContextModel().getContextVectorForType(GeneContextModel.CONTEXTTYPE_PMIDS),
+					text.getPMID());
+			if (pmidScore > 0.0f) {
+				allScores.put("PM", pmidScore);
+				//System.err.println("PMID score for gene " + gene.ID + " = " + pmidScore);
+			}
+			scores.add(pmidScore);
+		} else {
+			//System.err.println("NOT USING PUBMED");
+		}
 
 		float summaryScore = getScore_Summary(
 				gene.getContextModel().getContextVectorForType(GeneContextModel.CONTEXTTYPE_ENTREZGENESUMMARY),
@@ -844,6 +853,7 @@ public class GenePubMedScorer {
 		return 0.0f;
 	}
 
+
 	/**
 	 *
 	 * TODO
@@ -946,131 +956,5 @@ public class GenePubMedScorer {
 		this.verbosity = verbosity;
 	}
 
-
-
-
-	/**
-	 * For testing purposes
-	 * @param args
-	 */
-	@SuppressWarnings("unchecked")
-	public static void main (String[] args) throws Exception {
-		/*if (args.length == 0) {
-			test();
-			System.exit(0);
-		}*/
-
-		String sourceText = "The Bmx sequence was identified and cloned during our search for novel tyrosine kinase genes expressed in human bone marrow cells. Bmx cDNA comprises a long open reading frame of 675 amino acids, containing one SH3, one SH2 and one tyrosine kinase domain, which are about 70% identical with Btk, Itk and Tec and somewhat less with Txk tyrosine kinase sequences. The amino terminal sequences of these four tyrosine kinases are about 40% identical and each contains a so-called pleckstrin homology domain. The 2.7 kb Bmx mRNA was expressed in endothelial cells and several human tissues by Northern blotting and an 80 kD Bmx polypeptide was detected in human endothelial cells. Immunoprecipitates of COS cells transfected with a Bmx expression vector and NIH3T3 cells expressing a Bmx retrovirus contained a tyrosyl phosphorylated Bmx polypeptide of similar molecular weight. The BMX gene was located in chromosomal band Xp22.2 between the DXS197 and DXS207 loci. Interestingly, chromosome X also contains the closest relative of BMX, the BTK gene, implicated in X-linked agammaglobulinemia. The BMX gene thus encodes a novel nonreceptor tyrosine kinase, which may play a role in the growth and differentiation of hematopoietic cells.";
-		String[] domains = {"SH2", "PH", "Protein kinase"};
-		for (String dom: domains) {
-			System.out.println("# Checking for domain: '" + dom + "'");
-			if (sourceText.matches(".*(^|\\D)" + dom + "([\\s\\,\\.\\;\\)]|$).*")) {
-				System.out.println("# Found it.");
-			}
-		}
-
-		String[] lengths = {"675"};
-		for (String len: lengths) {
-			System.out.println("# Checking for length: '" + len + "'");
-			if (sourceText.matches(".*(^|\\s)" + len + "\\s?amino[\\-\\s]?acids.*")){//\\s?(aa|amino\\-?acid)s?.*")) {
-				System.out.println("# Found it.");
-			}
-		}
-
-		System.exit(0);
-
-
-		String[] geneIDs = args[0].split(",");
-		String pubmedID = args[1];
-		//LinkedList
-
-		LinkedList geneids = new LinkedList();
-		Collections.addAll(geneids, (Object[])geneIDs);
-		//Arrays.asList(a)
-
-		System.out.println("Reading text repository...");
-		TextRepository textrep = TextFactory.loadTextRepositoryFromDirectory(
-				"data/abs_train/",
-				"textObjects/pmGoAccessionNumbers.object"//"textObjects/gocodes.object"
-		);//new TextRepository();
-		//Text mytext = TextFactory.loadTextFromFile(args[0]);
-		//textrep.addText(mytext);
-		Text mytext = textrep.getText(pubmedID);
-		System.out.println("Text: " + mytext.ID);
-		//String[] types = mytext.getContextModel().getContextVectorTypes();
-		//System.out.print("  ");
-		//for (String type: types)
-		//	System.out.print(" " + type);
-		//System.out.println();
-		//System.out.println(mytext.getContextModel().getContextVectorForType(ContextModel.CONTEXTTYPE_TEXT));
-
-		/*		System.out.println("Reading gene repository...");
-		GeneRepository generep = GeneFactory.loadGeneRepositoryFromEntrezGeneObjectFiles(
-				"entrezGeneLexicon_oneSynPerLine.txt",
-				"entrezGeneObjects/geneRifs.object",
-				"entrezGeneObjects/goIDs.object",
-				"entrezGeneObjects/goTerms.object",
-				"entrezGeneObjects/summaries.object",
-				"entrezGeneObjects/uDiseases.object",
-				"entrezGeneObjects/uFunctions.object",
-				"entrezGeneObjects/uKeywords.object",
-				"entrezGeneObjects/locations.object",
-				"entrezGeneObjects/tissues.object",
-				"entrezGeneObjects/pmIDs.object",
-				"entrezGeneObjects/uMutations.object",
-				"entrezGeneObjects/uLength.object",
-				"entrezGeneObjects/uDomains.object"
-				);*/
-
-		//		GeneRepository generep = new GeneRepository();
-		//		GeneFactory.dataDirectory = "data/entrezgenes/";
-		//LinkedList<Gene> allgenes = geneFactory.loadAllGenesFromDirectory();
-		//System.out.println("# Loaded " + allgenes.size() + " genes");
-		//		generep.setGenes( GeneFactory.loadAllGenesFromDirectory() );
-		/*for (int i = 1; i < args.length; i++) {
-			Gene gene = geneFactory.loadGeneForID(args[i]);
-			//genes.loadModelForID(args[i]);
-			genes.addGene(gene);
-		}*/
-
-
-
-
-		//		GenePubMedScorer genePubMedScorer = new GenePubMedScorer();
-
-
-
-
-		/*for (Gene gene: generep.getGenes()) {
-			if (!gene.isValid()) continue;
-
-			float score = genePubMedScorer.scoreGeneAndPubMed(gene, mytext);
-
-			System.err.println("Gene " + gene.ID + " (" +  MathHelper.round2(gene.getContextModel().innerCoherence) + ") and text "
-					+ mytext.ID + ":\t"+ MathHelper.round2(score)
-					/*+ "\t["
-					+ round((score / gene.getContextModel().innerCoherence))
-					+ ", " + round((score * gene.getContextModel().innerCoherence))
-					+ ", " + round((score / (1.0f - gene.getContextModel().innerCoherence)))
-					+ ", " + round((score * (1.0f - gene.getContextModel().innerCoherence)))
-					+ ", " + round((score + ((1.0f - gene.getContextModel().innerCoherence) / 10.0f)))
-					+ ", " + round((score - (gene.getContextModel().innerCoherence / 10.0f)))
-					+ ", " + round(gene.getContextModel().innerCoherence - score)
-					+ "]"*/
-		/*					);
-		}
-
-		System.out.println("17465228: 840;   1579499: 1656;   9694715: 2147, 2316, 2317, 2318, 7450");*/
-
-
-		/*System.out.println("Scoring genes...");
-
-		for (Gene gene:	generep.getGenes(geneids)) {
-			float score = genePubMedScorer.getScore(gene, mytext);
-			System.out.println(gene.ID + ": " + score);
-		}*/
-
-
-	}
 
 }

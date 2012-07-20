@@ -138,7 +138,9 @@ public class LinnaeusSpeciesServiceNer implements Filter {
 				System.err.println("The species ID " + id + " must be numeric.");
 		}
 
-		RecognizedEntity recognizedGeneName = new RecognizedEntity(text, new TextAnnotation(position, evidence, eType));
+		TextAnnotation textAnnotation = new TextAnnotation(position, evidence, eType);
+		textAnnotation.setSource("automatic");
+		RecognizedEntity recognizedGeneName = new RecognizedEntity(text, textAnnotation);
 		context.addRecognizedEntity1(recognizedGeneName, ids);
 	}
 

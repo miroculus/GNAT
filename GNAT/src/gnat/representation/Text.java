@@ -2,7 +2,13 @@ package gnat.representation;
 
 import gnat.preprocessing.sentences.SentenceSplitter;
 import gnat.preprocessing.sentences.SentenceSplitterRegex;
+import gnat.retrieval.PubmedAccess;
+import gnat.utils.UniversalNamespaceResolver;
 
+import java.io.ByteArrayInputStream;
+import java.io.File;
+import java.io.IOException;
+import java.io.StringWriter;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.LinkedList;
@@ -11,6 +17,29 @@ import java.util.Map;
 import java.util.Set;
 import java.util.TreeSet;
 import java.util.Vector;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+
+import javax.xml.parsers.DocumentBuilder;
+import javax.xml.parsers.DocumentBuilderFactory;
+import javax.xml.parsers.ParserConfigurationException;
+import javax.xml.transform.OutputKeys;
+import javax.xml.transform.Transformer;
+import javax.xml.transform.TransformerConfigurationException;
+import javax.xml.transform.TransformerException;
+import javax.xml.transform.TransformerFactory;
+import javax.xml.transform.dom.DOMSource;
+import javax.xml.transform.stream.StreamResult;
+import javax.xml.xpath.XPath;
+import javax.xml.xpath.XPathConstants;
+import javax.xml.xpath.XPathExpressionException;
+import javax.xml.xpath.XPathFactory;
+
+import org.w3c.dom.Document;
+import org.w3c.dom.Element;
+import org.w3c.dom.Node;
+import org.w3c.dom.NodeList;
+import org.xml.sax.SAXException;
 
 /**
  * Represents a text object, with source text, text context model, and annotations.
@@ -39,16 +68,28 @@ public class Text {
 	public String ID = "-1";
 
 	public IdTypes idType;
-	
 
 	/** */
+	public String title = "";
+	
+	/** */
 	public String plainText = "";
-
 	
 	/** */
 	public String originalXml = "";
 	
+	/** */
+	public String annotatedXml = "";
+	
+	/** A JDOM Document representation of this text.<br>Will be set only if an XML input was used,
+	 * for example via {@link TextFactory#loadTextFromMedlineXmlfile(String)}.<br>
+	 * To update the XML
+	 * content with annotations, use {@link #replaceTitleInDocument(String)} and {@link #replaceAbstractInDocument(String)}.<br>
+	 * Print the current Document to a file using {@link #toXmlFile(String)}.
+	 * */
+	public Document jdocument; 
 
+	/** */
 	public int PMID = -1;
 
 
@@ -60,7 +101,6 @@ public class Text {
 
 	public LinkedList<String> sentences = new LinkedList<String>();
 
-
 	public LinkedList<Integer> sentenceIds = new LinkedList<Integer>();
 
 	SentenceSplitter splitter = new SentenceSplitterRegex();
@@ -68,6 +108,11 @@ public class Text {
 	/** If this flag is set, treats every incoming sentence as XML-formatted. {@link #getSurroundingPlainText(int))} 
 	 *  will then strip the sentence off all XML tags. Flag can be set using the constructor {@link #Text(String, List, boolean)}. */
 	public boolean sentencesInXML = false;
+	
+	/** */
+	public LinkedList<TextAnnotation> annotations = new LinkedList<TextAnnotation>();
+
+
 
 
 	/** */
@@ -76,6 +121,10 @@ public class Text {
 		
 		if (id.matches("\\d+"))
 			this.PMID = Integer.parseInt(id);	// default
+		else if (id.matches(".*\\/\\d+\\.[a-z]+")) {
+			String pm = id.replaceFirst(".*\\/(\\d+)\\.[a-z]+", "$1");
+			this.PMID = Integer.parseInt(pm);
+		}
 	}
 
 
@@ -115,7 +164,7 @@ public class Text {
 	 * @param id
 	 * @param sentences
 	 */
-	public Text (String id, Vector<String> sentences) {
+	public Text (String id, List<String> sentences) {
 		this(id);
 		setSentences(sentences, false);
 
@@ -123,10 +172,6 @@ public class Text {
 		tcm.addPlainText(this.getPlainText());
 		this.setContextModel(tcm);
 	}
-
-
-	/** */
-	public LinkedList<TextAnnotation> annotations = new LinkedList<TextAnnotation>();
 
 
 	/**
@@ -153,15 +198,6 @@ public class Text {
 	 */
 	public void setContextModel (TextContextModel model) {
 		this.model = model;
-	}
-
-
-	/**
-	 * 
-	 * @param taxonIDs
-	 */
-	public void setTaxonIDs (Set<Integer> taxonIDs) {
-		this.taxonIDs = taxonIDs;
 	}
 
 
@@ -193,8 +229,11 @@ public class Text {
 	}
 
 
-	public int length()
-    {
+	/**
+	 * Returns the length of the plain text.
+	 * @return
+	 */
+	public int length() {
 	    return getPlainText().length();
     }
 
@@ -208,6 +247,29 @@ public class Text {
 	}
 	
 	
+	
+	///////////////
+	// Species information
+	// Methods to set and get taxa that are discussed in this text.
+	///////////////
+	
+	/**
+	 * 
+	 * @param taxonIDs
+	 */
+	public void setTaxonIDs (Set<Integer> taxonIDs) {
+		this.taxonIDs = taxonIDs;
+	}
+
+
+	/**
+	 * Add a species occurrence (identified by an NER step, for example, or other heuristics)
+	 * to this Text.<br><tt>name</tt> is the name of the species, as found in the text, but can
+	 * also be a synonym etc. <tt>taxon</tt> refers to NCBI Taxonomy ID of the species, for instance,
+	 * 9606 for human (H. sap), or 10090 for mouse (M. mus).
+	 * @param taxon
+	 * @param name
+	 */
 	public void addTaxonWithName (int taxon, String name) {
 		List<String> allNames = taxonIdsToNames.get(taxon);
 		if (allNames == null)
@@ -277,6 +339,8 @@ public class Text {
 		}
 	}
 
+	
+	///////////////
 
 	public void setPlainText(String text){
 		this.plainText = text;
@@ -343,15 +407,18 @@ public class Text {
 
 
 	/**
-	 * TODO: currently, a TextRepository can only contain one text with an 'unknown' ID (=-1)
+	 * TODO: currently, a {@link TextRepository} can only contain one text with an 'unknown' ID (=-1)
 	 */
 	@Override
 	public int hashCode() {
 		return this.ID.hashCode();
 	}
 
+	
+	/** Checks for identify of two Texts (this and another one) using the text IDs.<br>
+	 *  Therefore, a {@link TextRepository} can only contain one text with an "unknown" ID (-1). */
 	@Override
-	public boolean equals(Object anObject) {
+	public boolean equals (Object anObject) {
 		boolean equal = false;
 		if(anObject instanceof Text && anObject.hashCode()==this.hashCode()){
 			equal = true;
@@ -378,6 +445,22 @@ public class Text {
     }
 
 
+	/**
+	 * Sentence 0 would typically be the title of a text.
+	 * @param index
+	 * @param plainText
+	 */
+	public void setSentence (int index, String plainText) {
+		if (sentences == null)
+			sentences = new LinkedList<String>();
+		
+		while (sentences.size() < (index+1))
+			sentences.add("");
+		
+		sentences.set(0, plainText);
+	}
+	
+	
 	/**
 	 * 
 	 * @param sentences
@@ -416,8 +499,8 @@ public class Text {
 			sents.add(sent);
 		setSentences(sents, xml);
 	}
-
-
+	
+	
 	/**
 	 * 
 	 * @param xmlSentence
@@ -451,23 +534,6 @@ public class Text {
 				max++;
 		}
 		return plain.toString();
-	}
-
-
-	/**
-	 * 
-	 * @param xmlSentence
-	 * @return
-	 */
-	public static String xmlToPlainSentence (String xmlSentence) {
-		//System.err.println("Xml2plain: '" + xmlSentence + "'");
-		xmlSentence = xmlSentence.replaceAll("<([A-Za-z0-9\\_\\:]+)(\\s[^>]*)?>(.*?)</\\1>", "$3");
-		xmlSentence = xmlSentence.replaceAll("<([A-Za-z0-9\\_\\:]+)(\\s[^>]*)?>(.*?)</\\1>", "$3");
-		xmlSentence = xmlSentence.replaceAll("<([A-Za-z0-9\\_\\:]+)(\\s[^>]*)?>(.*?)</\\1>", "$3");
-		xmlSentence = xmlSentence.replaceAll("<([A-Za-z0-9\\_\\:]+)(\\s[^>]*)?>(.*?)</\\1>", "$3");
-		xmlSentence = xmlSentence.replaceAll("<([A-Za-z0-9\\_\\:]+)(\\s[^>]*)?>(.*?)</\\1>", "$3");
-		//System.err.println("           '" + xmlSentence + "'");
-		return xmlSentence;
 	}
 
 
@@ -588,26 +654,178 @@ public class Text {
 			return -1;
 	}
 
+	
+	///////////////
+	// XML
+	// Methods to handle the XML version of this Text, including a JDOM Document representation 
+	// Fields: jdocument, originalXml, plainText
+	///////////////
+	
+	/**
+	 * 
+	 * @param xml
+	 */
+	public void setPlainFromXml (String xml) {
+		this.originalXml = xml;
+		plainText = PubmedAccess.getAbstractsFromXML(xml)[0];
+	}
+
 
 	/**
-	 * For testing only.
-	 * @param args
+	 * Uses the current content of {@link #originalXml} to extract the plain text from 
+	 * the XML. Currently, assumes PubMed XML format and grabs only the content of
+	 * ArticleTitle and AbstractText, see {@link PubmedAccess#getAbstractsFromXML(String)}.
+	 * @param xml
 	 */
-	public static void main (String[] args) {
-		/*Text text = new Text();
-		text.setPlainText("Segregation data on LW in families of informative males show that the LW (Landsteiner-Wiener) blood group locus is closely linked to the complement C3 locus and to the locus for the Lutheran blood group. This finding also confirms the presence of a larger linkage group on chromosome 19, including now the loci for apoE, Le, C3, LW, Lu, Se, H, PEPD, myotonic dystrophy (DM), neurofibromatosis (NF) and familial hypercholesterolemia (FHC). Linkage of LW with the Lewis blood group locus could not be definitely established by the present family data, but small positive scores between LW and Le suggest that the Le locus is situated outside the C3-LW region.");
+	public void setPlainFromXml () {
+		plainText = PubmedAccess.getAbstractsFromXML(this.originalXml)[0];
+	}
 
-		// first sentence end mark ('.') is at 202
-		// 2nd sentence (This ..) starts at 204 ('T')
-		// 654 = 'o' in final word, "... region."
-		// 656 = final '.'
-
-		int pos = 656;
-		System.out.println(text.getCharAt(pos-2) + "" + text.getCharAt(pos-1) + "" + text.getCharAt(pos) + "" + text.getCharAt(pos+1) + "" + text.getCharAt(pos+2));
-		System.out.println("--'"  + text.getSentenceAround(pos) + "'--");
-		*/
-		Text text = new Text("1");
-		System.out.println(text.xmlToPlainSentence("<SENT PMID=\"10464305\" SID=\"291\"><plain>Furthermore the specific activity of the <z:uniprot ids=\"P09516\">50-kDa protein</z:uniprot> increases on association of <z:uniprot ids=\"P12398\">mtHSP70</z:uniprot>.</plain></SENT>"));
+	
+	/**
+	 * 
+	 * @param xmlSentence
+	 * @return
+	 */
+	public static String xmlToPlainSentence (String xmlSentence) {
+		System.err.println("Xml2plain: '" + xmlSentence + "'");
+		if (xmlSentence.matches("[\\s\\t]*<[^>]+>[\\s\\t]*"))
+			xmlSentence = "";
+		else {
+			xmlSentence = xmlSentence.replaceAll("<([A-Za-z0-9\\_\\:]+)(\\s[^>]*)?>(.*?)</\\1>", "$3");
+			xmlSentence = xmlSentence.replaceAll("<([A-Za-z0-9\\_\\:]+)(\\s[^>]*)?>(.*?)</\\1>", "$3");
+			xmlSentence = xmlSentence.replaceAll("<([A-Za-z0-9\\_\\:]+)(\\s[^>]*)?>(.*?)</\\1>", "$3");
+			xmlSentence = xmlSentence.replaceAll("<([A-Za-z0-9\\_\\:]+)(\\s[^>]*)?>(.*?)</\\1>", "$3");
+			xmlSentence = xmlSentence.replaceAll("<([A-Za-z0-9\\_\\:]+)(\\s[^>]*)?>(.*?)</\\1>", "$3");
+		}
+		System.err.println("           '" + xmlSentence + "'");
+		return xmlSentence.trim();
 	}
 	
+
+	/**
+	 * Writes the current XML content, as given in the JDOM Document {@link #jdocument},
+	 * into the file specified by <tt>filename</tt>.<br>
+	 * If {@link #jdocument} is not set, does not write anything to a file.
+	 * @param filename
+	 */
+	public void toXmlFile (String filename) {
+		if (jdocument == null) return;
+		TransformerFactory transformerFactory = TransformerFactory.newInstance();
+		Transformer transformer;
+		try {
+			transformer = transformerFactory.newTransformer();
+			DOMSource source = new DOMSource(jdocument);
+			StreamResult result = new StreamResult(new File(filename)); 
+			transformer.transform(source, result);
+		} catch (TransformerConfigurationException e) {
+			e.printStackTrace();
+		} catch (TransformerException e) {
+			e.printStackTrace();
+		}
+	}
+	
+	
+	
+	/**
+	 * Returns the current XML content, as given in the JDOM Document {@link #jdocument},
+	 * as a string.<br>
+	 * If {@link #jdocument} is not set, returns an empty string.
+	 * @param filename
+	 */
+	public String toXmlString () {
+		if (jdocument == null) return "";
+		
+		String output = "";
+		try {
+			TransformerFactory tf = TransformerFactory.newInstance();
+			Transformer transformer = tf.newTransformer();
+			transformer.setOutputProperty(OutputKeys.OMIT_XML_DECLARATION, "yes");
+			StringWriter writer = new StringWriter();
+			transformer.transform(new DOMSource(jdocument), new StreamResult(writer));
+			output = writer.getBuffer().toString();//.replaceAll("\n|\r", "");
+		} catch (TransformerConfigurationException e) {
+			e.printStackTrace();
+		} catch (TransformerException e) {
+			e.printStackTrace();
+		}
+
+		return output;
+	}
+
+	
+	/**
+	 * Replaces the current title of this Text with an annotated one (XML format).<br>
+	 * Affects only the value of {@link #annotatedXml}. 
+	 * @param annotatedTitle
+	 */
+	public void annotateXmlTitle (String annotatedTitle) {
+		if (annotatedXml.length() == 0)
+			annotatedXml = originalXml;
+		String full = annotatedXml;
+		Pattern p = Pattern.compile("<ArticleTitle>.*</ArticleTitle>", Pattern.MULTILINE);
+		Matcher m = p.matcher(full);
+		full = m.replaceFirst("<ArticleTitle>" + annotatedTitle + "</ArticleTitle>");
+		annotatedXml = full;
+	}
+	
+	
+	/**
+	 * Replaces the current abstract of this Text with an annotated one (XML format).<br>
+	 * Affects only the value of {@link #annotatedXml}. 
+	 * @param annotatedTitle
+	 */
+	public void annotateXmlAbstract (String annotatedAbstract) {
+		if (annotatedXml.length() == 0)
+			annotatedXml = originalXml;
+		String full = annotatedXml;
+		Pattern p = Pattern.compile("<AbstractText(?:\\s.+?)?>.*</AbstractText>", Pattern.DOTALL);
+		Matcher m = p.matcher(full);
+		full = m.replaceFirst("<AbstractText>" + annotatedAbstract + "</AbstractText>");
+		annotatedXml = full;
+	}
+	
+	
+	/**
+	 * 
+	 * @param prefix
+	 */
+	public void addPrefixToXml (String prefix) {
+		Pattern p = Pattern.compile("<PubmedArticle", Pattern.DOTALL);
+		Matcher m = p.matcher(annotatedXml);
+		annotatedXml = m.replaceFirst("<PubmedArticle xmlns:" + prefix + "=\"http://gnat.sourceforge.net\"");
+		
+		m = p.matcher(originalXml);
+		originalXml = m.replaceFirst("<PubmedArticle xmlns:" + prefix + "=\"http://gnat.sourceforge.net\"");
+	}
+	
+	
+	/**
+	 * Generates a new DOM Document ({@link #jdocument}} based on the current value
+	 * of {@link #annotatedXml}.<br>
+	 * If {@link #annotatedXml} is not set (length = 0), will use {@link #originalXml}.
+	 */
+	public void buildJDocumentFromAnnotatedXml () {
+		DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
+	    factory.setNamespaceAware(true);
+	    DocumentBuilder builder;
+		try {
+			builder = factory.newDocumentBuilder();
+			if (annotatedXml.length() > 0) {
+				//Pattern p = Pattern.compile("<PubmedArticle", Pattern.DOTALL);
+				//Matcher m = p.matcher(annotatedXml);
+				//annotatedXml = m.replaceFirst("<PubmedArticle xmlns:src=\"http://gnat.sourceforge.net\"");
+		    	jdocument = builder.parse(new ByteArrayInputStream(annotatedXml.getBytes()));
+			} else {
+				jdocument = builder.parse(new ByteArrayInputStream(originalXml.getBytes()));
+			}
+		} catch (ParserConfigurationException e) {
+			e.printStackTrace();
+		} catch (SAXException e) {
+			e.printStackTrace();
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+	}
+
 }

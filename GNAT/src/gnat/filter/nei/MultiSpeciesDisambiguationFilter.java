@@ -41,7 +41,7 @@ public class MultiSpeciesDisambiguationFilter implements Filter {
 	private Map<String, Map<String, Float>> scoredGenes = new HashMap<String, Map<String, Float>>();
 
 	/** */
-	public int verbosity = 0;
+	public int verbosity = 6;
 	
 	Context context;
 	TextRepository textRepository;

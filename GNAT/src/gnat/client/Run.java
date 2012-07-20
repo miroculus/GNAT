@@ -2,13 +2,16 @@ package gnat.client;
 
 import gnat.filter.Filter;
 import gnat.representation.Context;
+import gnat.representation.Gene;
 import gnat.representation.GeneRepository;
+import gnat.representation.IdentificationStatus;
 import gnat.representation.IdentifiedGene;
 import gnat.representation.RecognizedEntity;
 import gnat.representation.Text;
 import gnat.representation.TextRepository;
 
 import java.io.PrintStream;
+import java.util.Collection;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
@@ -77,6 +80,15 @@ public class Run {
 	 */
 	public void setTextRepository (TextRepository textRepository) {
 		this.textRepository = textRepository;
+	}
+	
+	
+	/**
+	 * 
+	 * @return
+	 */
+	public TextRepository getTextRepository () {
+		return this.textRepository;
 	}
 	
 	
@@ -192,5 +204,17 @@ public class Run {
 			float seconds = (float)(endtime - starttime) / 1000.0f;
 			System.out.println("Run finished in " + seconds + "sec. ");
 		}
+	}
+	
+	
+	public GeneRepository getGeneRepository () {
+		return this.geneRepository;
+	}
+	
+	public Gene getGene (String geneId) {
+		if (this.geneRepository.geneMap.containsKey(geneId))
+			return this.geneRepository.geneMap.get(geneId);
+		else
+			return null;
 	}
 }

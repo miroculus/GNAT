@@ -202,7 +202,9 @@ public class GnatServiceNer implements Filter {
 		TextAnnotation.Type eType = TextAnnotation.Type.getValue(type);
 		String[] ids = idString.split("\\s*[\\;\\,]\\s*");
 
-		RecognizedEntity recognizedGeneName = new RecognizedEntity(text, new TextAnnotation(position, evidence, eType));
+		TextAnnotation textAnnotation = new TextAnnotation(position, evidence, eType);
+		textAnnotation.setSource("automatic");
+		RecognizedEntity recognizedGeneName = new RecognizedEntity(text, textAnnotation);
 		context.addRecognizedEntity1(recognizedGeneName, ids);
 
 		if (type.equals("species"))
