@@ -15,10 +15,11 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
+import java.util.LinkedList;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.TreeSet;
-import java.util.Vector;
 
 /**
  * Retrieves information on a set of genes from a database and compiles
@@ -70,7 +71,7 @@ public class GeneRepositoryFromDatabase {
 	 * @return
 	 */
 	public String[] getValues (String table, String column, String id) {
-		Vector<String> temp = new Vector<String>();
+		List<String> temp = new LinkedList<String>();
 
 		try {
 			userResultset = userStatement.executeQuery("SELECT " +column + " FROM " + table + " WHERE ID="+id);
@@ -352,6 +353,14 @@ public class GeneRepositoryFromDatabase {
 
 			String[] values = getValues("GR_Names", "name", geneId);
 			gene.addNames(values);
+			
+			values = getValues("GR_Symbols", "symbol", geneId);
+			//System.out.println("Off sym = " + values[0]);
+			if (values.length > 0 && values[0].length() > 0)
+				gene.officialSymbol = values[0];
+			else
+				gene.officialSymbol = null;
+			
 			values = getValues("GR_ProteinNames", "name", geneId);
 			gene.addNames(values);
 
@@ -618,6 +627,13 @@ public class GeneRepositoryFromDatabase {
 			}
 
 			gene.setContextModel(gcm);
+			
+			String[] values = getValues("GR_Symbols", "symbol", geneId);
+			//System.out.println("Off sym = " + values[0]);
+			if (values.length > 0 && values[0].length() > 0)
+				gene.officialSymbol = values[0];
+			else
+				gene.officialSymbol = null;
 
 			//grep.addGene(gene);
 			geneList.add(gene);

@@ -260,6 +260,28 @@ public class PubmedAccess {
 	}
 
 
+	public static String getPubMedIdFromXML (String xml) {
+		String[] abs = new String[0];
+		try {
+			SAXBuilder builder = new SAXBuilder();
+			Document doc = builder.build(new StringReader(xml));
+			Element root = doc.getRootElement(); // root should be "PubmedArticle"
+			List articleList = root.getChildren("MedlineCitation");
+			abs = new String[articleList.size()];
+			Iterator articleIt = articleList.iterator();
+			for (int i = 0; articleIt.hasNext(); i++) {
+				Element pubmedArticleElement = (Element) articleIt.next();
+				Element pmidElement = pubmedArticleElement.getChild("PMID");
+				return pmidElement.getTextTrim();
+			}
+		} catch (JDOMException e) {
+			e.printStackTrace();
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+		return "-1";
+	}
+	
 	
 	/**
 	 * Returns an array of abstract texts from a MedlineCitationSet XML. Concatenates
@@ -273,7 +295,7 @@ public class PubmedAccess {
 		try {
 			SAXBuilder builder = new SAXBuilder();
 			Document doc = builder.build(new StringReader(xml));
-			Element root = doc.getRootElement();
+			Element root = doc.getRootElement(); // root should be "PubmedArticle"
 			List articleList = root.getChildren("MedlineCitation");
 			abs = new String[articleList.size()];
 			Iterator articleIt = articleList.iterator();
@@ -284,8 +306,15 @@ public class PubmedAccess {
 
 				abs[i] = titleElement.getTextTrim();
 				if (abstractElement != null) {
-					Element abstractText = abstractElement.getChild("AbstractText");
-					abs[i] += " " + abstractText.getTextTrim();
+					//Element abstractText = abstractElement.getChild("AbstractText");
+					//abs[i] += " " + abstractText.getTextTrim();
+					
+					List<Element> abstractTexts = abstractElement.getChildren("AbstractText");
+					for (Element abstractText: abstractTexts) {
+						abs[i] += " " + abstractText.getTextTrim();						
+						//System.err.println("#ADDING " + abstractText.getTextTrim());
+					}
+					
 				}
 			}
 		} catch (JDOMException e) {

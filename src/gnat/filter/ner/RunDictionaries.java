@@ -502,7 +502,9 @@ public class RunDictionaries implements Filter {
 			
 			String idString = annotatedGeneName.substring(idOpenQuot + 1, idCloseQuot);
 
-			RecognizedEntity recognizedGeneName = new RecognizedEntity(originalText, new TextAnnotation(new TextRange(startIndex, endIndex), geneName, ttype));
+			TextAnnotation textAnnotation =new TextAnnotation(new TextRange(startIndex, endIndex), geneName, ttype);
+			textAnnotation.setSource("automatic");
+			RecognizedEntity recognizedGeneName = new RecognizedEntity(originalText, textAnnotation);
 			context.addRecognizedEntity(recognizedGeneName, idString.split(";"));
 
 			geneTagBeginIndex = annotatedText.indexOf("<entity", geneTagEndIndex);

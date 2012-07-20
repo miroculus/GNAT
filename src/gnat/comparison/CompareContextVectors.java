@@ -199,6 +199,8 @@ public class CompareContextVectors implements Serializable {
 		temp1.retainAll(cv2.elements);
 		temp2.retainAll(cv1.elements);
 
+		//System.err.println("Shared elements: " + temp1);
+		
 		for (Feature t1: temp1) {
 			//System.out.println("Feature t1=" + t1);
 			int idx = temp2.indexOf(t1);

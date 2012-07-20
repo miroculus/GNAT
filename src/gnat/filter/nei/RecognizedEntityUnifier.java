@@ -46,7 +46,9 @@ public class RecognizedEntityUnifier implements Filter {
 					i = prolongEntityName(context, text, entityList, i, newEntityRange, newEntityIds);
 
 					String newName = text.getPlainText().substring(newEntityRange.getBegin(), newEntityRange.getEnd()+1);
-					RecognizedEntity newEntity = new RecognizedEntity(text, new TextAnnotation(newEntityRange, newName));
+					TextAnnotation annotation = new TextAnnotation(newEntityRange, newName);
+					annotation.setSource("automatic");
+					RecognizedEntity newEntity = new RecognizedEntity(text, annotation);
 					context.addRecognizedEntity(newEntity, newEntityIds);
 					//System.out.println("**** Added new name '"+newName+"' for text="+text.getID()+" sarting at "+newEntity.getBegin());
 				}

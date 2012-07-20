@@ -870,6 +870,7 @@ class GnatServiceHandler extends ServiceHandler {
 					if (type.equals("gene")) {
 						TextAnnotation.Type ttype = TextAnnotation.Type.GENE;
 						TextAnnotation textAnnotation = new TextAnnotation(textRange, name, ttype);
+						textAnnotation.setSource("automatic");
 						RecognizedEntity gene = new RecognizedEntity(text, textAnnotation);
 
 						String[] idCandidates = ids.split("\\s*[\\;\\,]\\s*");

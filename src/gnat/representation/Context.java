@@ -125,6 +125,20 @@ public class Context {
 		return textSet;
 	}
 
+	
+	/**
+	 * Returns the Text with the corresponding ID if it contains any recognized entities in this context.
+	 * Returns NULL if no Text with the given ID exists, or the Text with the matching ID has no recognized entities.
+	 * */
+	public Text getText_ifAnnotated (String text_id) {
+		Set<RecognizedEntity> recognizedEntities = this.getRecognizedEntities();
+		for (RecognizedEntity name : recognizedEntities) {
+			if (name.getText().getID().equals(text_id))
+				return name.getText();
+        }
+		return null;
+	}
+
 
 	/**
 	 * 	Adds a recognized entity to this context.
@@ -502,6 +516,46 @@ public class Context {
     }
 	
 	
+	public float getConfidenceScore (Gene gene, Text text) {
+		float score = -1.0f;
+		List<IdentifiedGene> identifiedGenes = this.getEntitiesIdentifiedAsGene();
+		for (IdentifiedGene igene : identifiedGenes) {
+	    	String textId = igene.getRecognizedEntity().getText().getID();
+	    	String geneId = igene.getGene().getID();
+	    	if (text.ID.equals(textId) && gene.ID.equals(geneId)) {
+	    		return igene.getConfidenceScore();
+	    	}
+		}
+		
+		return score;
+	}
+	
+	
+	/**
+	 * 
+	 * @param gene
+	 * @param text_id
+	 * @return
+	 */
+	public float getConfidenceScore (Gene gene, String text_id) {
+		float score = -1.0f;
+		List<IdentifiedGene> identifiedGenes = this.getEntitiesIdentifiedAsGene();
+		for (IdentifiedGene igene : identifiedGenes) {
+	    	String textId = igene.getRecognizedEntity().getText().getID();
+	    	String geneId = igene.getGene().getID();
+	    	//System.err.println("gene.ID: " + gene.ID);
+	    	//System.err.println("geneId:  " + geneId);
+	    	if (gene == null || gene.ID == null || geneId == null) return -1.0f;
+	    	if (text_id.equals(textId)
+	    			&& gene.ID.equals(geneId)) {
+	    		return igene.getConfidenceScore();
+	    	}
+		}
+		
+		return score;
+	}
+	
+	
 	/**
 	 * Returns a list of strings that represent the result in TSV format:
 	 * a tab-separated list with columns for text ID (PubMed ID), gene ID (EntrezGene),
@@ -558,24 +612,6 @@ public class Context {
 
 	    return result;
     }
-
-	
-	
-	/**
-	 * 
-	 * @param text
-	 * @return
-	 */
-	public String getInlineAnnotations (Text text) {
-		StringBuilder result = new StringBuilder();
-		
-		// <src:GNAT ENREZGENE=“2064“ pt=“ERBB2“>her-2</src:GNAT>
-		
-		//text.plainText
-		
-		
-		return result.toString();
-	}
 	
 
 	/**
@@ -606,6 +642,26 @@ public class Context {
 			writer.write(line + "\n");
 		writer.close();
     }
+	
+	
+	/**
+	 * 
+	 * @return
+	 */
+	public Map<String, List<String>> toIdentifiedGeneList_SortedByPosition_byText () {
+		List<String> allGenes_tsvFormat = toIdentifiedGeneList_SortedByPosition();
+		
+		Map<String, List<String>> text_to_geneList = new HashMap<String, List<String>>();
+		for (String geneTsv: allGenes_tsvFormat) {
+			String id = geneTsv.split("\t")[0];
+			List<String> genes_for_this_text = new LinkedList<String>();
+			if (text_to_geneList.containsKey(id))
+				genes_for_this_text = text_to_geneList.get(id);
+			genes_for_this_text.add(geneTsv);
+			text_to_geneList.put(id, genes_for_this_text);
+		}
+		return text_to_geneList;
+	}
 	
 	
 	/**

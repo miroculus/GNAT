@@ -1,22 +1,22 @@
 package gnat.representation;
 
 import gnat.ConstantsNei;
+import gnat.retrieval.PubmedAccess;
 
 import java.io.BufferedReader;
+import java.io.ByteArrayInputStream;
 import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
-import java.io.ObjectInputStream;
-import java.util.Arrays;
 import java.util.Collection;
-import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.Map;
-import java.util.Set;
-import java.util.TreeSet;
+
+import javax.xml.parsers.DocumentBuilder;
+import javax.xml.parsers.DocumentBuilderFactory;
+import javax.xml.parsers.ParserConfigurationException;
+
+import org.xml.sax.SAXException;
 
 import uk.ac.man.documentparser.dataholders.Document;
 import uk.ac.man.documentparser.input.DocumentIterator;
@@ -31,143 +31,9 @@ import uk.ac.man.documentparser.input.DocumentIterator;
 
 public class TextFactory {
 
-
 	/**
-	 * Loads a text repository from the given directory. Also loads GO terms
-	 * annotated to texts. The argument <tt>directory</tt> may also point to a single
-	 * file, in which case the text repository will contain only a single text.
-	 * <br><br>
-	 * Considers only files that have the extension *.txt.
-	 *
-	 * @param directory
-	 * @param goCodes
-	 * @return
-	 */
-	@SuppressWarnings("unchecked")
-	@Deprecated public static TextRepository loadTextRepositoryFromDirectory (String directory, String goCodes) {
-		// start a new repository
-		TextRepository textRepository = new TextRepository();
-		Set<String> textIds = new TreeSet<String>();
-
-		// first, read all plain texts from the directory
-		File INPUTS = new File(directory);
-		
-		// if the argument is a directory, load all files (*.txt) in there
-		if (INPUTS.isDirectory()) {
-			//System.err.println("Param is a directory.");
-			if (!directory.endsWith("/"))
-				directory += "/";
-			// get all files in the directory
-			String[] inputfiles = INPUTS.list();
-			// try to load all files that end with .txt
-			for (String filename: inputfiles) {
-				if (filename.endsWith("txt")){
-					Text text = loadTextFromFile(directory + filename);
-					textRepository.addText(text);
-					textIds.add(text.ID);
-				}
-			}
-		// if the argument is a single file, load this single file
-		} else {
-			Text text = loadTextFromFile(directory);
-			textRepository.addText(text);
-			textIds.add(text.ID);
-		}
-
-		// now, add annotations found in the 'object' directory and from other sources (DBs)
-		// maps each text ID to a context model
-		Map<String, TextContextModel> contextModelTable = new HashMap<String, TextContextModel>();
-		// maps text IDs to plain data arrays
-		HashMap<String, String[]> objectTable = new HashMap<String, String[]>();
-
-		String[] gocodefiles = new String[]{goCodes};
-		File GOCODES = new File(goCodes);
-		if (GOCODES.isDirectory()) {
-			gocodefiles = GOCODES.list();
-			for (int g = 0; g < gocodefiles.length; g++)
-				gocodefiles[g] = goCodes + "/" + gocodefiles[g];
-		}
-		
-		ObjectInputStream ois;
-		try {
-			for (String gocodefile: gocodefiles) {
-				ois = new ObjectInputStream(new FileInputStream(gocodefile));
-				HashMap<String, String[]> tempTable = (HashMap<String, String[]>) ois.readObject();
-				for (String key: tempTable.keySet()) {
-					objectTable.put(key, tempTable.get(key));
-				}
-				ois.close();
-			}
-			
-			// go through all known texts and check if a corresponding annotation is there
-			for (String textId : textIds) {
-				String[] gocodes = objectTable.get(textId);
-				if(gocodes!=null){
-					TextContextModel tcm = contextModelTable.get(textId);
-					if (tcm == null) {
-						tcm = new TextContextModel();
-						contextModelTable.put(textId, tcm);
-					}
-					tcm.addCodes(gocodes, GeneContextModel.CONTEXTTYPE_GOCODES);
-				}
-			}
-		} catch (FileNotFoundException e) {
-			e.printStackTrace();
-		} catch (IOException e) {
-			e.printStackTrace();
-		} catch (ClassNotFoundException cnfe) {
-			cnfe.printStackTrace();
-		}
-
-
-		// finally, change all texts in the repository (only plain texts now) and
-		// add the data from the table of context models
-
-		
-		
-		for (String textId : textIds) {
-			//System.out.println("Xchk"+textId);
-			TextContextModel tcm = contextModelTable.get(textId);
-			Text text = textRepository.getText(textId);
-			if (tcm != null) {
-				text.addToContextModel(tcm);
-			} else {
-				//text.setContextModel(new TextContextModel());
-			}
-			textRepository.setText(textId, text);
-        }
-		
-		//System.out.println("#Xcheck: ");
-		//Iterator<Text> it = textRepository.getTexts().iterator();
-		//while (it.hasNext()) {
-		//	Text t = it.next();
-		//	System.out.println("#TCM: " +t.getContextModel().getContextVectorForType(ContextModel.CONTEXTTYPE_TEXT));
-		//}
-
-		return textRepository;
-	}
-	
-	
-	/**
-	 * Loads a text repository from the given directories. Considers only files with the filename 
-	 * extension "txt" files ("*.txt").
-	 *
-	 * @param directories
-	 * @return
-	 */
-	public static TextRepository loadTextRepositoryFromDirectories (String... directories) {
-		List<String> listOfDirectories = new LinkedList<String>();
-		
-		for (String dir: directories)
-			listOfDirectories.add(dir);
-			
-		return loadTextRepositoryFromDirectories(listOfDirectories);
-	}
-	
-	
-	/**
-	 * Loads a text repository from the given directories. Considers only files with the filename 
-	 * extension "txt" files ("*.txt").
+	 * Loads a text repository from the given directories.<br>
+	 * Supported file formats (identified by extensions) are .txt, .xml, and .medline.xml.
 	 *
 	 * @param directories
 	 * @return
@@ -189,9 +55,14 @@ public class TextFactory {
 						if (filename.endsWith(".txt")){
 							Text text = loadTextFromFile(dir + filename);
 							textRepository.addText(text);
-							//textIds.add(text.ID);
+						} else if (filename.endsWith(".medline.xml")){
+							Text text = loadTextFromMedlineXmlfile(dir + filename);
+							textRepository.addText(text);
+						} else if (filename.endsWith(".medlines.xml")){
+							textRepository.addTexts(loadTextsFromMedlineSetXmlfile(dir + filename));
 						} else if (filename.endsWith(".xml")) {
-							
+							Text text = loadTextFromXmlfile(dir + filename);
+							textRepository.addText(text);
 						}
 					}
 
@@ -209,8 +80,32 @@ public class TextFactory {
 
 		return textRepository;
 	}
+	
+	
+	/**
+	 * Loads a text repository from the given directories. Convenience methods that calls
+	 * {@link #loadTextRepositoryFromDirectories(Collection)}.<br>
+	 * Supported file formats (identified by extensions) are .txt, .xml, and .medline.xml.
+	 *
+	 * @param directories
+	 * @return
+	 */
+	public static TextRepository loadTextRepositoryFromDirectories (String... directories) {
+		List<String> listOfDirectories = new LinkedList<String>();
+		
+		for (String dir: directories)
+			listOfDirectories.add(dir);
+			
+		return loadTextRepositoryFromDirectories(listOfDirectories);
+	}
 
-	public static TextRepository loadTextRepository(DocumentIterator documents) {
+
+	/**
+	 * Loads the given documents into the text repository.
+	 * @param documents
+	 * @return
+	 */
+	public static TextRepository loadTextRepository (DocumentIterator documents) {
 		TextRepository textRepository = new TextRepository();
 
 		for (Document d : documents){
@@ -218,96 +113,6 @@ public class TextFactory {
 			textRepository.addText(t);
 		}
 		
-		return textRepository;
-	}
-
-
-
-	/*/*
-	 * Loads a text repository from the given directory. Also loads GO terms
-	 * annotated to texts. Loads texts for the given IDs only.
-	 *
-	 * @param directory
-	 * @param goCodes
-	 * @param ids
-	 * @return
-	 */
-	@SuppressWarnings("unchecked")
-	@Deprecated public static TextRepository loadTextRepositoryFromDirectoryXXX (
-			String directory,
-			String goCodes,
-			String[] ids
-			) {
-
-		if(!directory.endsWith("/")){
-			directory += "/";
-		}
-
-		TextRepository textRepository = new TextRepository();
-		Set<String> loadedTextIds = new TreeSet<String>();
-		Set<String> wantedTextIDs = new TreeSet<String>();
-		wantedTextIDs.addAll(Arrays.asList(ids));
-
-		// first, read all plain texts from the directory
-		File dir = new File(directory);
-		String[] files = dir.list();
-		for (String filename : files) {
-			if(filename.endsWith("txt")){
-				String id = filename.replaceFirst("^(\\d+?)\\.txt$", "$1");
-				if (wantedTextIDs.contains(id)) {
-					Text text = loadTextFromFile(directory+filename);
-					textRepository.addText(text);
-					//String ID = filename.replaceFirst("(.+)\\.txt", "$1");
-					loadedTextIds.add(text.ID);
-				}
-			}
-		}
-
-		// now, add annotations found in the 'object' directory and from other sources (DBs)
-		// maps each text ID to a context model
-		Map<String, TextContextModel> contextModelTable = new HashMap<String, TextContextModel>();
-		// maps text IDs to plain data arrays
-		HashMap<String, String[]> objectTable;
-
-		ObjectInputStream ois;
-		try {
-			ois = new ObjectInputStream(new FileInputStream(goCodes));
-			objectTable = (HashMap<String, String[]>) ois.readObject();
-			ois.close();
-			// go through all known texts and check if a corresponding annotation is there
-			for (String textId : loadedTextIds) {
-				String[] gocodes = objectTable.get(textId);
-				if(gocodes!=null){
-					TextContextModel tcm = contextModelTable.get(textId);
-					if (tcm == null) {
-						tcm = new TextContextModel();
-						contextModelTable.put(textId, tcm);
-					}
-					tcm.addCodes(gocodes, GeneContextModel.CONTEXTTYPE_GOCODES);
-				}
-			}
-		} catch (FileNotFoundException e) {
-			e.printStackTrace();
-		} catch (IOException e) {
-			e.printStackTrace();
-		} catch (ClassNotFoundException cnfe) {
-			cnfe.printStackTrace();
-		}
-
-
-		// finally, change all texts in the repository (only plain texts now) and
-		// add the data from the table of context models
-		for (String textId : loadedTextIds) {
-			TextContextModel tcm = contextModelTable.get(textId);
-			Text text = textRepository.getText(textId);
-			if (tcm != null) {
-				text.addToContextModel(tcm);
-			} else {
-				text.setContextModel(new TextContextModel());
-			}
-			textRepository.setText(textId, text);
-        }
-
 		return textRepository;
 	}
 
@@ -325,22 +130,22 @@ public class TextFactory {
 		
 		//System.out.println("id: "+ id);
 		
-		StringBuffer text = new StringBuffer();
+		StringBuilder xml = new StringBuilder();
 		
 		try {
 			BufferedReader br = new BufferedReader(new FileReader(filename));
 			String line;
 			while ((line = br.readLine()) != null) {
-				text.append(line);
-				text.append("\n");
+				xml.append(line);
+				xml.append("\n");
 			}
 			br.close();
 		} catch (IOException ioe) {
 			ioe.printStackTrace();
 		}
 		
-		// finally construct the Text to be returned
-		Text aText = new Text(id, text.toString());
+		Text aText = new Text(id);
+		aText.setPlainFromXml(xml.toString());
 
 		// every Text needs a context model
 		TextContextModel tcm = new TextContextModel(aText.ID);
@@ -360,7 +165,7 @@ public class TextFactory {
 	 * @param filename
 	 * @return
 	 */
-	public static Text loadTextFromXml (String filename) {
+	public static Text loadTextFromXmlfile (String filename) {
 		// remove the extension from the filename to get an ID
 		String id = filename.replaceFirst("^(.+)\\..*?$", "$1");
 		
@@ -397,5 +202,159 @@ public class TextFactory {
 		aText.setContextModel(tcm);
 
 		return aText;
+	}
+	
+	
+	/**
+	 * Gets a {@link Text} from the given filename.<br>
+	 * The assumed format is MEDLINE XML ("PubmedArticle"), and the plain text will be taken from
+	 * the ArticleTitle and AbstractText elements only.
+	 * 
+	 * @param filename
+	 * @return
+	 */
+	public static Text loadTextFromMedlineXmlfile (String filename) {
+		// remove the extension from the filename to get an ID
+		String id = filename.replaceFirst("^(.*\\/)?(.+?)\\..*?$", "$2");
+		
+		//System.out.println("id: "+ id);
+		
+		StringBuilder xml = new StringBuilder();
+		String title = "";
+		try {
+			BufferedReader br = new BufferedReader(new FileReader(filename));
+			String line;
+			while ((line = br.readLine()) != null) {
+				xml.append(line);
+				xml.append("\n");
+				
+				if (line.matches(".*<ArticleTitle>.*</ArticleTitle>.*")) {
+					title = line.replaceFirst("^.*<ArticleTitle>(.*)</ArticleTitle>.*$", "$1");
+				}
+			}
+			br.close();
+		} catch (IOException ioe) {
+			ioe.printStackTrace();
+		}
+		
+		Text aText = new Text(id);
+		aText.setPlainFromXml(xml.toString());
+		aText.title = title;
+
+		String pmid = PubmedAccess.getPubMedIdFromXML(xml.toString());
+		if (pmid != null && !pmid.equals("-1") && pmid.matches("\\d+")) {
+			aText.setPMID(Integer.parseInt(pmid));
+			aText.ID = pmid;
+		}
+		
+		// every Text needs a context model
+		TextContextModel tcm = new TextContextModel(aText.ID);
+		tcm.addPlainText(aText.getPlainText());
+
+		// add the extracted context model to the text
+		aText.setContextModel(tcm);
+		
+		//aText.jdocument = PubmedAccess.getAbstractsAsDocument(aText.originalXml);
+		DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
+
+	    factory.setNamespaceAware(true);
+	    DocumentBuilder builder;
+		try {
+			builder = factory.newDocumentBuilder();
+		    aText.jdocument = builder.parse(new ByteArrayInputStream(aText.originalXml.getBytes()));
+		} catch (ParserConfigurationException e) {
+			e.printStackTrace();
+		} catch (SAXException e) {
+			e.printStackTrace();
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+		
+		return aText;
+	}
+	
+	
+	/**
+	 * Gets a set of {@link Text Texts} from the given file.<br>
+	 * The assumed format is MEDLINE XML ("PubmedArticleSet"), and the plain text will be taken from
+	 * the ArticleTitle and AbstractText elements only.
+	 * 
+	 * @param filename
+	 * @return
+	 */
+	public static Collection<Text> loadTextsFromMedlineSetXmlfile (String filename) {
+		// remove the extension from the filename to get an ID
+		String id = filename.replaceFirst("^(.*\\/)?(.+?)\\..*?$", "$2");
+		
+		List<Text> temp_texts = new LinkedList<Text>();
+		
+		StringBuilder xml = new StringBuilder();
+		String title = "";
+		try {
+			BufferedReader br = new BufferedReader(new FileReader(filename));
+			String line;
+			while ((line = br.readLine()) != null) {
+				
+				if (line.matches(".*<PubmedArticle.*")) {
+					xml.setLength(0);
+					xml.append(line);
+					xml.append("\n");
+					continue;
+				}
+				
+				xml.append(line);
+				xml.append("\n");
+				if (line.matches(".*<ArticleTitle>.*</ArticleTitle>.*")) {
+					title = line.replaceFirst("^.*<ArticleTitle>(.*)</ArticleTitle>.*$", "$1");
+				}
+				
+				if (line.matches(".*</PubmedArticle>.*")) {
+					Text aText = new Text(id);
+					aText.setPlainFromXml(xml.toString());
+					aText.title = title;
+
+					String pmid = PubmedAccess.getPubMedIdFromXML(xml.toString());
+					if (pmid != null && !pmid.equals("-1") && pmid.matches("\\d+")) {
+						aText.setPMID(Integer.parseInt(pmid));
+						aText.ID = pmid;
+					}
+					
+					// every Text needs a context model
+					TextContextModel tcm = new TextContextModel(aText.ID);
+					tcm.addPlainText(aText.getPlainText());
+
+					// add the extracted context model to the text
+					aText.setContextModel(tcm);
+					
+					//aText.jdocument = PubmedAccess.getAbstractsAsDocument(aText.originalXml);
+					DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
+
+				    factory.setNamespaceAware(true);
+				    DocumentBuilder builder;
+					try {
+						builder = factory.newDocumentBuilder();
+					    aText.jdocument = builder.parse(new ByteArrayInputStream(aText.originalXml.getBytes()));
+					} catch (ParserConfigurationException e) {
+						e.printStackTrace();
+					} catch (SAXException e) {
+						e.printStackTrace();
+					} catch (IOException e) {
+						e.printStackTrace();
+					}
+					
+					temp_texts.add(aText);
+					//System.err.println("ADDED text " + aText.ID);
+					
+					// reset buffer
+					xml.setLength(0);
+				}
+				
+			}
+			br.close();
+		} catch (IOException ioe) {
+			ioe.printStackTrace();
+		}
+		
+		return temp_texts;
 	}
 }

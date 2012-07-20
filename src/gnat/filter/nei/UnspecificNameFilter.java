@@ -322,7 +322,14 @@ public class UnspecificNameFilter implements Filter {
 				"|great|tissue|simple|face|nude|type|raft|partial|bind|cord|Chr|rank|anti" +
 				"|can|not|was|has|on|via|use|up|acidic|longest|best|raised|multiple" +
 				"|Ca2|CA|C\\-C|CHO|Cys|pro|how|early|similar|no|period" +
-				"|interleukins|releases?|origins?|chemokines?|sons?|nets?|[a-z]+s)");
+				"|interleukins|releases?|origins?|chemokines?|sons?|nets?|[a-z]+s" +
+				// added for Lupus/IBD project:
+				"|mild|platelet|drip|sera|neo|radix|spliceosomal|hip|Part I|[Uu]rinary protein|urine protein" +
+				"|Chi|dot|rash|pulmonary function|BMI|toll|min|autoimmune susceptibility|lethal|pan|Med" +
+				"|Abs|Ags|UTR|expand" +
+				"|adipose|SLE|multiple sclerosis|anti\\-?phospholipid syndrome|[a-z]+ syndrome" +
+				"|thrombocytopenia|renal amyloidosis|CD4|CD8|Mai" +
+				")");
 	}
 
 
