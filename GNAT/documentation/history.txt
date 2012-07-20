@@ -1,0 +1,31 @@
+Version history for GNAT code and resources
+
+1.0 to 1.1
+----------
+
+Resources:
+- switched S. cer and E. coli genes to different NCBI taxa; due to a change in 
+  Entrez Gene that moved all S. cer genes from 4932 to 559292 (S. cer. S288c) 
+  and all E. coli genes from 562 to 511145 (E. coli str. K-12 substr. MG1655).
+  - added these two dictionaries
+  - changed entries in gene to taxon table (GR_Origin)
+- added test data set from Hakenberg et al., Bioinformatics, 2008:
+  100 abstracts from BioCreative I+II annotated for all genes from all species
+  see texts/test100
+- updated documentation, more details on steps to setup (MySQL driver,JDOM,..) 
+  and test
+  
+Code---additions, changes:
+- added class client.JustAnnotate - simple local run that prints results in 
+  BioCreative format
+- changed the DefaultSpeciesNER filter to return a list of each species mention
+- changed Text to store all species mentions -> helps counting how many species
+  occur at which frequencies
+- added SpeciesFrequency filter that decides on a species by checking the most
+  frequently mentioned species in a text
+- updated UnspecificNameFilter
+
+Bug fixes:
+- when reading abstracts, lines where concatenated w/o white space, so at 
+  NER could fail within accidentally concatenated words b/c it requires
+  word boundaries left+right of a gene and species

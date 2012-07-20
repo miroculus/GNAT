@@ -1,25 +1,27 @@
-9606	127.0.0.1:56001	human
-10090	56002	mouse
-10116	56003	rat
-9031	56004	chicken
-562	56005	e. coli
-4932	56006	s. cerevisiae	baker's yeast	yeast
+9606	56001	H. sap	human
+10090	56002	M. mus	mouse	mice
+10116	56003	R. norv	rat
+9031	56004	G. gallus	chicken
+#562	56005	E. coli	# outdated, should use 511145
+511145	56005	E. coli str. K-12 substr. MG1655
+#4932	56006	S. cerevisiae	baker's yeast	yeast	#outdated, should use 559292
+559292	56006	S. cerevisiae 288c	baker's yeast	yeast
 3702	56007	a. thaliana	thale cress
 7227	56008	fruit fly	d. melanogaster
-9913	56009	bos taurus	cattle
-6239	56010	c. elegans	nematode
-8355	56011	x.laevis	frog
-3055	56012	c. reinhardtii
+9913	56009	Bos taurus	cattle
+6239	56010	C. elegans	nematode
+8355	56011	X. laevis	claw frog	frog
+3055	56012	C. reinhardtii
 7955	56013	zebrafish
-44689	56014	d. discoideum
-11103	56015	hcv	hepatitis c virus
-148305	56016	m. grisea	rice blast fungus
-2104	56017	m. pneumoniae
-5141	56018	n. crassa
-4530	56019	o. sativa	rice
-5833	56020	p. falciparum
-4754	56021	p. carinii
-4896	56022	s. pombe	fission yeast
-31033	56023	t. rubripes	takifugu	tiger puffer
+44689	56014	D. discoideum
+11103	56015	HCV	hepatitis c virus
+148305	56016	M. grisea	rice blast fungus
+2104	56017	M. pneumoniae
+5141	56018	N. crassa
+4530	56019	O. sativa	rice
+5833	56020	P. falciparum
+4754	56021	P. carinii
+4896	56022	S. pombe	fission yeast
+31033	56023	T. rubripes	takifugu	tiger puffer
 4577	56024	zea mays	maize
-11676	56025	hiv1	human immunodeficiency virus 1
+11676	56025	HIV1	human immunodeficiency virus 1

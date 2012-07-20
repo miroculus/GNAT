@@ -1,0 +1,4 @@
+
+filter.nei.BANNERValidationFilter
+- needs to be switched to new version of BANNER that uses new classes to
+  store properties etc.
