@@ -152,4 +152,8 @@ public class TextAnnotation {
     	return type;
     }
 
+	public void setType (Type type) {
+		this.type = type;
+	}
+	
 }
