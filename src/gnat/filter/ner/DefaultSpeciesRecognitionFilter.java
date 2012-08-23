@@ -65,10 +65,24 @@ public class DefaultSpeciesRecognitionFilter implements Filter {
 			String[] lines = text.getPlainText().split("[\r\n]+");
 			for (String line: lines) {
 				while (line.matches(".*(?:^|[\\W])" +
-						"([Hh]uman|man|patient|[Hh](\\.|omo)\\ssap(\\.|iens))" +
+						"([Hh]umans?|man|patients?|[Hh](\\.|omo)\\ssap(\\.|iens)" +
+						"|" +
+						"(?:HTB-134|HT-29"  + // cell line names
+						"|293 cells?|HEK[\\-\\s]?293|293T|T47D|T-47D|Ramsey" + 
+						"|breast cancer)" +
+						"|" + 
+						"(?:mammalian cells?|vertebrate homolog[a-z]*|mammalian|mammals)" + // mammals count as 'humans'
+						")" +
 						"(?:[\\W]|$).*")) {
 					String name = line.replaceFirst("^.*(?:^|[\\W])" +
-							"([Hh]uman|man|patient|[Hh](\\.|omo)\\ssap(\\.|iens))" +
+							"([Hh]umans?|man|patients?|[Hh](\\.|omo)\\ssap(\\.|iens)" +
+							"|" +
+							"(?:HTB-134|HT-29" +
+							"|293 cells?|HEK[\\-\\s]?293|293T|T47D|T-47D|Ramsey" +
+							"|breast cancer)" +
+							"|" + 
+							"(?:mammalian cells?|vertebrate homolog[a-z]*|mammalian|mammals)" +
+							")" +
 							"(?:[\\W]|$).*$", "$1");
 					String replace = "x";
 					for (int r = 1; r < name.length(); r++)	replace += "x";
@@ -189,7 +203,9 @@ public class DefaultSpeciesRecognitionFilter implements Filter {
 						"(baker's yeast|[Yy]east" +
 						"|Saccharomyces cerevisiae S288c|Saccharomyces cerevisiae" +
 						"|[Ss]\\.\\s?[Cc]er(\\.|evisiae)?)" +
-						"(?:[\\W]|$).*")) {
+						"(?:[\\W]|$).*")
+						&& !line.matches(".*((two|2|to|1|one|3|three)[\\s\\-]?hybrid|Y2H|YS2H).*")
+						&& !line.matches(".*yeast homolog.*")) {
 					String name = line.replaceFirst("^.*(?:^|[\\W])" +
 							"([Yy]east|baker's yeast|Saccharomyces cerevisiae|[Ss]\\.\\s?[Cc]er(\\.|evisiae)?)" +
 							"(?:[\\W]|$).*$", "$1");

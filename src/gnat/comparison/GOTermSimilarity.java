@@ -42,7 +42,7 @@ public class GOTermSimilarity implements Serializable {
 	public int verbosity = 0;
 
 	/** Stores the distances between two GO codes. Key: "GO:0005575;GO:0001695". */
-	private HashMap<String, Float> goTermDistances = new HashMap<String, Float>();
+	private Map<String, Float> goTermDistances = new HashMap<String, Float>();
 
 	/** Where to find the existing GO term distances. Default: go2go.obj.<br>
 	 * Format: HashMap&lt;String, Float&gt;, see <code>goTermDistances</code>. */
@@ -60,7 +60,7 @@ public class GOTermSimilarity implements Serializable {
 	 * are stored in <tt>go2gofile</tt>.  If set to false, uses distances
 	 * from that file only and returns NEG.INF for unknown distances.
 	 */
-	public boolean useDatabase = true;
+	private boolean useDatabase = true;
 
 
 	/**
@@ -97,9 +97,9 @@ public class GOTermSimilarity implements Serializable {
 
 		String key = goCode1 + ";" + goCode2;
 
-		if(verbosity>3){
-			System.out.println(this.getClass().getSimpleName()+": getDistance for key='"+key+"'");
-		}
+		//if(verbosity>3){
+		//	System.out.println(this.getClass().getSimpleName()+": getDistance for key='"+key+"'");
+		//}
 
 		if (goTermDistances.containsKey(key)) {
 			return goTermDistances.get(key);
@@ -111,28 +111,18 @@ public class GOTermSimilarity implements Serializable {
 		if (!useDatabase)
 			return Float.NEGATIVE_INFINITY;
 
-
-		//computedNewSimilarity = true;
-
-//		if (goAccess == null || !goAccess.isOpen()) {
-//			if (goAccess == null)
-//				goAccess = new GOAccess();
-//			goAccess.open();
-//		}
-
+		
+		//System.err.println("#GTS: getting distance");
 		float dist = goAccess.getDistance(goCode1, goCode2);
-		goAccess.close();
 
 		if(verbosity>3){
 			System.out.println(this.getClass().getSimpleName()+": getDistance: computed new similarity = "+dist);
 		}
 
-		//if (dist > Float.NEGATIVE_INFINITY) {
 		key = goCode1 + ";" + goCode2;
 		goTermDistances.put(key, dist);
 
 		computedNewSimilarity = true;
-		//}
 
 		return dist;
 	}
@@ -150,7 +140,6 @@ public class GOTermSimilarity implements Serializable {
 
 		//GOAccess goAccess = new GOAccess();
 		float dist = goAccess.getDistance(goCode1, goCode2);
-		goAccess.close();
 
 		return 1.0f - dist;
 	}
@@ -165,6 +154,11 @@ public class GOTermSimilarity implements Serializable {
 	 */
 	@SuppressWarnings({ "unchecked", "rawtypes" })
 	public float getGOSimilarity (LinkedList<String> codes1, LinkedList<String> codes2) {
+		//System.err.println("Calling GTS.getGOSim");
+		//System.err.println("#Scoring GO codes for gene vs text:");
+		//System.err.println("# codes 1: " + codes1);
+		//System.err.println("# codes 2: " + codes2);
+		
 		// maps a GO-Code pair to its distance
 		Hashtable<String, Float> pair2distance = new Hashtable<String, Float>();
 
@@ -206,9 +200,9 @@ public class GOTermSimilarity implements Serializable {
 		for (int e = 0; e < entries.length; e++) {
 			String key = (String)entries[e].getKey();
 			float dist = pair2distance.get(key).floatValue();
-			if (verbosity > 3) {
-				System.out.println("# pair " + key + ": sim=" + (1.0f-dist));
-			}
+			//if (verbosity > 3) {
+			//	System.err.println("# pair " + key + ": sim=" + (1.0f-dist));
+			//}
 		}
 
 		// get the best fitting pairs of myID and pID, remove them from the sets,
@@ -237,6 +231,8 @@ public class GOTermSimilarity implements Serializable {
 		}
 
 		float score = (1 - (average / count));
+		
+		//System.err.println("# score = " + score);
 
 		return score;
 	}
@@ -318,6 +314,7 @@ public class GOTermSimilarity implements Serializable {
 	 */
 	public boolean writeGOTermDistances () {
 		if (computedNewSimilarity || (initiallyLoadedSimilarities < goTermDistances.size())) {
+			//System.err.println("#Calling writeGO (1)");
 			if(verbosity>0)
 				System.err.println("# Writing GO term distances to disk, #pairs: " + goTermDistances.size());
 			FileOutputStream fos = null;
@@ -335,6 +332,7 @@ public class GOTermSimilarity implements Serializable {
 			return true;
 		}
 		else{
+			//System.err.println("#Calling writeGO (2)");
 			if(verbosity>0)
 				System.err.println("# No new GO term similarities. Skip writing.");
 			return true;

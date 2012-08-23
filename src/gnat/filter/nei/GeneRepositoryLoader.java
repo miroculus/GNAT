@@ -182,7 +182,7 @@ public class GeneRepositoryLoader implements Filter {
 		} else if (method == RetrievalMethod.DATABASE) {
 			// access a database
 			if (ConstantsNei.OUTPUT_LEVEL.compareTo(ConstantsNei.OUTPUT_LEVELS.STATUS) >= 0)
-				System.out.println("#Getting gene repository from database...");
+				System.out.println("#Getting gene repository from database (" + allCandidateIDs.size() + " genes) ...");
 			//			GeneRepositoryFromDatabase grepper = new GeneRepositoryFromDatabase();
 			//			grepper.verbosity = 1;
 			//			//geneRepository = grepper.getGeneRepository(allCandidateIDs);

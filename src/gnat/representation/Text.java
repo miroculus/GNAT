@@ -3,7 +3,6 @@ package gnat.representation;
 import gnat.preprocessing.sentences.SentenceSplitter;
 import gnat.preprocessing.sentences.SentenceSplitterRegex;
 import gnat.retrieval.PubmedAccess;
-import gnat.utils.UniversalNamespaceResolver;
 
 import java.io.ByteArrayInputStream;
 import java.io.File;
@@ -30,15 +29,8 @@ import javax.xml.transform.TransformerException;
 import javax.xml.transform.TransformerFactory;
 import javax.xml.transform.dom.DOMSource;
 import javax.xml.transform.stream.StreamResult;
-import javax.xml.xpath.XPath;
-import javax.xml.xpath.XPathConstants;
-import javax.xml.xpath.XPathExpressionException;
-import javax.xml.xpath.XPathFactory;
 
 import org.w3c.dom.Document;
-import org.w3c.dom.Element;
-import org.w3c.dom.Node;
-import org.w3c.dom.NodeList;
 import org.xml.sax.SAXException;
 
 /**
@@ -118,11 +110,16 @@ public class Text {
 	/** */
 	public Text (String id){
 		this.ID = id;
-		
 		if (id.matches("\\d+"))
-			this.PMID = Integer.parseInt(id);	// default
-		else if (id.matches(".*\\/\\d+\\.[a-z]+")) {
-			String pm = id.replaceFirst(".*\\/(\\d+)\\.[a-z]+", "$1");
+			this.PMID = Integer.parseInt(id);	         // default: numerical ID only
+		else if (id.matches("\\d+\\.[a-z]+")) {          // PMID plus file extension
+			String pm = id.replaceFirst("^(\\d+)\\.[a-z]+$", "$1");
+			this.PMID = Integer.parseInt(pm);
+		} else if (id.matches(".*\\/\\d+")) {            // path plus PMID, no file extension
+			String pm = id.replaceFirst("^.*\\/(\\d+)$", "$1");
+			this.PMID = Integer.parseInt(pm);
+		} else if (id.matches(".*\\/\\d+\\.[a-z]+")) {   // path plus PMID plus file extension
+			String pm = id.replaceFirst("^.*\\/(\\d+)\\.[a-z]+$", "$1");
 			this.PMID = Integer.parseInt(pm);
 		}
 	}
@@ -254,13 +251,22 @@ public class Text {
 	///////////////
 	
 	/**
-	 * 
+	 * Sets a collection of taxa as recognized in this text.
 	 * @param taxonIDs
 	 */
 	public void setTaxonIDs (Set<Integer> taxonIDs) {
 		this.taxonIDs = taxonIDs;
 	}
 
+	
+	/**
+	 * Adds one taxon ID as a recognized species in this text.
+	 * @param taxonId
+	 */
+	public void addTaxonId (int taxonId) {
+		this.taxonIDs.add(taxonId);
+	}
+	
 
 	/**
 	 * Add a species occurrence (identified by an NER step, for example, or other heuristics)
@@ -707,6 +713,10 @@ public class Text {
 	 * Writes the current XML content, as given in the JDOM Document {@link #jdocument},
 	 * into the file specified by <tt>filename</tt>.<br>
 	 * If {@link #jdocument} is not set, does not write anything to a file.
+	 * <br><b>Note:</b> if the text in {@link #annotatedXml} was changed, for instance, using
+	 * {@link #annotateXmlTitle(String)} or {@link #annotateXmlAbstract(String)}, you need to
+	 * run {@link #buildJDocumentFromAnnotatedXml()} to propagate those changes to the
+	 * the {@link #jdocument}!
 	 * @param filename
 	 */
 	public void toXmlFile (String filename) {
@@ -724,18 +734,21 @@ public class Text {
 			e.printStackTrace();
 		}
 	}
-	
-	
-	
+
+
 	/**
 	 * Returns the current XML content, as given in the JDOM Document {@link #jdocument},
 	 * as a string.<br>
-	 * If {@link #jdocument} is not set, returns an empty string.
+	 * If {@link #jdocument} is not set, returns an empty string.<br>
+	 * <br><b>Note:</b> if the text in {@link #annotatedXml} was changed, for instance, using
+	 * {@link #annotateXmlTitle(String)} or {@link #annotateXmlAbstract(String)}, you need to
+	 * run {@link #buildJDocumentFromAnnotatedXml()} to propagate those changes to the
+	 * the {@link #jdocument}!
 	 * @param filename
 	 */
 	public String toXmlString () {
 		if (jdocument == null) return "";
-		
+
 		String output = "";
 		try {
 			TransformerFactory tf = TransformerFactory.newInstance();
@@ -757,31 +770,70 @@ public class Text {
 	/**
 	 * Replaces the current title of this Text with an annotated one (XML format).<br>
 	 * Affects only the value of {@link #annotatedXml}. 
+	 * <br><b>Note:</b> changes {@link #annotatedXml} only, need to run {@link #buildJDocumentFromAnnotatedXml()}
+	 * to change the {@link #jdocument} that will be used in {@link #toXmlFile(String)} and {@link #toXmlString()}!
 	 * @param annotatedTitle
 	 */
 	public void annotateXmlTitle (String annotatedTitle) {
 		if (annotatedXml.length() == 0)
 			annotatedXml = originalXml;
 		String full = annotatedXml;
-		Pattern p = Pattern.compile("<ArticleTitle>.*</ArticleTitle>", Pattern.MULTILINE);
+		Pattern p = Pattern.compile("<ArticleTitle>.*</ArticleTitle>", Pattern.UNIX_LINES | Pattern.MULTILINE);
+		//System.err.println("!!!testing title!!!");
+		//System.err.println(full);
 		Matcher m = p.matcher(full);
+		//if (m.matches())
+		//	System.err.println("!!!matches-title!!!");
 		full = m.replaceFirst("<ArticleTitle>" + annotatedTitle + "</ArticleTitle>");
+//		annotatedXml = full;
+//		
+//		full = "";
+//		String[] lines = annotatedXml.split("[\r\n]+");
+//		for (int l = 0; l < lines.length; l++) {
+//			String line = lines[l];
+//			if (line.matches("<ArticleTitle>.*</ArticleTitle>")) {
+//				lines[l] = line.replaceFirst("<ArticleTitle>.*</ArticleTitle>", "<ArticleTitle>" + annotatedTitle + "</ArticleTitle>");
+//			}
+//			full += lines[l] + "\n";
+//		}
+		//System.err.println(full);
+		
 		annotatedXml = full;
 	}
 	
 	
 	/**
 	 * Replaces the current abstract of this Text with an annotated one (XML format).<br>
-	 * Affects only the value of {@link #annotatedXml}. 
+	 * Affects only the value of {@link #annotatedXml}.
+	 * <br><b>Note:</b> changes {@link #annotatedXml} only, need to run {@link #buildJDocumentFromAnnotatedXml()}
+	 * to change the {@link #jdocument} that will be used in {@link #toXmlFile(String)} and {@link #toXmlString()}!
 	 * @param annotatedTitle
 	 */
 	public void annotateXmlAbstract (String annotatedAbstract) {
 		if (annotatedXml.length() == 0)
 			annotatedXml = originalXml;
 		String full = annotatedXml;
-		Pattern p = Pattern.compile("<AbstractText(?:\\s.+?)?>.*</AbstractText>", Pattern.DOTALL);
+		//System.err.println("!!!testing text!!!");
+		//Pattern p = Pattern.compile("<AbstractText(?:\\s.+?)?>.*</AbstractText>", Pattern.MULTILINE | Pattern.DOTALL);
+		Pattern p = Pattern.compile("<AbstractText>.*</AbstractText>", Pattern.UNIX_LINES | Pattern.MULTILINE);
 		Matcher m = p.matcher(full);
+		//if (m.matches())
+		//	System.err.println("!!!matches-text!!!");
 		full = m.replaceFirst("<AbstractText>" + annotatedAbstract + "</AbstractText>");
+		
+		
+//		full = "";
+//		String[] lines = annotatedXml.split("[\r\n]+");
+//		for (int l = 0; l < lines.length; l++) {
+//			String line = lines[l];
+//			if (line.matches("<AbstractText(?:\\s.+?)?>.*</AbstractText>")) {
+//				lines[l] = line.replaceFirst("(<AbstractText(?:\\s.+?)?>).*</AbstractText>", "$1" + annotatedAbstract + "</AbstractText>");
+//			}
+//			full += lines[l] + "\n";
+//		}
+//		System.err.println(full);
+//		
+//		
 		annotatedXml = full;
 	}
 	
@@ -812,6 +864,12 @@ public class Text {
 		try {
 			builder = factory.newDocumentBuilder();
 			if (annotatedXml.length() > 0) {
+				// some PubMed "XMLs" still have a non-escaped ampersand in there
+				annotatedXml = annotatedXml.replaceAll("&\\s", "&amp; ");
+				annotatedXml = annotatedXml.replaceAll("<([\\d\\.\\s])", "&lt;$1");
+				annotatedXml = annotatedXml.replaceAll("<\\/=", "&lt;/="); // in PubMed 9618483 "share </=50% identity"
+				annotatedXml = annotatedXml.replaceAll(" >([\\d\\.\\s])", " &gt;$1");
+				//annotatedXml = annotatedXml.replaceAll("([Pp]\\s*<)", "$1&lt;");
 				//Pattern p = Pattern.compile("<PubmedArticle", Pattern.DOTALL);
 				//Matcher m = p.matcher(annotatedXml);
 				//annotatedXml = m.replaceFirst("<PubmedArticle xmlns:src=\"http://gnat.sourceforge.net\"");
@@ -821,6 +879,10 @@ public class Text {
 			}
 		} catch (ParserConfigurationException e) {
 			e.printStackTrace();
+		} catch (org.xml.sax.SAXParseException e) {
+			System.err.println("##### ERROR building XML doc from ");
+			System.err.println(annotatedXml);
+			//System.exit(2);
 		} catch (SAXException e) {
 			e.printStackTrace();
 		} catch (IOException e) {

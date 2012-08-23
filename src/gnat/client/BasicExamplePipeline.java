@@ -15,7 +15,7 @@ import gnat.filter.nei.UnambiguousMatchFilter;
 import gnat.filter.nei.UnspecificNameFilter;
 import gnat.filter.ner.GnatServiceNer;
 import gnat.filter.ner.LinnaeusSpeciesServiceNer;
-import gnat.filter.ner.RunDictionaries;
+import gnat.filter.ner.RunAllGeneDictionaries;
 import gnat.preprocessing.NameRangeExpander;
 import gnat.representation.Text;
 import gnat.representation.TextFactory;

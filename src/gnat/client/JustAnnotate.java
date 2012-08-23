@@ -3,23 +3,27 @@ package gnat.client;
 import gnat.ISGNProperties;
 import gnat.filter.nei.AlignmentFilter;
 import gnat.filter.nei.GeneRepositoryLoader;
-import gnat.filter.nei.IdentifyAllFilter;
 import gnat.filter.nei.ImmediateContextFilter;
 import gnat.filter.nei.LeftRightContextFilter;
 import gnat.filter.nei.MultiSpeciesDisambiguationFilter;
 import gnat.filter.nei.NameValidationFilter;
 import gnat.filter.nei.RecognizedEntityUnifier;
 import gnat.filter.nei.SpeciesFrequencyFilter;
+import gnat.filter.nei.SpeciesValidationFilter;
 import gnat.filter.nei.StopWordFilter;
 import gnat.filter.nei.UnambiguousMatchFilter;
 import gnat.filter.nei.UnspecificNameFilter;
 import gnat.filter.ner.DefaultSpeciesRecognitionFilter;
-import gnat.filter.ner.RunDictionaries;
+import gnat.filter.ner.RunAllGeneDictionaries;
 import gnat.preprocessing.NameRangeExpander;
+import gnat.representation.Text;
 import gnat.representation.TextFactory;
 import gnat.utils.AlignmentHelper;
 
 import java.io.File;
+import java.io.FileWriter;
+import java.io.IOException;
+import java.io.PrintWriter;
 import java.util.List;
 
 /**
@@ -46,36 +50,44 @@ public class JustAnnotate {
 
 		// check for command line parameters
 		if (args.length == 0 || args[0].matches("\\-\\-?h(elp)?")) {
-			System.out.println("Need a directory with <PMID>.txt files to annotate as parameter!");
+			System.out.println("A simple processing pipeline that takes a directory as input,\n" +
+				"reads all files (*.txt) and prints the list of predicted genes in a tabular format.");
+			System.out.println("Needs a directory with <PMID>.txt files to annotate as parameter.");
 			System.out.println("Optional parameters:");
-			System.out.println(" -v      -  set verbosity");
-			System.out.println(" -nodir  -  do not print the directory name, just file name, in the output");
+			System.out.println(" -v=<int>    - set verbosity");
+			System.out.println(" -nodir      - do not print the directory name, just file name, in the output");
+			System.out.println(" -out <file> - file name for the final output (tab-separted format); default: STDOUT");
 			System.exit(1);
 		}
 		
 		// parse and store command line parameters
 		String dir = "";         // directory to read from
+		String outfile = "";
 		boolean printDir = true; // print full path name in output, or just file name		
-		for (String arg: args) {
+		for (int a = 0; a < args.length; a++) {
 			// parameter is -v to regulate verbosity at runtime
-			if (arg.matches("\\-v=\\d+"))
-				run.verbosity = Integer.parseInt(args[0].replaceFirst("^\\-v=(\\d+)$", "$1"));
-			else if (arg.toLowerCase().matches("\\-\\-?nodir")) 
+			if (args[a].matches("\\-v=\\d+"))
+				run.verbosity = Integer.parseInt(args[a].replaceFirst("^\\-v=(\\d+)$", "$1"));
+			else if (args[a].toLowerCase().matches("\\-\\-?nodir")) 
 				printDir = false;
+			else if (args[a].toLowerCase().matches("\\-\\-?out")) 
+				outfile = args[++a];
+			else if (args[a].toLowerCase().matches("\\-\\-?out=.+")) 
+				outfile = args[a].replaceFirst("^\\-\\-?out=(.+)$", "$1");
 			else {
-				dir = arg;
+				dir = args[a];
 				File DIR = new File(dir);
 				if (DIR.exists() && DIR.canRead()) {
 					if (DIR.isDirectory()) {
 						if (DIR.list().length == 0) {
-							System.err.println("Error: there seem to be no files in the directory " + arg);
+							System.err.println("Error: there seem to be no files in the directory " + args[a]);
 							System.exit(3);
 						}
 					} else {
 						// is a single file
 					}
 				} else {
-					System.err.println("Error: cannot access the file/directory " + arg);
+					System.err.println("Error: cannot access the file/directory " + args[a]);
 					System.exit(2);					
 				}
 			}
@@ -105,9 +117,12 @@ public class JustAnnotate {
 		// NER filters here:
 		// default species NER: spots human, mouse, rat, yeast, and fly only
 		run.addFilter(new DefaultSpeciesRecognitionFilter());
+		for (Text text : run.getTextRepository().getTexts()) {
+			text.addTaxonId(9606);
+		}
 		
 		// construct a dictionary for human, mouse, yeast, fruit fly genes only
-		RunDictionaries afewDictionaryFilters = new RunDictionaries();
+		RunAllGeneDictionaries afewDictionaryFilters = new RunAllGeneDictionaries();
 		afewDictionaryFilters.setLimitToTaxons(9606, 10090, 10116, 559292, 7227);
 		run.addFilter(afewDictionaryFilters);
 		
@@ -128,6 +143,9 @@ public class JustAnnotate {
 		// print the status on all recognized genes before loading information on each gene
 		//run.addFilter(new PrintStatus());
 		
+		//
+		run.addFilter(new ImmediateContextFilter());
+		
 		// load the gene repository to obtain information on each gene (if only the species)
 		// not loading gene repository will produce an empty result at the end
 		run.addFilter(new GeneRepositoryLoader(GeneRepositoryLoader.RetrievalMethod.DATABASE));
@@ -146,13 +164,16 @@ public class JustAnnotate {
 		// filter by the number of occurrences of each organism
 		run.addFilter(new SpeciesFrequencyFilter());
 		
+		//
+		//run.addFilter(new SpeciesValidationFilter());
+		
 		// Final disambiguation filter
 		run.addFilter(new MultiSpeciesDisambiguationFilter(
 				Integer.parseInt(ISGNProperties.get("disambiguationThreshold")),
 				Integer.parseInt(ISGNProperties.get("maxIdsForCandidatePrediction"))));
 		
 		// Mark everything that "survived" until here as OK, will be reported in output 
-		run.addFilter(new IdentifyAllFilter());
+		//run.addFilter(new IdentifyAllFilter());
 		
 		
 		//////////
@@ -165,19 +186,31 @@ public class JustAnnotate {
 		// get the results for each text, in BioCreative tab-separated format
 		List<String> result = run.context.getIdentifiedGeneList_SortedByTextAndId();
 		// get expected results from saved file
-		for (String res: result) {
-			if (printDir)
-				System.out.println(res);
-			else {
-				// first column: path+file name
-				String[] cols = res.split("\t");
-				String filename = cols[0].replaceFirst(".*\\/(.+?)", "$1");
-				System.out.print(filename);
-				for (int c = 1; c < cols.length; c++)
-					System.out.print("\t" + cols[c]);
-				System.out.println();
+		PrintWriter out = new PrintWriter(System.out);
+		if (outfile.length() > 0) {
+			try {
+				out = new PrintWriter(new FileWriter(outfile));
+			} catch (IOException o) {
+				o.printStackTrace();
 			}
 		}
+		for (String res: result) {
+			// print output including filepath and not just the filename
+			if (printDir)
+				out.println(res);
+			// print output with filename only
+			else {
+				// first column: path+file name -> split into path and name -> grab name only
+				String[] cols = res.split("\t");
+				String filename = cols[0].replaceFirst(".*\\/(.+?)", "$1");
+				out.print(filename);
+				// other columns are ok
+				for (int c = 1; c < cols.length; c++)
+					out.print("\t" + cols[c]);
+				out.println();
+			}
+		}
+		out.close();
 	}
 	
 }

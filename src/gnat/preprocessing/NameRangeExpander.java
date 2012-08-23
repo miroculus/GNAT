@@ -599,14 +599,15 @@ public class NameRangeExpander implements Filter {
 
 
 	/**
-	 * Checks the given base name and numbers if they make sense
+	 * Checks the given base name and numbers if they make sense; returns false if the case should
+	 * be skipped and therefore not expanded.
 	 * <ul>
 	 * <li>the base name should look like a gene name
 	 * <li>the numbers should be of the same type (digits, letters, or Roman) and case
 	 * <li>the numbers should be in ascending order
 	 * <li>no number should not be zero
 	 * </ul>
-	 * Threre are cases in the BC2 set where the order was not maintained =&gt; skip that particular check!<br>
+	 * There are cases in the BC2 set where the order was not maintained =&gt; skip that particular check!<br>
 	 * 
 	 * @param basename
 	 * @param numbers
@@ -649,7 +650,7 @@ public class NameRangeExpander implements Filter {
 		if (arabic) {
 			for (int i = 1; i < numbers.length; i++) {
 				if (Integer.parseInt(numbers[i-1]) >= Integer.parseInt(numbers[i])) {
-					System.err.println("#NameRangeExpander: spurious order of numbers: " + numbers[i-1] + " -> " + numbers[i]);
+					System.err.println("#NameRangeExpander: spurious order of numbers: " + numbers[i-1] + " -> " + numbers[i] + " in basename='" + basename + "'");
 					//return false;
 				}
 			}
@@ -658,13 +659,13 @@ public class NameRangeExpander implements Filter {
 		if (uppercase || lowercase) {
 			for (int i = 1; i < numbers.length; i++) {
 				if (numbers[i-1].compareTo(numbers[i]) >= 0) {
-					System.err.println("#NameRangeExpander: spurious order of numbers: " + numbers[i-1] + " -> " + numbers[i]);
+					System.err.println("#NameRangeExpander: spurious order of numbers: " + numbers[i-1] + " -> " + numbers[i] + " in basename='" + basename + "'");
 					//return false;
 				}
 			}
 		}
 		
-		// TODO: comparison of Roman numerals
+		// TODO: check Roman numerals for ascending order
 		
 		return true;
 	}

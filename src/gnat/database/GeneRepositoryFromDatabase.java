@@ -26,7 +26,23 @@ import java.util.TreeSet;
  * them in to a GeneRepository.
  *
  *
- * @author Joerg
+ * <h4>Updating the GNAT database</h4>
+ * <h5>Gene Ontology codes and term mappings</h5>
+ * 1) download gene2go and gene2pubmed from NCBI's FTP site for Gene<br>
+ * 2) create a PubMed to GO mapping using<br>
+ *    {@code cat gene2go | cut -f3,7 | grep -v -P "\t\-" | sed 's/GO:0x//' | sed 's/\(.*\)\t\(.*\)/\2\t\1/' > pubmed2Go.txt}<br>
+ *    replace 'x' in the sed command with an asterisk =&gt; 'GO:0*' !<br>
+ * -  copy this file into the data directory; path and filename can be changed in the isgn_properties.xml file,
+ *    the key is 'pubmedId2GO'<br>
+ * 3) create gene to GO code and GO term mappings using<br>
+ *    {@code cat gene2go | cut -f2,3 | sed 's/\tGO:0x/\t/' > gene2go_code.tsv}<br>
+ *    (again replacing x with *)<br>
+ *    {@code cat gene2go | cut -f2,6 > gene2go_term.tsv}<br>
+ * -  load GO codes and terms into the database:<br>
+ *    mysql> load data local infile 'gene2go_codes.tsv' into table GR_GOID fields terminated by '\t';<br>
+ *    mysql> load data local infile 'gene2go_terms.tsv' into table GR_GOTerm fields terminated by '\t';<br>
+ *
+ * @author Joerg Hakenberg, Conrad Plake
  */
 
 public class GeneRepositoryFromDatabase {

@@ -24,7 +24,7 @@ public class GOAccess {
 
 	public GOAccess () {
 		this(ISGNProperties.get("dbDriver"), ISGNProperties.get("dbAccessUrl"),
-				ISGNProperties.get("dbUser"), ISGNProperties.get("dbPass"), true);
+			 ISGNProperties.get("dbUser"), ISGNProperties.get("dbPass"), true);
 	}
 
 
@@ -124,10 +124,10 @@ public class GOAccess {
 	 * @return
 	 */
 	public float getDistance (String acc1, String acc2) {
-//		if (!isGOAccessionNumber(acc1))
-//			acc1 = makeGOAccessionNumber(acc1);
-//		if (!isGOAccessionNumber(acc2))
-//			acc2 = makeGOAccessionNumber(acc2);
+		//if (!isGOAccessionNumber(acc1))
+			acc1 = ""+makeGOAccessionNumeral(acc1);
+		//if (!isGOAccessionNumber(acc2))
+			acc2 = ""+makeGOAccessionNumeral(acc2);
 
 		if (acc1.equals(acc2)) return 0.0f;
 
@@ -141,10 +141,8 @@ public class GOAccess {
 		int depthTerm1 = -1;
 		int depthTerm2 = -1;
 
+		//System.err.println("#Scoring acc1=" + acc1 + " against acc2="+acc2);
 
-		if (verbosity > 3) {
-			System.out.print("# " + acc1 + "/" + acc2 + " ");
-		}
 		/*
 		 *
 		 * IDEA:    directDistance / (depthLCA + depthTerm1 + depthTerm2)
@@ -152,64 +150,15 @@ public class GOAccess {
 		 *
 		 */
 
-
-		// if distance to GO:0005575 (cellular_component) <= 8, return 1.0f, high distance
-
-		/*try {
-			// first, check if one is a direct parent of the other
-			// (in GeneOntology_GO2GO table)
-
-			// term 1 parent of term?
-			userResultset = userStatement.executeQuery("SELECT * FROM " + dbGo2GoTable +
-					" WHERE parent=\"GO:0005575\" AND child=\"" + acc1 + "\"");
-			if (userResultset.first()) {
-				return 1.0f;
-				//directDistance = userResultset.getInt("distance");
-				//if (directDistance <= 8) return 1.0f;
-			}
-			userResultset = userStatement.executeQuery("SELECT * FROM " + dbGo2GoTable +
-					" WHERE parent=\"GO:0005575\" AND child=\"" + acc2 + "\"");
-			if (userResultset.first()) {
-				return 1.0f;
-				//directDistance = userResultset.getInt("distance");
-				//if (directDistance <= 8) return 1.0f;
-			}
-		} catch (SQLException sqle) {
-			//System.err.println("# SQLE");
-			sqle.printStackTrace();
-		}*/
-
-		/*
-
-
-
-		 direct = 0                 =>   dist = 0
-
-		 direct = 1, down in tree   =>   dist = 0.1
-
-		 direct = 1, up in tree     =>   dist = 0.9
-
-		 direct = 5, down in tree   =>   dist = 0.3
-
-		 direct = 5, up in tree     =>   dist = 0.7
-
-		 direct = 9, down in tree   =>   dist = 0.4
-
-		 direct = 9, up in tree     =>   dist = 0.6
-
-
-		 */
-
-
 		// catch SQLException, return POS_INFTY on any
 		try {
-			// first, check if one is a direct parent of the other
-			// (in GeneOntology_GO2GO table)
 
-			// term 1 parent of term?
-			userResultset = userStatement.executeQuery("SELECT * FROM " + dbGo2GoTable +
+			// term 1 parent of term 2?
+			userResultset = 
+				userStatement.executeQuery("SELECT * FROM " + dbGo2GoTable +
 					" WHERE parent=\"" + acc1 + "\" AND child=\"" + acc2 + "\"");
 			if (userResultset.first()) {
+				//System.err.println("# => acc1 is parent of acc2");
 				directDistance = userResultset.getInt("distance");
 
 				// check info on parent term 1
@@ -224,16 +173,13 @@ public class GOAccess {
 
 			// term 2 parent of term 1?
 			} else {
-				if (verbosity > 3) {
-					System.out.print(", no p/c");
-				}
-
 				userResultset = userStatement.executeQuery("SELECT * FROM " + dbGo2GoTable +
 						" WHERE parent=\"" + acc2 + "\" AND child=\"" + acc1 + "\"");
 
 				if (userResultset.first()) {
 					directDistance = userResultset.getInt("distance");
-
+					//System.err.println("# => acc2 is parent of acc1");
+					
 					// check info on parent term 2
 					userResultset = userStatement.executeQuery("SELECT * FROM " + dbGo2GoTable +
 							" WHERE parent=\"all\" AND child=\"" + acc2 + "\"");
@@ -243,10 +189,7 @@ public class GOAccess {
 						depthLCA = depthTerm2;
 						found = true;
 					}
-				} else
-					if (verbosity > 3) {
-						System.out.print(", no c/p");
-					}
+				}
 			}
 
 
@@ -260,8 +203,13 @@ public class GOAccess {
 						+ " WHERE goid1=\"" + acc1 + "\" AND goid2=\"" + acc2 + "\"");
 				// get info on this tuple if it exists
 				if (userResultset.first()) {
+					
 					depthLCA = userResultset.getInt("depthlca");
 
+					int lcaid = userResultset.getInt("lcaid");
+					//System.err.println("# => siblings, children of LCA term " + lcaid);
+
+					
 					int distanceFromLCATerm1 = userResultset.getInt("dist1");
 					int distanceFromLCATerm2 = userResultset.getInt("dist2");
 					directDistance = distanceFromLCATerm1 + distanceFromLCATerm2;
@@ -270,10 +218,6 @@ public class GOAccess {
 					found = true;
 
 				} else {
-					if (verbosity > 3) {
-						System.out.print(", no c1/c2");
-					}
-
 					// no such tuple? then maybe stored as term2 / term1 in the DB...
 					userResultset = userStatement.executeQuery("SELECT * FROM " + dbLCAtable
 							+ " WHERE goid1=\"" + acc2 + "\" AND goid2=\"" + acc1 + "\"");
@@ -281,27 +225,30 @@ public class GOAccess {
 					if (userResultset.first()) {
 						depthLCA = userResultset.getInt("depthlca");
 
+						int lcaid = userResultset.getInt("lcaid");
+						//System.err.println("# => siblings, children of LCA term " + lcaid);
+						
 						int distanceFromLCATerm2 = userResultset.getInt("dist1");
 						int distanceFromLCATerm1 = userResultset.getInt("dist2");
 						directDistance = distanceFromLCATerm1 + distanceFromLCATerm2;
 						depthTerm1 = depthLCA + distanceFromLCATerm1;
 						depthTerm2 = depthLCA + distanceFromLCATerm2;
 						found = true;
-					} else
-						if (verbosity > 3) {
-							System.out.print(", no c2/c1");
-						}
+					}
 				}
 			} // if not found
 
 
 			if (found) {
-
 				distance = (float)directDistance /
 					( (float)depthLCA + (float)depthTerm1 + (float)depthTerm2 );
-
+				//System.err.println("# Distance = " + distance);
+			} else {
+				//System.err.println("# No distance available");
 			}
 
+			//System.err.println("Depth acc1="+acc1 + " => " + depthTerm1);
+			//System.err.println("Depth acc2="+acc2 + " => " + depthTerm2);
 
 		} catch (SQLException sqle) {
 			//System.err.println("# SQLE");
@@ -313,9 +260,6 @@ public class GOAccess {
 			//return Float.NEGATIVE_INFINITY;
 		}
 
-		if (verbosity > 3) {
-			System.out.println(" => " + distance);
-		}
 
 		return distance;
 
@@ -570,6 +514,22 @@ public class GOAccess {
 			result = "0" + result;
 		return "GO:" + result;
 	}
+	
+	
+	/**
+	 * Transforms the given GO code (GO:0012345) into the number part (12345).
+	 * <br/>
+	 * @param number
+	 * @return
+	 */
+	public static int makeGOAccessionNumeral (String code) {
+		String x = code.toLowerCase().replaceFirst("go:", "");
+		try {
+			return Integer.parseInt(x);
+		} catch (NumberFormatException e) {
+			return -1;
+		}
+	}
 
 
 	/**
@@ -604,6 +564,11 @@ public class GOAccess {
 		} catch (Exception e) {
 			System.err.println("Exception: unknown host?");
 		}
+		
+		//System.err.println(userStatement);
+		//System.err.println(success);
+		//System.exit(1);
+		
 		if (success) openConnection = true;
 		return success;
 	}
