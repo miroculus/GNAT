@@ -12,7 +12,7 @@ import gnat.filter.nei.StopWordFilter;
 import gnat.filter.nei.UnambiguousMatchFilter;
 import gnat.filter.nei.UnspecificNameFilter;
 import gnat.filter.ner.DefaultSpeciesRecognitionFilter;
-import gnat.filter.ner.RunDictionaries;
+import gnat.filter.ner.RunAllGeneDictionaries;
 import gnat.preprocessing.NameRangeExpander;
 import gnat.representation.TextFactory;
 import gnat.utils.AlignmentHelper;
@@ -93,7 +93,7 @@ public class LocalPipelineTest extends PipelineTest {
 //		gnatServiceNer.useDefaultSpecies = true;
 //		run.addFilter(gnatServiceNer);
 		// construct a dictionary for human genes only
-		RunDictionaries humanDictionaryFilter = new RunDictionaries();
+		RunAllGeneDictionaries humanDictionaryFilter = new RunAllGeneDictionaries();
 		humanDictionaryFilter.addLimitToTaxon(9606);
 		run.addFilter(humanDictionaryFilter);
 		
