@@ -83,4 +83,8 @@ public class IdentifiedGene implements Comparable<IdentifiedGene>
 		return 0;//this.hashCode() - o.hashCode();
 	}
 
+	@Override public String toString () {
+		return this.gene.getID() + " (" + this.gene.getNames() + ")";
+	}
+	
 }

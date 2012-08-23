@@ -1,6 +1,7 @@
 package gnat.representation;
 
 import gnat.ConstantsNei;
+import gnat.ISGNProperties;
 import gnat.retrieval.PubmedAccess;
 
 import java.io.BufferedReader;
@@ -9,8 +10,12 @@ import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
 import java.util.Collection;
+import java.util.HashMap;
+import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Map;
+import java.util.Set;
 
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
@@ -31,6 +36,12 @@ import uk.ac.man.documentparser.input.DocumentIterator;
 
 public class TextFactory {
 
+	/** Stores a mapping from PubMed IDs to GO codes; will be added to a Text's ContextModel. */
+	static Map<Integer, Set<Integer>> pubmed2gocodes = new HashMap<Integer, Set<Integer>>();
+	/** Stores a mapping from PubMed IDs to GO terms; will be added to a Text's ContextModel. */
+	static Map<Integer, Set<String>> pubmed2goterms  = new HashMap<Integer, Set<String>>();
+	
+	
 	/**
 	 * Loads a text repository from the given directories.<br>
 	 * Supported file formats (identified by extensions) are .txt, .xml, and .medline.xml.
@@ -41,6 +52,41 @@ public class TextFactory {
 	public static TextRepository loadTextRepositoryFromDirectories (Collection<String> directories) {
 		TextRepository textRepository = new TextRepository();
 
+		System.err.println("#TextFactory loading GO codes and terms...");
+		String file = ISGNProperties.get("pubmedId2GO");
+		if (file != null && file.length() > 0) {
+			File FILE = new File(file);
+			if (FILE.exists() && FILE.canRead()) {
+				try {
+					BufferedReader br = new BufferedReader(new FileReader(file));
+					String line;
+					while ((line = br.readLine()) != null) {
+						String[] cols = line.split("\t");
+						// assume one PMID in column 1
+						String[] pmids = new String[]{cols[0]};
+						// could be multiple, separated by , ; |
+						if (cols[0].matches(".*[\\;\\,\\|]\\s?.*"))
+							pmids = cols[0].split("[\\;\\,\\|]\\s*");
+						int gocode = Integer.parseInt(cols[1].toLowerCase().replaceFirst("go:", ""));
+						for (String pmid: pmids) {
+							int pubmed = Integer.parseInt(pmid);
+							Set<Integer> codes = pubmed2gocodes.get(pubmed);
+							if (codes == null) {
+								codes = new HashSet<Integer>();
+								pubmed2gocodes.put(pubmed, codes);
+							}
+							codes.add(gocode);
+						}
+					}
+					br.close();
+				} catch (IOException ioe) {
+					ioe.printStackTrace();
+				}
+			} else
+				System.err.println("#TextFactory was expecting PubMed-to-GO mappings in " + file);
+		}
+		
+		System.err.println("#TextFactory loading texts from directories...");
 		for (String dir: directories) {
 			//Set<String> textIds = new TreeSet<String>();
 	
@@ -130,14 +176,14 @@ public class TextFactory {
 		
 		//System.out.println("id: "+ id);
 		
-		StringBuilder xml = new StringBuilder();
+		StringBuilder file_content = new StringBuilder();
 		
 		try {
 			BufferedReader br = new BufferedReader(new FileReader(filename));
 			String line;
 			while ((line = br.readLine()) != null) {
-				xml.append(line);
-				xml.append("\n");
+				file_content.append(line);
+				file_content.append("\n");
 			}
 			br.close();
 		} catch (IOException ioe) {
@@ -145,11 +191,25 @@ public class TextFactory {
 		}
 		
 		Text aText = new Text(id);
-		aText.setPlainFromXml(xml.toString());
+		if (filename.endsWith(".xml"))
+			aText.setPlainFromXml(file_content.toString());
+		else
+			aText.setPlainText(file_content.toString());
 
 		// every Text needs a context model
 		TextContextModel tcm = new TextContextModel(aText.ID);
 		tcm.addPlainText(aText.getPlainText());
+		
+		//System.err.println(aText.getID() + "\t" + aText.getPMID());
+		if (pubmed2gocodes.containsKey(aText.getPMID())) {
+			Set<Integer> gocodes = pubmed2gocodes.get(aText.getPMID());
+			String[] scodes = new String[gocodes.size()];
+			int s = 0;
+			for (int gocode: gocodes)
+				scodes[s++] = ""+gocode;
+			tcm.addCodes(scodes, GeneContextModel.CONTEXTTYPE_GOCODES);
+			//System.err.println("#Added " + scodes.length + " GO codes for text " + aText.getPMID());
+		}
 
 		// add the extracted context model to the text
 		aText.setContextModel(tcm);
