@@ -113,10 +113,12 @@ public class Gene implements Serializable {
 	}
 
 
-	public String getID()
-	{
+	public String getID() {
 	    return ID;
     }
 
+	@Override public String toString() {
+		return this.ID;
+	}
 
 }
