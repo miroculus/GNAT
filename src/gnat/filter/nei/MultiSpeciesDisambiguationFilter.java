@@ -372,5 +372,5 @@ public class MultiSpeciesDisambiguationFilter implements Filter {
     {
     	this.threshold = threshold;
     }
-	
+
 }

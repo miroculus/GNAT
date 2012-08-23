@@ -3,6 +3,7 @@ package gnat.client;
 import gnat.ISGNProperties;
 import gnat.filter.nei.AlignmentFilter;
 import gnat.filter.nei.GeneRepositoryLoader;
+import gnat.filter.nei.IdentifyAllFilter;
 import gnat.filter.nei.ImmediateContextFilter;
 import gnat.filter.nei.LeftRightContextFilter;
 import gnat.filter.nei.MultiSpeciesDisambiguationFilter;
@@ -111,17 +112,24 @@ public class JustAnnotate {
 		//////////
 		// Pre-processing filters here:
 		run.addFilter(new NameRangeExpander());
-
+		
 		
 		//////////
 		// NER filters here:
 		// default species NER: spots human, mouse, rat, yeast, and fly only
 		run.addFilter(new DefaultSpeciesRecognitionFilter());
-		for (Text text : run.getTextRepository().getTexts()) {
-			text.addTaxonId(9606);
+		String assumeSpecies = ISGNProperties.get("assumeSpecies");
+		if (assumeSpecies != null && assumeSpecies.length() > 0) {
+			String[] species = assumeSpecies.split("[\\;\\,]\\s*");
+			for (String spec: species) {
+				if (!spec.matches("\\d+")) continue;
+				int tax = Integer.parseInt(spec);
+				for (Text text : run.getTextRepository().getTexts())
+					text.addTaxonId(tax);
+			}
 		}
 		
-		// construct a dictionary for human, mouse, yeast, fruit fly genes only
+		// construct a dictionary filter for human, mouse, yeast, fruit fly genes only
 		RunAllGeneDictionaries afewDictionaryFilters = new RunAllGeneDictionaries();
 		afewDictionaryFilters.setLimitToTaxons(9606, 10090, 10116, 559292, 7227);
 		run.addFilter(afewDictionaryFilters);
@@ -172,8 +180,11 @@ public class JustAnnotate {
 				Integer.parseInt(ISGNProperties.get("disambiguationThreshold")),
 				Integer.parseInt(ISGNProperties.get("maxIdsForCandidatePrediction"))));
 		
-		// Mark everything that "survived" until here as OK, will be reported in output 
-		//run.addFilter(new IdentifyAllFilter());
+		// Mark everything that "survived" until here as OK, will be reported in output
+		// Only for high-recall runs
+		String tuning = ISGNProperties.get("tuning");
+		if (tuning != null && tuning.equalsIgnoreCase("recall"))
+			run.addFilter(new IdentifyAllFilter());
 		
 		
 		//////////
