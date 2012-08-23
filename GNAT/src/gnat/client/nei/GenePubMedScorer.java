@@ -11,14 +11,12 @@ import gnat.representation.ContextVector;
 import gnat.representation.Gene;
 import gnat.representation.GeneContextModel;
 import gnat.representation.Text;
-import gnat.representation.TextFactory;
-import gnat.representation.TextRepository;
 
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.LinkedList;
-import java.util.List;
+import java.util.Map;
 
 /**
  * Scores one or more genes given their occurrence in a particular piece of text. Its main use
@@ -59,7 +57,7 @@ public class GenePubMedScorer {
 	public int DEBUG_OUTPUT = 2;
 
 	/** */
-	HashMap <String, LinkedList<Float>> scoreCache = new HashMap <String, LinkedList<Float>>();
+	Map <String, LinkedList<Float>> scoreCache = new HashMap <String, LinkedList<Float>>();
 
 	/**
 	 * Constructs a new GenePubMedScorer with an access to the GO
@@ -271,6 +269,7 @@ public class GenePubMedScorer {
 		if (scoreCache.containsKey(gene.getID() + ";" + text.getID()))
 			return scoreCache.get(gene.getID() + ";" + text.getID());
 
+		
 		//
 		HashMap<String, Float> allScores = new HashMap<String, Float>();
 		LinkedList<Float> scores = new LinkedList<Float>();
@@ -420,7 +419,7 @@ public class GenePubMedScorer {
 
 		// output scores if needed
 		if (ConstantsNei.OUTPUT_LEVEL.compareTo(ConstantsNei.OUTPUT_LEVELS.DEBUG) >= 0)
-			System.out.println("Scores of gene " + gene.ID + " in text " + text.ID + ": " + allScores);
+			System.out.println("#Scores of gene " + gene.ID + " in text " + text.ID + ": " + allScores);
 		else if (ConstantsNei.OUTPUT_LEVEL == ConstantsNei.OUTPUT_LEVELS.SVM) {
 			System.out.print("0");
 			if (allScores.containsKey("AA"))
@@ -501,6 +500,9 @@ public class GenePubMedScorer {
 	 * @return
 	 */
 	public float getScore_GOCodes (ContextVector cv1, ContextVector cv2) {
+		
+		//System.err.println("Calling GPS.getScore_GOC");
+		
 		float sim = -1.0f;
 
 		LinkedList<String> goCodes1;
@@ -519,6 +521,8 @@ public class GenePubMedScorer {
 			//System.err.println("  No GO codes for text.");
 			return -1.0f;
 		}
+		
+		
 
 		sim = goTermScorer.getGOSimilarity(goCodes1, goCodes2);
 
@@ -954,6 +958,11 @@ public class GenePubMedScorer {
 	 */
 	public void setVerbosity (int verbosity) {
 		this.verbosity = verbosity;
+	}
+	
+	
+	public GOTermSimilarity getGoTermScorer () {
+		return goTermScorer;
 	}
 
 
