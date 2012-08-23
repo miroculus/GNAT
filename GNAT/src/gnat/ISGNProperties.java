@@ -28,8 +28,6 @@ public class ISGNProperties {
 			myProperties.loadFromXML(new FileInputStream(new File (FILE_PROPERTIES)));
 		} catch (FileNotFoundException e) {
 			System.err.println("Unable to load properties file: " + FILE_PROPERTIES + ", make sure to load manually using ISGNProperties.loadProperties(File).");
-//			System.exit(2);
-			//System.err.println("Creating an emtpy properties file.");
 		} catch (InvalidPropertiesFormatException e) {
 			System.err.println("Property file has invalid format.");
 			System.exit(2);

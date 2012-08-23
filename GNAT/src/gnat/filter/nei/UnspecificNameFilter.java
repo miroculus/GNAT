@@ -24,6 +24,10 @@ import java.util.Set;
  */
 public class UnspecificNameFilter implements Filter {
 
+	public static String leftWordBoundary = "(^|[\\s\\(\\[\\/])";
+	public static String rightWordBoundary = "([\\s\\,\\)\\]\\/\\;\\!\\?]|$)";
+
+	
 	/**
 	 *	Removes all recognized gene names that are made up entirely of unspecific keywords or where names point to something else than a gene name,
 	 *  e.g. a tissue, species, amino acid.
@@ -63,10 +67,13 @@ public class UnspecificNameFilter implements Filter {
 				|| isAminoAcid(maskedGeneName)
 				|| textHasPlural(maskedGeneName, text.plainText)
 				|| isChromosome(recognizedGeneName.getName(), sentence)
-				//|| isDisease(recognizedGeneName.getName())
+				|| isDiseaseName(recognizedGeneName.getName())
+				|| isDiseaseName(maskedGeneName)
 				|| sentence.matches(".*" + maskedGeneName + "([\\-\\/][A-Za-z0-9]*[A-Z0-9][A-Za-z0-9]*)?( [a-z]+)? (gene|protein) family([\\.\\,\\;\\:]| [a-z]+ [a-z]+[\\s\\,\\.\\:\\;]).*")
 				) {
 
+				System.out.println("UNF: removing " + recognizedGeneName.getName() + " in sentence " + sentence);
+				
 				context.removeRecognizedEntity(recognizedGeneName);
 				//removedNames.add(recognizedGeneName.getName() + "/" + recognizedGeneName.getText().ID);
 				removed++;
@@ -145,7 +152,7 @@ public class UnspecificNameFilter implements Filter {
 		// units and some typical mistakes (and 1, or in) --> bp has to keep Bp50!
 		if (term.matches("^(aa|bp\\s[0-9]{1,2}|kd|mg|Ki|nM|CD|Sci|Proc|Acad|\\d+ h" +
 				"|[\\d\\.]+[\\s\\-]?[Kk][Dd][Aa]" +
-				"|or\\sin|and\\s[1Ii]|for\\s4|[Aa]\\sgene|[Aa]t\\s5|[Aa]\\sC|is\\s1|at\\s\\d" +
+				"|or\\sin|and\\s[1Ii]|for\\s4|is\\s4|[Aa]\\sgene|[Aa]t\\s5|[Aa]\\sC|is\\s1|at\\s\\d" +
 				"|as a|a PS|or if|a [ACGTU]|d or|a part" +
 
 				"|factor[\\s\\-]\\d|factor[\\s\\-](alpha|beta|gamma|delta)" +
@@ -171,7 +178,7 @@ public class UnspecificNameFilter implements Filter {
 		if (term.toLowerCase().endsWith("amp") && term.length() == 4)
 			return true;
 
-		// a list of name parts that, in any combination, result in an unspecific name
+		// a list of name parts that, in any combination, result in an unspecific mention
 		// protein types and functions, cellular/tissue locations, processes
 		// latest add ons: polypetide release (factor), (growth) hormone, "lung cancer"   --in brackets: token was already included
 		if (term.matches("^([\\s\\,\\.\\-\\;\\:\\(\\)\\/]" +
@@ -225,7 +232,6 @@ public class UnspecificNameFilter implements Filter {
 				//"" +
 				"|to|by|that|like|a|[tT]he|for|of|and|or|with|in" +
 				//"" +
-
 				"|[Aa]ntigen|lymphocyte|cytoplasmic|helicase|retinoic|acid|plasminogen|cytoskeletal|anchor" +
 				"|[Aa]nti|integral|membrane|[Nn]eutrophil|ubiquitin" +
 				"|basic|leucine|zipper|putative|transmembrane|proteasome|responsive" +
@@ -325,11 +331,74 @@ public class UnspecificNameFilter implements Filter {
 				"|interleukins|releases?|origins?|chemokines?|sons?|nets?|[a-z]+s" +
 				// added for Lupus/IBD project:
 				"|mild|platelet|drip|sera|neo|radix|spliceosomal|hip|Part I|[Uu]rinary protein|urine protein" +
-				"|Chi|dot|rash|pulmonary function|BMI|toll|min|autoimmune susceptibility|lethal|pan|Med" +
+				"|Chi|dot|rash|pulmonary function|BMI|toll|min|lethal|pan|Med" +
 				"|Abs|Ags|UTR|expand" +
-				"|adipose|SLE|multiple sclerosis|anti\\-?phospholipid syndrome|[a-z]+ syndrome" +
-				"|thrombocytopenia|renal amyloidosis|CD4|CD8|Mai" +
+				"|CD4|CD8|Mai" +
+				// BC2 gn test
+				"|kbp|helical|post\\-?synaptic|min\\-1|death[\\-\\s]inducing|sub|repressor" +
+				"|early[\\-\\s]response|[Nn]on\\-histone[\\-\\s]chromosomal|pituitary|a catalytic" +
+				"|P\\(k\\)|[Mm]ediator complex|trans-Golgi network" +
 				")");
+	}
+
+	
+
+
+	/**
+	 *
+	 *	Returns true if the name is followed by a keyword indicating that this name is a disease.
+	 *
+	 * @param name
+	 * @return
+	 */
+	public static boolean isDiseaseName (String name) {
+		boolean ret = false;
+		// cannot remove "... disease" directly, b/c "a gene associated with ... disease"!
+		if (name.trim().matches(
+				".*([a-z]+(phase|osis|topy|trophy|itis|noma|phoma|axia|emia|stoma)|syndrome|failure|disease|severity)"))
+			ret = true;
+		if (name.trim().matches(
+				"(NF|[Nn]eurofibromatosis([\\s\\-][12])?" +
+				"|DM" + //|myotonic\\sdystrophy" +
+				"|Lu|Lutheran\\sblood\\sgroup" +
+				"|Se" +
+				"|H" +
+				"|Le|Lewis\\sblood\\sgroup" +
+				"|Rb" + //|retinoblastoma" +
+				"|LW|LW\\sblood\\sgroup|Landsteiner[\\s\\-]Wiener\\sblood\\sgroup" +
+				"|autoimmune susceptibility" +
+				"|FHC" +//|familial\\shypercholesterolemia" +
+				// Lupus/IBD:
+				"|adipose|SLE|multiple sclerosis|anti\\-?phospholipid syndrome|[a-z]+ syndrome" +
+				"|thrombocytopenia|renal amyloidosis" +
+				// BC2 gn text
+				"|hepatocellular\\scarcinoma|hereditary\\shemochromatosis|promyelocytic\\sleukemia" +
+				"|retinitis pigmentosa|multiple endocrine neoplasia" +
+				")"))
+			ret = true;
+
+		return ret;
+	}
+	
+
+	/**
+	 *
+	 *	Returns true if this disease name is mentioned together with a locus or genes/proteins in this sentence.
+	 *
+	 * @param name
+	 * @param sentence
+	 * @return
+	 */
+	public static boolean keepDiseaseName (String name, String sentence) {
+		try {
+	        return (
+	        	   sentence.matches(".*" + leftWordBoundary + "(locus|loci|location|chromosom[a-z]+|gene.+associated)" + rightWordBoundary + ".*")
+	        	|| sentence.matches(".*" + leftWordBoundary + name.replaceAll("([\\+\\-\\*\\(\\)\\[\\]\\{\\}])", "\\\\$1") + rightWordBoundary + ".*" + leftWordBoundary + "(gene|protein)s?" + rightWordBoundary + ".*")
+	        	);
+        }
+        catch (java.util.regex.PatternSyntaxException e) {
+	        return false;
+        }
 	}
 
 
@@ -349,6 +418,40 @@ public class UnspecificNameFilter implements Filter {
 				")"
 		);
 	}
+
+	
+	/**
+	 *	Returns true if the name is followed by a keyword indicating that this name is a cell line.
+	 *
+	 * @param name
+	 * @param sentence
+	 * @return
+	 */
+	public static boolean isCellLine (String name, String sentence) {//, String text) {
+		// mask any characters that have a meaning in reg.exes
+		name = StringHelper.espaceString(name);
+		
+		if (sentence.matches(".*" + leftWordBoundary  + name + rightWordBoundary + "(cell|culture)s?.*")) {
+			//System.out.println("#Checking '" + name + "' for cell line in sentence '" + sentence + "' => yes");
+			return true;
+		}
+//		if (sentence.matches(".*" + leftWordBoundary  + name + rightWordBoundary + "sequences?.*")) {
+//			System.out.print("#Checking '" + name + "' for cell line in sentence '" + sentence + "' => yes");
+//			return true;
+//		}
+		if (name.matches("CD\\d+")) {
+			if (sentence.matches(".*" + leftWordBoundary  + name + rightWordBoundary + "([A-Za-z\\-]+ )?(cell)s?.*")) {
+				//System.out.println("#Checking '" + name + "' for cell line in sentence '" + sentence + "' => yes");
+				return true;
+			}
+		}
+		if (sentence.matches(".*" + leftWordBoundary  + name + "[\\-\\/][0-9]+[A-Z]*" + rightWordBoundary + "([a-z]+ ){0,2}(cell|culture)s?.*")) {
+			//System.out.println("#Checking '" + name + "' for cell line in sentence '" + sentence + "' => yes");
+			return true;
+		}
+		return false;
+	}
+
 
 
 	/**

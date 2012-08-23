@@ -71,7 +71,7 @@ public class ImmediateContextFilter implements Filter {
 //				continue;
 //			}
 
-			if (isCellLine(name, sentence)) {
+			if (UnspecificNameFilter.isCellLine(name, sentence)) {
 				if (ConstantsNei.OUTPUT_LEVEL.compareTo(ConstantsNei.OUTPUT_LEVELS.DEBUG) >= 0)
 					System.out.println("#ICF: Kicking cell " + recognizedGeneName.getName() + " in " + text.PMID +
 							", \"" + sentence + "\"");
@@ -88,14 +88,17 @@ public class ImmediateContextFilter implements Filter {
 					|| UnspecificNameFilter.isUnspecificAbbreviation(name, sentence)
 					|| UnspecificNameFilter.isSpecies(name)
 					|| UnspecificNameFilter.isAminoAcid(name)
-					//|| isDisease(name)
-					) && !sentence.matches(".*" + maskedName + "\\)\\s(gene|protein|mRNA|cDNA|isoform|isozym).*")
+					|| UnspecificNameFilter.isDiseaseName(name)
+					//|| sentence.matches(".*" + maskedName + "( (gene|protein))? family.*")
+					|| sentence.matches(".*" + maskedName + " homology(\\s.{0,7})? domain.*")
+					) //&& !sentence.matches(".*" + maskedName + "\\)\\s(gene|protein|mRNA|cDNA|isoform|isozym).*")
 					) {
 
 				if (ConstantsNei.OUTPUT_LEVEL.compareTo(ConstantsNei.OUTPUT_LEVELS.DEBUG) >= 0)
 					System.out.println("#ICF: Kicking uns. " + recognizedGeneName.getName() + " in " + text.PMID +
 							", \"" + sentence + "\"");
-				context.removeEntitiesHavingName(name, text);
+				//context.removeEntitiesHavingName(name, text);
+				context.removeRecognizedEntity(recognizedGeneName);
 				continue;
 			}
 		}
@@ -214,88 +217,5 @@ public class ImmediateContextFilter implements Filter {
 		}
 	}
 
-
-	/**
-	 *
-	 *	Returns true if this disease name is mentioned together with a locus or genes/proteins in this sentence.
-	 *
-	 * @param name
-	 * @param sentence
-	 * @return
-	 */
-	public static boolean keepDiseaseName (String name, String sentence) {
-		try {
-	        return (
-	        	   sentence.matches(".*" + leftWordBoundary + "(locus|loci|location|chromosom[a-z]+|gene.+associated)" + rightWordBoundary + ".*")
-	        	|| sentence.matches(".*" + leftWordBoundary + name.replaceAll("([\\+\\-\\*\\(\\)\\[\\]\\{\\}])", "\\\\$1") + rightWordBoundary + ".*" + leftWordBoundary + "(gene|protein)s?" + rightWordBoundary + ".*")
-	        	);
-        }
-        catch (java.util.regex.PatternSyntaxException e) {
-	        return false;
-        }
-	}
-
-
-	/**
-	 *	Returns true if the name is followed by a keyword indicating that this name is a cell line.
-	 *
-	 * @param name
-	 * @param sentence
-	 * @return
-	 */
-	public static boolean isCellLine (String name, String sentence) {//, String text) {
-		// mask any characters that have a meaning in reg.exes
-		name = StringHelper.espaceString(name);
-		
-		if (sentence.matches(".*" + leftWordBoundary  + name + rightWordBoundary + "(cell|culture)s?.*")) {
-			//System.out.println("#Checking '" + name + "' for cell line in sentence '" + sentence + "' => yes");
-			return true;
-		}
-//		if (sentence.matches(".*" + leftWordBoundary  + name + rightWordBoundary + "sequences?.*")) {
-//			System.out.print("#Checking '" + name + "' for cell line in sentence '" + sentence + "' => yes");
-//			return true;
-//		}
-		if (name.matches("CD\\d+")) {
-			if (sentence.matches(".*" + leftWordBoundary  + name + rightWordBoundary + "([A-Za-z\\-]+ )?(cell)s?.*")) {
-				//System.out.println("#Checking '" + name + "' for cell line in sentence '" + sentence + "' => yes");
-				return true;
-			}
-		}
-		if (sentence.matches(".*" + leftWordBoundary  + name + "[\\-\\/][0-9]+[A-Z]*" + rightWordBoundary + "([a-z]+ ){0,2}(cell|culture)s?.*")) {
-			//System.out.println("#Checking '" + name + "' for cell line in sentence '" + sentence + "' => yes");
-			return true;
-		}
-		return false;
-	}
-
-
-	/**
-	 *
-	 *	Returns true if the name is followed by a keyword indicating that this name is a disease.
-	 *
-	 * @param name
-	 * @return
-	 */
-	public static boolean isDiseaseName (String name) {
-		boolean ret = false;
-		// cannot remove "... disease" directly, b/c "a gene associated with ... disease"!
-		if (name.trim().matches(
-				".*([a-z]+(phase|osis|topy|trophy|itis|noma|phoma|axia|emia|stoma)|syndrome|failure|disease|severity)"))
-			ret = true;
-		if (name.trim().matches(
-				"(NF|[Nn]eurofibromatosis([\\s\\-][12])?" +
-				"|DM" + //|myotonic\\sdystrophy" +
-				"|Lu|Lutheran\\sblood\\sgroup" +
-				"|Se" +
-				"|H" +
-				"|Le|Lewis\\sblood\\sgroup" +
-				"|Rb" + //|retinoblastoma" +
-				"|LW|LW\\sblood\\sgroup|Landsteiner[\\s\\-]Wiener\\sblood\\sgroup" +
-				"|FHC" +//|familial\\shypercholesterolemia" +
-				")"))
-			ret = true;
-
-		return ret;
-	}
-
+	
 }

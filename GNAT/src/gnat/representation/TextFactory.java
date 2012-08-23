@@ -31,7 +31,6 @@ import uk.ac.man.documentparser.input.DocumentIterator;
  * This includes extracting the TextContextModel for each text.
  *
  * @author Joerg Hakenberg
- *
  */
 
 public class TextFactory {
@@ -44,7 +43,9 @@ public class TextFactory {
 	
 	/**
 	 * Loads a text repository from the given directories.<br>
-	 * Supported file formats (identified by extensions) are .txt, .xml, and .medline.xml.
+	 * Supported file formats (which are determined by file extensions!) are .txt, .xml, .medline.xml, and .medlines.xml.<br>
+	 * - medlines.xml assumes multiple articles in one XML file and subsequently calls {@link #loadTextsFromMedlineSetXmlfile(String)}.<br>
+	 * - .txt assumes one article per file and calls {@link #loadTextFromFile(String)}.<br>
 	 *
 	 * @param directories
 	 * @return
@@ -85,14 +86,14 @@ public class TextFactory {
 			} else
 				System.err.println("#TextFactory was expecting PubMed-to-GO mappings in " + file);
 		}
-		
+
+		// go through all directories specified
 		System.err.println("#TextFactory loading texts from directories...");
 		for (String dir: directories) {
-			//Set<String> textIds = new TreeSet<String>();
-	
-			// read all plain texts from the directory
+			// read all supported files from each directory
 			File DIR = new File(dir);
 			if (DIR.exists() && DIR.canRead()) {
+				// try to load all files found in the directory
 				if (DIR.isDirectory()) {
 					if (!dir.endsWith("/")) dir += "/";					
 					// get the list of all files in that directory, load each if it is a .txt file
@@ -106,7 +107,7 @@ public class TextFactory {
 							textRepository.addText(text);
 						} else if (filename.endsWith(".medlines.xml")){
 							textRepository.addTexts(loadTextsFromMedlineSetXmlfile(dir + filename));
-						} else if (filename.endsWith(".xml")) {
+						} else if (filename.endsWith(".xml")) { // !needs to be checked last, after the other .*.xml!
 							Text text = loadTextFromXmlfile(dir + filename);
 							textRepository.addText(text);
 						}
@@ -116,7 +117,6 @@ public class TextFactory {
 					// load an individual file
 					Text text = loadTextFromFile(dir);
 					textRepository.addText(text);
-					//textIds.add(text.ID);
 				}
 			}
 		}
@@ -335,9 +335,13 @@ public class TextFactory {
 	
 	
 	/**
-	 * Gets a set of {@link Text Texts} from the given file.<br>
-	 * The assumed format is MEDLINE XML ("PubmedArticleSet"), and the plain text will be taken from
-	 * the ArticleTitle and AbstractText elements only.
+	 * Gets a set of {@link Text Texts} from the given XML file.<br>
+	 * The assumed format is MEDLINE XML ("PubmedArticleSet"), and the {@link Text#plainText} will be
+	 * taken from the ArticleTitle and AbstractText elements.<br>
+	 * {@link Text#PMID} and {@link Text#ID} will be set from the PMID element of PubmedArticle.
+	 * <br><br>
+	 * For the DTD, see
+	 * <a href="http://www.ncbi.nlm.nih.gov/corehtml/query/DTD/pubmed_120101.dtd">pubmed_120101.dtd</a>.
 	 * 
 	 * @param filename
 	 * @return
@@ -348,31 +352,39 @@ public class TextFactory {
 		
 		List<Text> temp_texts = new LinkedList<Text>();
 		
+		// xml is a StringBuilder that contains single articles,
+		// it will get reset for each new article encountered in the multi-article XML
 		StringBuilder xml = new StringBuilder();
+		// store the title, also gets reset for each new article encountered in the XML
 		String title = "";
 		try {
 			BufferedReader br = new BufferedReader(new FileReader(filename));
 			String line;
+			// parse the XML file, extract each individual article
 			while ((line = br.readLine()) != null) {
 				
+				// the XML file will contain (potentially) multiple abstracts/text
+				// start a new individual PubmedArticle, discard old lines
 				if (line.matches(".*<PubmedArticle.*")) {
 					xml.setLength(0);
 					xml.append(line);
 					xml.append("\n");
 					continue;
 				}
-				
+
+				// keep appending lines for to current individual XML article
 				xml.append(line);
 				xml.append("\n");
 				if (line.matches(".*<ArticleTitle>.*</ArticleTitle>.*")) {
 					title = line.replaceFirst("^.*<ArticleTitle>(.*)</ArticleTitle>.*$", "$1");
 				}
-				
+
 				if (line.matches(".*</PubmedArticle>.*")) {
 					Text aText = new Text(id);
 					aText.setPlainFromXml(xml.toString());
 					aText.title = title;
 
+					// get PubMed ID from the XML tag
 					String pmid = PubmedAccess.getPubMedIdFromXML(xml.toString());
 					if (pmid != null && !pmid.equals("-1") && pmid.matches("\\d+")) {
 						aText.setPMID(Integer.parseInt(pmid));

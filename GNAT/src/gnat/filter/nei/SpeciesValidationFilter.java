@@ -49,7 +49,7 @@ import java.util.Vector;
  */
 public class SpeciesValidationFilter implements Filter {
 
-	/** */
+	/** Maps a taxon ID to it's parent taxon ID. */
 	private static Map<Integer, Integer> parentTable = new HashMap<Integer, Integer>();
 	private GnatServiceNer speciesRecognizer;
 
@@ -118,7 +118,7 @@ public class SpeciesValidationFilter implements Filter {
 				int parent = keepThisTax;
 				if (parentTable.containsKey(keepThisTax))
 					parent = parentTable.get(keepThisTax);
-				//System.out.println("#SVF: Found a single species "+keepThisTax+"/"+parent+" in sentence " + sentence);
+				System.out.println("#SVF: Found a single species "+keepThisTax+"/"+parent+" in sentence " + sentence);
 				
 				TreeSet<String> removeGeneIds = new TreeSet<String>();
 				Iterator<String> it = geneIdCandidates.iterator();
@@ -126,10 +126,10 @@ public class SpeciesValidationFilter implements Filter {
 					String gid = it.next();
 					int currentTax = geneRepository.getGene(gid).getTaxon();
 					if (currentTax != keepThisTax && currentTax != parent) {
-						//System.out.println("#SVF: removing gene " + gid + " (tax: " + currentTax + ")");
+						System.out.println("#SVF: removing gene " + gid + " (tax: " + currentTax + ")");
 						removeGeneIds.add(gid);
 					} else {
-						//System.out.println("#SVF: keeping gene " + gid + " (tax: " + currentTax + ")");
+						System.out.println("#SVF: keeping gene " + gid + " (tax: " + currentTax + ")");
 					}
 				}
 

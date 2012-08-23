@@ -16,7 +16,6 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
 import java.util.TreeSet;
-import java.util.Vector;
 
 /**
  * Context for NEI processing.<br>
@@ -676,18 +675,26 @@ public class Context {
 		List<String> geneList = new LinkedList<String>();
 		
 		//TreeSet<String> addedGenes = new TreeSet<String>();
-		HashMap<Integer, TreeSet<IdentifiedGene>> allGenes = new HashMap<Integer, TreeSet<IdentifiedGene>>();
-		Vector<Integer> begins = new Vector<Integer>();
+		Map<Integer, List<IdentifiedGene>> allGenes = new HashMap<Integer, List<IdentifiedGene>>();
+		List<Integer> begins = new LinkedList<Integer>();
 		List<IdentifiedGene> identifiedGenes = this.getEntitiesIdentifiedAsGene();
 	    for (IdentifiedGene gene : identifiedGenes) {
 	    	if (!begins.contains(gene.getRecognizedEntity().getBegin()))
 	    		begins.add(gene.getRecognizedEntity().getBegin());
-	    	TreeSet<IdentifiedGene> genes = allGenes.get(gene.getRecognizedEntity().getBegin());
+	    	
+	    	/////
+	    	List<IdentifiedGene> genes = allGenes.get(gene.getRecognizedEntity().getBegin());
 	    	if (genes == null) {
-	    		genes = new TreeSet<IdentifiedGene>();
+	    		genes = new LinkedList<IdentifiedGene>();
 	    		allGenes.put(gene.getRecognizedEntity().getBegin(), genes);
 	    	}
 	    	genes.add(gene);
+	    	/////
+//	    	List<IdentifiedGene> genes =  new LinkedList<IdentifiedGene>();
+//	    	genes.addAll(allGenes.get(gene.getRecognizedEntity().getBegin()));
+//	    	allGenes.put(gene.getRecognizedEntity().getBegin(), genes);
+	    	/////
+	    	
 	    	
 	    	//if (allGenes.containsKey(gene.getRecognizedEntity().getBegin())) {
 	    	//	//TODO: merge annotations for this form of output
@@ -700,30 +707,45 @@ public class Context {
 	    Collections.sort(begins);
 	    Collections.reverse(begins);
 	    
+//	    System.err.println("##########");
+//	    System.err.println("##########");
+//	    System.err.println("##########");
+//	    System.err.println(allGenes.get(38));
+//	    System.err.println("##########");
+//	    System.err.println("##########");
+//	    System.err.println("##########");
+	    
 	    for (int begin: begins) {
-	    	TreeSet<IdentifiedGene> genes = allGenes.get(begin);
+	    	//TreeSet<IdentifiedGene> genes = allGenes.get(begin);
+	    	List<IdentifiedGene> genes = new LinkedList<IdentifiedGene>();
+	    	genes.addAll(allGenes.get(begin));
 	    	String ids = "";
 	    	String taxa = "";
+	    	
 	    	for (IdentifiedGene gene: genes) {
 	    		if (ids.length() == 0)
 	    			ids = gene.getGene().getID();
 	    		else
 	    			ids += ";" + gene.getGene().getID();
-	    		
+
 	    		if (taxa.length() == 0)
 	    			taxa = ""+gene.getGene().taxon;
 	    		else
 	    			taxa += ";" + gene.getGene().taxon;
 	    	}
-	    	IdentifiedGene gene = genes.first();
-	    	String line = gene.getRecognizedEntity().getText().getID()
-				+"\t"+ids
-				+"\t"+gene.getRecognizedEntity().getName()
-				+"\t"+gene.getConfidenceScore()
-				+"\t"+gene.getRecognizedEntity().getBegin()
-				+"\t"+gene.getRecognizedEntity().getEnd()
-				+"\t"+taxa;
-	    	geneList.add(line);
+	    	
+	    	//IdentifiedGene gene = genes.first();
+	    	//IdentifiedGene gene = genes.get(0);
+	    	for (IdentifiedGene gene: genes) {
+		    	String line = gene.getRecognizedEntity().getText().getID()
+					+"\t"+ids
+					+"\t"+gene.getRecognizedEntity().getName()
+					+"\t"+gene.getConfidenceScore()
+					+"\t"+gene.getRecognizedEntity().getBegin()
+					+"\t"+gene.getRecognizedEntity().getEnd()
+					+"\t"+taxa;
+		    	geneList.add(line);
+	    	}
 	    }
 	    
 	    return geneList;
