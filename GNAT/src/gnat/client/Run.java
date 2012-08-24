@@ -1,5 +1,6 @@
 package gnat.client;
 
+import gnat.ConstantsNei;
 import gnat.filter.Filter;
 import gnat.representation.Context;
 import gnat.representation.Gene;
@@ -11,7 +12,6 @@ import gnat.representation.Text;
 import gnat.representation.TextRepository;
 
 import java.io.PrintStream;
-import java.util.Collection;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
@@ -178,28 +178,26 @@ public class Run {
 	/**
 	 * Runs all filters in the order given by <tt>filterPipeline</tt>,
 	 * working on and changing <tt>context</tt>, <tt>textRepository</tt>, and <tt>geneRepository</tt>.
-	 * <br><br>
-	 * A status is printed to STDOUT after each filter if {@link #verbosity} &gt; 2, using {@link #printCurrentStatus(PrintStream)).
 	 */
 	public void runFilters () {
 		long starttime = System.currentTimeMillis();
 		
 		for (Filter filter: filterPipeline) {
-			if (verbosity > 1)
+			if (ConstantsNei.verbosityAtLeast(ConstantsNei.OUTPUT_LEVELS.STATUS))
 				System.out.println("Running filter " + filter.getClass());
 			
 			filter.filter(context, textRepository, geneRepository);
 			
-			if (verbosity > 2)
+			if (ConstantsNei.verbosityAtLeast(ConstantsNei.OUTPUT_LEVELS.DEBUG))
 				printCurrentStatus(System.out);
 			
-			if (verbosity > 3) {
+			if (ConstantsNei.verbosityAtLeast(ConstantsNei.OUTPUT_LEVELS.DEBUG)) {
 				System.out.println("TextRepository has " + textRepository.size() + " texts.");
 				System.out.println("GeneRepository has " + geneRepository.size() + " genes.");
 			}
 		}
 		
-		if (verbosity > 0) {
+		if (ConstantsNei.verbosityAtLeast(ConstantsNei.OUTPUT_LEVELS.STATUS)) {
 			long endtime = System.currentTimeMillis();
 			float seconds = (float)(endtime - starttime) / 1000.0f;
 			System.out.println("Run finished in " + seconds + "sec. ");

@@ -1,5 +1,6 @@
 package gnat.client;
 
+import gnat.ConstantsNei;
 import gnat.ISGNProperties;
 import gnat.filter.nei.AlignmentFilter;
 import gnat.filter.nei.GeneRepositoryLoader;
@@ -26,11 +27,10 @@ import gnat.utils.AlignmentHelper;
 import gnat.utils.StringHelper;
 
 import java.io.File;
+import java.util.Collection;
 import java.util.Collections;
-import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.Map;
 import java.util.Set;
 import java.util.TreeSet;
 
@@ -50,6 +50,8 @@ public class JustAnnotateInline {
 
 	/** Name of the XML element tag that will be used to annotate genes found by GNAT. */
 	public static String xml_tag = "GNAT";
+	/** XML tag for a gene mention that has no ID. */
+	public static String xml_tag_mention = "GNATGM";
 	/** Name of the XML attribute for the {@link #xml_tag} element, which will contain the gene ID(s). */
 	public static String xml_attribute_id     = "id";
 	/** Name of the XML attribute for the {@link #xml_tag} element, which will contain the gene symbols(s), also known as primary terms. */
@@ -59,6 +61,8 @@ public class JustAnnotateInline {
 	public static String xml_attribute_score = "score";
 	/** */
 	public static String xml_attribute_other_ids = "otherIds";
+	/** */
+	public static String xml_attribute_candidate_ids = "candidateIds";
 
 
 	/**
@@ -122,6 +126,7 @@ public class JustAnnotateInline {
 			}
 		}
 
+		ConstantsNei.setOutputLevel(run.verbosity);
 
 		//////////
 		// INPUT
@@ -234,12 +239,18 @@ public class JustAnnotateInline {
 			if (!DIR.exists())
 				DIR.mkdirs();
 		}
-		Set<Text> texts = run.context.getTexts();
-		
+		//Set<Text> texts = run.context.getTexts();
+		//System.err.println("Context has " + texts.size() + " texts");
+		Collection<Text> texts = run.getTextRepository().getTexts();
+		//System.err.println("Run has " + texts2.size() + " texts");
+		//if (true)
+		//	return;
 		
 		for (Text text: texts) {
 			Set<RecognizedEntity> entities = run.context.getRecognizedEntitiesInText(text);
-			System.err.println("For text " + text.getPMID() + ", found " + entities.size() + " entities (including duplicates):");
+			if (ConstantsNei.verbosityAtLeast(ConstantsNei.OUTPUT_LEVELS.DEBUG))
+				if (entities.size() > 0)
+					System.out.println("Found " + entities.size() + " in text " + text.getPMID());
 			// sort entities by position within each text:
 			List<SortableEntity> sortedEntities = new LinkedList<SortableEntity>();
 			for (RecognizedEntity re: entities) {
@@ -269,34 +280,27 @@ public class JustAnnotateInline {
 				if (otherIds_set.size() > 0)
 					otherIds = StringHelper.joinStringSet(otherIds_set, ";");
 				
-				annotatedText = annotatedText.substring(0, se.end + 1) + "</" + xml_tag + ">" + annotatedText.substring(se.end + 1);
-				
 				// insert the gene's ID into the XML
-				//String geneId = cols[1];
-				//String otherIds = "";
 				// in some cases, candidate IDs with the same score are returned
 				// pick the first ID and set as main ID
 				// add the other IDs in a separate XML attribute
-				if (geneId == null) geneId = "";
-//				if (geneId.matches(".*[\\;\\,].*")) {
-//					String[] allIds = geneId.split("\\s*[\\,\\;]\\s*");
-//					geneId = allIds[0].trim();
-//					if (allIds.length > 1) {
-//						otherIds = allIds[1];
-//						for (int a = 2; a < allIds.length; a++)
-//							otherIds += ";" + allIds[a];
-//					}
-//				}
-				String insert = "<" + xml_tag;
-				if (geneId.length() > 0)
+				String insert = "<";
+				if (geneId == null || geneId.length() == 0) {
+					annotatedText = annotatedText.substring(0, se.end + 1) + "</" + xml_tag_mention + ">" + annotatedText.substring(se.end + 1);
+					
+					insert += xml_tag_mention;
+					if (otherIds.length() > 0)
+						insert += " " + xml_attribute_candidate_ids + "=\"" + otherIds + "\"";
+				} else {
+					annotatedText = annotatedText.substring(0, se.end + 1) + "</" + xml_tag + ">" + annotatedText.substring(se.end + 1);
+					
+					insert += xml_tag;
 					insert += " " + xml_attribute_id + "=\"" + geneId + "\"";
-				if (otherIds.length() > 0)
-					insert += " " + xml_attribute_other_ids + "=\"" + otherIds + "\"";
-				
-				// get the Gene object for the (main) gene ID
-				// and from that, get the official symbol (if known)
-				// and add to XML attribute
-				if (geneId != null && geneId.length() > 0) {
+					if (otherIds.length() > 0)
+						insert += " " + xml_attribute_other_ids + "=\"" + otherIds + "\"";
+					// get the Gene object for the (main) gene ID
+					// and from that, get the official symbol (if known)
+					// and add to XML attribute
 					Gene gene = run.getGene(geneId);
 					String symbol = "";
 					if (gene != null && gene.officialSymbol != null && gene.officialSymbol.length() > 0)
@@ -311,8 +315,6 @@ public class JustAnnotateInline {
 					float score = run.context.getConfidenceScore(gene, text.ID);
 					if (score >= 0.0)
 						insert +=  " " + xml_attribute_score + "=\"" + score + "\"";
-				} else {
-					insert +=  " " + xml_attribute_score + "=\"-1\"";
 				}
 				
 				insert += ">";
@@ -320,7 +322,11 @@ public class JustAnnotateInline {
 			}
 			
 			//System.err.println("-----\nAnnotated text:\n-----\n"+annotatedText+"\n----------");
-
+			if (sortedEntities.size() == 0) {
+				if (ConstantsNei.verbosityAtLeast(ConstantsNei.OUTPUT_LEVELS.WARNINGS))
+					ConstantsNei.OUT.println("Found no genes in text " + text.getPMID());
+			}
+			
 			// get the first sentence from the text, by finding the first sentence end mark
 			// assumes it is the full title of the paper
 			// TODO better to store the title separately, since some titles consist of multiple sentences
@@ -329,21 +335,23 @@ public class JustAnnotateInline {
 			// assume the 2nd and following sentences are the abstract
 			String annotatedAbstract = annotatedText.replaceFirst("^.+?[\\.\\!\\?]\\s(.*)$", "$1");
 			text.annotateXmlAbstract(annotatedAbstract);
-			//System.err.println("-----");
-			//System.err.println(annotatedAbstract);
-			//System.err.println("-----");
-			text.buildJDocumentFromAnnotatedXml();
+			//if (text.ID.equals("21340499") || text.getPMID() == 21340499) {
+			//	System.err.println("-----");
+			//	System.err.println(annotatedAbstract);
+			//	System.err.println("-----");
+			//}
 
 			// if the XML tag used to mark gene names has a prefix ("prefix:TAG"), we need to bind this prefix
 			if (xml_tag.indexOf(":") > 0) {
 				String prefix = xml_tag.replaceFirst("^(.+?)\\:.*$", "$1"); 
 				text.addPrefixToXml(prefix);
-				text.buildJDocumentFromAnnotatedXml();
 			}
+
+			//
+			text.buildJDocumentFromAnnotatedXml();
 			
 			String outfileName = text.getID() + ".annotated.xml";
 			text.toXmlFile(outDir + "/" + outfileName);
-			
 			
 			// or, if no gene was recognized in the current text:
 			//} else {
