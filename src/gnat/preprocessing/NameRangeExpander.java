@@ -1,5 +1,6 @@
 package gnat.preprocessing;
 
+import gnat.ConstantsNei;
 import gnat.filter.Filter;
 import gnat.representation.Context;
 import gnat.representation.GeneRepository;
@@ -419,7 +420,8 @@ public class NameRangeExpander implements Filter {
 			//	name2 = full.replaceFirst("^([A-Za-z]+[A-Za-z0-9\\-]+?)([0-9]+|[\\s\\-](?:[IVX]+|[ivx]+)|[AaBbCcDd])\\, ([0-9]+|(?:[IVX]+|[ivx]+)|[BbCcDdEe])\\,? and ([0-9]+|(?:[IVX]+|[ivx]+)|[CcDdEeFfGg])$", "$1$3");
 			//	name3 = full.replaceFirst("^([A-Za-z]+[A-Za-z0-9\\-]+?)([0-9]+|[\\s\\-](?:[IVX]+|[ivx]+)|[AaBbCcDd])\\, ([0-9]+|(?:[IVX]+|[ivx]+)|[BbCcDdEe])\\,? and ([0-9]+|(?:[IVX]+|[ivx]+)|[CcDdEeFfGg])$", "$1$4");
 			} else {
-				System.err.println("#NameRangeExpander: error case And3.1: no match, no expansion?");
+				if (ConstantsNei.verbosityAtLeast(ConstantsNei.OUTPUT_LEVELS.WARNINGS))
+					System.out.println("#NameRangeExpander: error case And3.1: no match, no expansion?");
 			}
 			
 			if (!sanityCheck(basename, new String[]{number1, number2, number3})) {
@@ -650,7 +652,8 @@ public class NameRangeExpander implements Filter {
 		if (arabic) {
 			for (int i = 1; i < numbers.length; i++) {
 				if (Integer.parseInt(numbers[i-1]) >= Integer.parseInt(numbers[i])) {
-					System.err.println("#NameRangeExpander: spurious order of numbers: " + numbers[i-1] + " -> " + numbers[i] + " in basename='" + basename + "'");
+					if (ConstantsNei.verbosityAtLeast(ConstantsNei.OUTPUT_LEVELS.WARNINGS))
+						System.out.println("#NameRangeExpander: spurious order of numbers: " + numbers[i-1] + " -> " + numbers[i] + " in basename='" + basename + "'");
 					//return false;
 				}
 			}
@@ -659,7 +662,8 @@ public class NameRangeExpander implements Filter {
 		if (uppercase || lowercase) {
 			for (int i = 1; i < numbers.length; i++) {
 				if (numbers[i-1].compareTo(numbers[i]) >= 0) {
-					System.err.println("#NameRangeExpander: spurious order of numbers: " + numbers[i-1] + " -> " + numbers[i] + " in basename='" + basename + "'");
+					if (ConstantsNei.verbosityAtLeast(ConstantsNei.OUTPUT_LEVELS.WARNINGS))
+						System.out.println("#NameRangeExpander: spurious order of numbers: " + numbers[i-1] + " -> " + numbers[i] + " in basename='" + basename + "'");
 					//return false;
 				}
 			}

@@ -115,25 +115,16 @@ public class RunAllGeneDictionaries implements Filter {
 				;//System.out.println("#RunDictionaries: for text " + text.getPMID() + ", checking species " + taxaForThisText);
 			
 			String plain = text.getPlainText();
-			//String[] plains = plain.split("[\\r\\n]+");
-			//plain = StringHelper.joinStringArray(plains, " ");
-
 			
-			//String full = plain;
 			Pattern p = Pattern.compile("[\\r\\n]", Pattern.UNIX_LINES | Pattern.MULTILINE);
-			//System.err.println("!!!testing title!!!");
-			//System.err.println(full);
 			Matcher m = p.matcher(plain);
-			//if (m.matches())
-			//	System.err.println("!!!matches-title!!!");
 			plain = m.replaceAll(" ");
 			
-			
 			buffer.append("<text>");
-			//buffer.append(text.getPlainText());
 			buffer.append(plain);
 			buffer.append("</text>");
-			System.out.println("#INFO sending text to dictionary:\n" + buffer.toString() + "\n----------");
+			if (ConstantsNei.verbosityAtLeast(ConstantsNei.OUTPUT_LEVELS.DEBUG))
+				System.out.println("#INFO sending text to dictionary:\n" + buffer.toString() + "\n----------");
 			
 			// go through all species recognized in this text
 			for (int taxon: taxaForThisText) {
@@ -148,12 +139,12 @@ public class RunAllGeneDictionaries implements Filter {
 				// TODO could add test, which runs once in a while, to check whether a dictionary became available?
 				if (!availableServersForSpecies.contains(taxon)) {
 					if (!reported_missing_dictionaries.contains(taxon)) {
-						System.out.println("#RunDictionaries: dictionary server for species " + taxon + "  not available");
+						if (ConstantsNei.verbosityAtLeast(ConstantsNei.OUTPUT_LEVELS.WARNINGS))
+							ConstantsNei.ERR.println("#RunDictionaries: dictionary server for species " + taxon + " not available");
 						reported_missing_dictionaries.add(taxon);
 					}
 					continue;
 				}
-				//System.out.println("#RunDictionaries: running dictionary for species " + taxon);
 				
 				String serverName = getServerForTaxon(taxon);
 				int serverPort    = getPortForTaxon(taxon);
@@ -174,7 +165,9 @@ public class RunAllGeneDictionaries implements Filter {
 					dictionaryWriter.flush();
 					String annotatedTexts = dictionaryReader.readLine();
 					
-					System.out.println("#INFO dictionary returned entities\n" + annotatedTexts + "\n----------");
+					if (ConstantsNei.verbosityAtLeast(ConstantsNei.OUTPUT_LEVELS.DEBUG))
+					//if (ConstantsNei.OUTPUT_LEVEL.compareTo(ConstantsNei.OUTPUT_LEVELS.DEBUG) >= 0)
+						System.out.println("#INFO dictionary returned entities\n" + annotatedTexts + "\n----------");
 					
 					List<String> entities = this.extractEntityTags(annotatedTexts);
 					if (entities != null && entities.size() > 0) {

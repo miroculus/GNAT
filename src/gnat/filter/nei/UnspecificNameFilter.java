@@ -34,7 +34,7 @@ public class UnspecificNameFilter implements Filter {
 	 */
 	public void filter (Context context, TextRepository textRepository, GeneRepository geneRepository) {
 		int removed = 0;
-		//int total =  context.getUnidentifiedEntities().size();
+		int total =  context.getUnidentifiedEntities().size();
 		//TreeSet<String> removedNames = new TreeSet<String>();
 
 		Iterator<RecognizedEntity> unidentifiedGeneNames = context.getUnidentifiedEntities().iterator();
@@ -58,29 +58,80 @@ public class UnspecificNameFilter implements Filter {
 			// mask any characters that have a meaning in reg.exes
 			String maskedGeneName = StringHelper.espaceString(recognizedGeneName.getName());
 
-			if (isUnspecific(maskedGeneName, speciesIDs)
-				|| isUnspecificSingleWordCaseInsensitive(maskedGeneName)
-				|| isUnspecificSingleWord(maskedGeneName)
-				|| isTissueCellCompartment(maskedGeneName)
-				|| isUnspecificAbbreviation(recognizedGeneName.getName(), sentence, speciesIDs)
-				|| isSpecies(maskedGeneName)
-				|| isAminoAcid(maskedGeneName)
-				|| textHasPlural(maskedGeneName, text.plainText)
-				|| isChromosome(recognizedGeneName.getName(), sentence)
-				|| isDiseaseName(recognizedGeneName.getName())
-				|| isDiseaseName(maskedGeneName)
-				|| sentence.matches(".*" + maskedGeneName + "([\\-\\/][A-Za-z0-9]*[A-Z0-9][A-Za-z0-9]*)?( [a-z]+)? (gene|protein) family([\\.\\,\\;\\:]| [a-z]+ [a-z]+[\\s\\,\\.\\:\\;]).*")
-				) {
-
-				System.out.println("UNF: removing " + recognizedGeneName.getName() + " in sentence " + sentence);
-				
+			boolean remove = false;
+			if (isUnspecific(maskedGeneName, speciesIDs)) {
+				if (ConstantsNei.verbosityAtLeast(ConstantsNei.OUTPUT_LEVELS.DEBUG))
+					ConstantsNei.OUT.println("UNF: removing " + recognizedGeneName.getName() + " in sentence " + sentence + "; reason: unspecific");
+				remove = true;
+			} else if (isUnspecificSingleWordCaseInsensitive(maskedGeneName)) {
+				if (ConstantsNei.verbosityAtLeast(ConstantsNei.OUTPUT_LEVELS.DEBUG))
+					ConstantsNei.OUT.println("UNF: removing " + recognizedGeneName.getName() + " in sentence " + sentence + "; reason: unspecific single word case-insensitive");
+				remove = true;
+			} else if (isUnspecificSingleWord(maskedGeneName)) {
+				if (ConstantsNei.verbosityAtLeast(ConstantsNei.OUTPUT_LEVELS.DEBUG))
+					ConstantsNei.OUT.println("UNF: removing " + recognizedGeneName.getName() + " in sentence " + sentence + "; reason: unspecific single word");
+				remove = true;
+			} else if (isTissueCellCompartment(maskedGeneName)) {
+				if (ConstantsNei.verbosityAtLeast(ConstantsNei.OUTPUT_LEVELS.DEBUG))
+					ConstantsNei.OUT.println("UNF: removing " + recognizedGeneName.getName() + " in sentence " + sentence + "; reason: tissue, cell compartment");
+				remove = true;
+			} else if (isUnspecificAbbreviation(recognizedGeneName.getName(), sentence, speciesIDs)) {
+				if (ConstantsNei.verbosityAtLeast(ConstantsNei.OUTPUT_LEVELS.DEBUG))
+					ConstantsNei.OUT.println("UNF: removing " + recognizedGeneName.getName() + " in sentence " + sentence + "; reason: unspecific abbreviation");
+				remove = true;
+			} else if (isSpecies(maskedGeneName)) {
+				if (ConstantsNei.verbosityAtLeast(ConstantsNei.OUTPUT_LEVELS.DEBUG))
+					System.out.println("UNF: removing " + recognizedGeneName.getName() + " in sentence " + sentence + "; reason: species");
+				remove = true;
+			} else if (isAminoAcid(maskedGeneName)) {
+				if (ConstantsNei.verbosityAtLeast(ConstantsNei.OUTPUT_LEVELS.DEBUG))
+					System.out.println("UNF: removing " + recognizedGeneName.getName() + " in sentence " + sentence + "; reason: amino acid");
+				remove = true;
+			} else if (textHasPlural(maskedGeneName, text.plainText)) {
+				if (ConstantsNei.verbosityAtLeast(ConstantsNei.OUTPUT_LEVELS.DEBUG))
+					ConstantsNei.OUT.println("UNF: removing " + recognizedGeneName.getName() + " in sentence " + sentence + "; reason: text has plural form");
+				remove = true;
+			} else if (isChromosome(recognizedGeneName.getName(), sentence)) {
+				if (ConstantsNei.verbosityAtLeast(ConstantsNei.OUTPUT_LEVELS.DEBUG))
+					ConstantsNei.OUT.println("UNF: removing " + recognizedGeneName.getName() + " in sentence " + sentence + "; reason: chromosome");
+				remove = true;
+			} else if (isDiseaseName(recognizedGeneName.getName())) {
+				if (ConstantsNei.verbosityAtLeast(ConstantsNei.OUTPUT_LEVELS.DEBUG))
+					ConstantsNei.OUT.println("UNF: removing " + recognizedGeneName.getName() + " in sentence " + sentence + "; reason: disease name");
+				remove = true;
+			} else if (isDiseaseName(maskedGeneName)) {
+				if (ConstantsNei.verbosityAtLeast(ConstantsNei.OUTPUT_LEVELS.DEBUG))
+					ConstantsNei.OUT.println("UNF: removing " + recognizedGeneName.getName() + " in sentence " + sentence + "; reason: disease name (masked)");
+				remove = true;
+			} else if (sentence.matches(".*" + maskedGeneName + "([\\-\\/][A-Za-z0-9]*[A-Z0-9][A-Za-z0-9]*)?( [a-z]+)? (gene|protein) family([\\.\\,\\;\\:]| [a-z]+ [a-z]+[\\s\\,\\.\\:\\;]).*")) {
+				if (ConstantsNei.verbosityAtLeast(ConstantsNei.OUTPUT_LEVELS.DEBUG))
+					ConstantsNei.OUT.println("UNF: removing " + recognizedGeneName.getName() + " in sentence " + sentence + "; reason: gene family");
+			}
+			
+//			if (isUnspecific(maskedGeneName, speciesIDs)
+//				|| isUnspecificSingleWordCaseInsensitive(maskedGeneName)
+//				|| isUnspecificSingleWord(maskedGeneName)
+//				|| isTissueCellCompartment(maskedGeneName)
+//				|| isUnspecificAbbreviation(recognizedGeneName.getName(), sentence, speciesIDs)
+//				|| isSpecies(maskedGeneName)
+//				|| isAminoAcid(maskedGeneName)
+//				|| textHasPlural(maskedGeneName, text.plainText)
+//				|| isChromosome(recognizedGeneName.getName(), sentence)
+//				|| isDiseaseName(recognizedGeneName.getName())
+//				|| isDiseaseName(maskedGeneName)
+//				|| sentence.matches(".*" + maskedGeneName + "([\\-\\/][A-Za-z0-9]*[A-Z0-9][A-Za-z0-9]*)?( [a-z]+)? (gene|protein) family([\\.\\,\\;\\:]| [a-z]+ [a-z]+[\\s\\,\\.\\:\\;]).*")
+//				) {
+			if (remove) {
+//				if (ConstantsNei.verbosityAtLeast(ConstantsNei.OUTPUT_LEVELS.DEBUG))
+//					ConstantsNei.OUT.println("UNF: removing " + recognizedGeneName.getName() + " in sentence " + sentence);
 				context.removeRecognizedEntity(recognizedGeneName);
 				//removedNames.add(recognizedGeneName.getName() + "/" + recognizedGeneName.getText().ID);
 				removed++;
 			}
 		}
 
-		//System.out.println(" "+ this.getClass().getSimpleName()+": removed "+removed+" names out of "+total);
+		if (ConstantsNei.verbosityAtLeast(ConstantsNei.OUTPUT_LEVELS.DEBUG))
+			ConstantsNei.OUT.println(" "+ this.getClass().getSimpleName()+": removed "+removed+" names out of "+total);
 	}
 
 
@@ -331,9 +382,10 @@ public class UnspecificNameFilter implements Filter {
 				"|interleukins|releases?|origins?|chemokines?|sons?|nets?|[a-z]+s" +
 				// added for Lupus/IBD project:
 				"|mild|platelet|drip|sera|neo|radix|spliceosomal|hip|Part I|[Uu]rinary protein|urine protein" +
-				"|Chi|dot|rash|pulmonary function|BMI|toll|min|lethal|pan|Med" +
-				"|Abs|Ags|UTR|expand" +
-				"|CD4|CD8|Mai" +
+				"|Chi|dot|rash|pulmonary function|BMI|toll|min|lethal|pan|Med|celiac" +
+				"|Abs|Ags|UTR|expand|alpha|killer|alpha|beta|gamma|delta|gamma|alpha1|alpha4|beta1|gamma1" +
+				"|[Pp]roteasome|[Ii]ntestinal|flu|Dan|as 1|or 2" +
+				"|CD4|CD8|Mai|dL|IBD|severe combined immunodeficiency" +
 				// BC2 gn test
 				"|kbp|helical|post\\-?synaptic|min\\-1|death[\\-\\s]inducing|sub|repressor" +
 				"|early[\\-\\s]response|[Nn]on\\-histone[\\-\\s]chromosomal|pituitary|a catalytic" +
@@ -494,7 +546,7 @@ public class UnspecificNameFilter implements Filter {
 			if (text.matches(".*[\\s\\(\\[\"]" + name + "s[\\s\\,\\.\\]\\)\"].*")
 					// but not a reference to a group of similar genes
 					&& !text.matches(".*(homolog|ortholog|similar)[a-z]*[^\\.\\;\\:]*[\\s\\(\\[]" + name + "s[\\s\\,\\.\\]\\)\"].*")) {
-				if (ConstantsNei.OUTPUT_LEVEL.compareTo(ConstantsNei.OUTPUT_LEVELS.DEBUG) >= 0)
+				if (ConstantsNei.verbosityAtLeast(ConstantsNei.OUTPUT_LEVELS.DEBUG))
 					System.out.println("#UNF: Text contains plural form: " + name);
 				return true;
 			}
