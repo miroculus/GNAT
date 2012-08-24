@@ -813,27 +813,27 @@ public class Text {
 		if (annotatedXml.length() == 0)
 			annotatedXml = originalXml;
 		String full = annotatedXml;
-		//System.err.println("!!!testing text!!!");
-		//Pattern p = Pattern.compile("<AbstractText(?:\\s.+?)?>.*</AbstractText>", Pattern.MULTILINE | Pattern.DOTALL);
-		Pattern p = Pattern.compile("<AbstractText>.*</AbstractText>", Pattern.UNIX_LINES | Pattern.MULTILINE);
+		
+		/////
+		// TODO PubMed abstracts can be structured, for instance,
+		// <Abstract>
+		//   <AbstractText Label="METHODS" NlmCategory="METHODS"> ... </AbstractText>
+		//   <AbstractText Label="RESULTS" NlmCategory="RESULTS"> ... </AbstractText>
+		// </Abstract>
+		// the code below will replace all these with one single <AbstractText> ... </AbstractText> element
+		// which does not have those section/label information anymore!
+		//
+		// find and replace the first occurrence of any <AbstractText ..> ... </AbstractText> element
+		Pattern p = Pattern.compile("<AbstractText[^>]*>.*</AbstractText>", Pattern.UNIX_LINES | Pattern.MULTILINE);
 		Matcher m = p.matcher(full);
-		//if (m.matches())
-		//	System.err.println("!!!matches-text!!!");
 		full = m.replaceFirst("<AbstractText>" + annotatedAbstract + "</AbstractText>");
-		
-		
-//		full = "";
-//		String[] lines = annotatedXml.split("[\r\n]+");
-//		for (int l = 0; l < lines.length; l++) {
-//			String line = lines[l];
-//			if (line.matches("<AbstractText(?:\\s.+?)?>.*</AbstractText>")) {
-//				lines[l] = line.replaceFirst("(<AbstractText(?:\\s.+?)?>).*</AbstractText>", "$1" + annotatedAbstract + "</AbstractText>");
-//			}
-//			full += lines[l] + "\n";
-//		}
-//		System.err.println(full);
-//		
-//		
+		// find and remove all further <AbstractText ..> elements 
+		Pattern p2 = Pattern.compile("<AbstractText[^>]+>.*</AbstractText>", Pattern.UNIX_LINES | Pattern.MULTILINE);
+		Matcher m2 = p2.matcher(full);
+		full = m2.replaceAll("");
+		//
+		/////
+
 		annotatedXml = full;
 	}
 	
@@ -866,12 +866,39 @@ public class Text {
 			if (annotatedXml.length() > 0) {
 				// some PubMed "XMLs" still have a non-escaped ampersand in there
 				annotatedXml = annotatedXml.replaceAll("&\\s", "&amp; ");
-				annotatedXml = annotatedXml.replaceAll("<([\\d\\.\\s])", "&lt;$1");
+				annotatedXml = annotatedXml.replaceAll("&([A-Za-z0-9]\\W)", "&amp;$1");
+				annotatedXml = annotatedXml.replaceAll("\\<([\\d\\.\\s])", "&lt;$1");
+				annotatedXml = annotatedXml.replaceAll("\\<or=", "&lt;or=");
+				//annotatedXml = annotatedXml.replaceAll("(\\W?)\\<(\\W)", "$1&lt;$2"); // this will replace ALL '<'/'>' in the entire XML document
+				//annotatedXml = annotatedXml.replaceAll("(\\W?)\\>(\\W)", "$1&gt;$2");
+				annotatedXml = annotatedXml.replaceAll("P\\s\\<\\s", "P &lt; ");
+				annotatedXml = annotatedXml.replaceAll("P\\s\\>\\s", "P &gt; ");
+				annotatedXml = annotatedXml.replaceAll("<mixed\\sH\\.", "&lt;mixed H."); // special case in Lupus/IBD...
 				annotatedXml = annotatedXml.replaceAll("<\\/=", "&lt;/="); // in PubMed 9618483 "share </=50% identity"
-				annotatedXml = annotatedXml.replaceAll(" >([\\d\\.\\s])", " &gt;$1");
+				annotatedXml = annotatedXml.replaceAll("\\s\\>([\\d\\.\\s])", " &gt;$1");
+				//annotatedXml = annotatedXml.replaceAll("±", "&plusmn;");
+				annotatedXml = annotatedXml.replaceAll("±", "plus/minus");
 				//annotatedXml = annotatedXml.replaceAll("([Pp]\\s*<)", "$1&lt;");
-				//Pattern p = Pattern.compile("<PubmedArticle", Pattern.DOTALL);
-				//Matcher m = p.matcher(annotatedXml);
+				
+				
+//				annotatedXml = annotatedXml.replaceAll("&\\s", "&amp; ");
+//				annotatedXml = annotatedXml.replaceAll("&([A-Za-z0-9]\\W)", "&amp;$1");
+//				annotatedXml = annotatedXml.replaceAll("\\<([\\d\\.\\s])", "&lt;$1");
+//				annotatedXml = annotatedXml.replaceAll("\\<or=", "&lt;or=");
+//				//annotatedXml = annotatedXml.replaceAll("(\\W?)\\<(\\W)", "$1&lt;$2"); // this will replace ALL '<'/'>' in the entire XML document
+//				//annotatedXml = annotatedXml.replaceAll("(\\W?)\\>(\\W)", "$1&gt;$2");
+//				annotatedXml = annotatedXml.replaceAll("P\\s\\<\\s", "P &lt; ");
+//				annotatedXml = annotatedXml.replaceAll("P\\s\\>\\s", "P &gt; ");
+//				annotatedXml = annotatedXml.replaceAll("<mixed\\sH\\.", "&lt;mixed H."); // special case in Lupus/IBD...
+//				annotatedXml = annotatedXml.replaceAll("<\\/=", "&lt;/="); // in PubMed 9618483 "share </=50% identity"
+//				annotatedXml = annotatedXml.replaceAll("\\s\\>([\\d\\.\\s])", " &gt;$1");
+//				//annotatedXml = annotatedXml.replaceAll("±", "&plusmn;");
+//				annotatedXml = annotatedXml.replaceAll("±", "plus/minus");
+				
+				
+				//System.err.println("-----");
+				//System.err.println(annotatedXml);
+				//System.err.println("-----");
 				//annotatedXml = m.replaceFirst("<PubmedArticle xmlns:src=\"http://gnat.sourceforge.net\"");
 		    	jdocument = builder.parse(new ByteArrayInputStream(annotatedXml.getBytes()));
 			} else {
@@ -882,6 +909,9 @@ public class Text {
 		} catch (org.xml.sax.SAXParseException e) {
 			System.err.println("##### ERROR building XML doc from ");
 			System.err.println(annotatedXml);
+			System.err.println("#####");
+			//System.err.println("##### Using original XML, discarding all markups");
+			//jdocument = builder.parse(new ByteArrayInputStream(originalXml.getBytes()));
 			//System.exit(2);
 		} catch (SAXException e) {
 			e.printStackTrace();
