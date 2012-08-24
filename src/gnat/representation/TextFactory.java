@@ -53,7 +53,8 @@ public class TextFactory {
 	public static TextRepository loadTextRepositoryFromDirectories (Collection<String> directories) {
 		TextRepository textRepository = new TextRepository();
 
-		System.err.println("#TextFactory loading GO codes and terms...");
+		if (ConstantsNei.verbosityAtLeast(ConstantsNei.OUTPUT_LEVELS.STATUS))
+			ConstantsNei.OUT.println("#TextFactory loading GO codes and terms...");
 		String file = ISGNProperties.get("pubmedId2GO");
 		if (file != null && file.length() > 0) {
 			File FILE = new File(file);
@@ -84,11 +85,13 @@ public class TextFactory {
 					ioe.printStackTrace();
 				}
 			} else
-				System.err.println("#TextFactory was expecting PubMed-to-GO mappings in " + file);
+				if (ConstantsNei.verbosityAtLeast(ConstantsNei.OUTPUT_LEVELS.WARNINGS))
+					ConstantsNei.ERR.println("#TextFactory was expecting PubMed-to-GO mappings in " + file);
 		}
 
 		// go through all directories specified
-		System.err.println("#TextFactory loading texts from directories...");
+		if (ConstantsNei.verbosityAtLeast(ConstantsNei.OUTPUT_LEVELS.STATUS))
+			ConstantsNei.OUT.println("#TextFactory loading texts from directories...");
 		for (String dir: directories) {
 			// read all supported files from each directory
 			File DIR = new File(dir);
@@ -121,8 +124,9 @@ public class TextFactory {
 			}
 		}
 		
-		if (ConstantsNei.OUTPUT_LEVEL.compareTo(ConstantsNei.OUTPUT_LEVELS.STATUS) >= 0)
-			System.out.println("#TextRepository loaded with " + textRepository.size() + " texts.");
+		
+		if (ConstantsNei.verbosityAtLeast(ConstantsNei.OUTPUT_LEVELS.STATUS))
+			ConstantsNei.OUT.println("#TextRepository loaded with " + textRepository.size() + " texts.");
 
 		return textRepository;
 	}
