@@ -70,7 +70,7 @@ public class JustAnnotateInline {
 	 * @param args
 	 */
 	public static void main (String[] args) {
-		// Each process is capsuled by a Run
+		// each pipeline is handled by a "Run"
 		Run run = new Run();
 		run.verbosity = 0;
 
@@ -329,7 +329,7 @@ public class JustAnnotateInline {
 			
 			// get the first sentence from the text, by finding the first sentence end mark
 			// assumes it is the full title of the paper
-			// TODO better to store the title separately, since some titles consist of multiple sentences
+			// TODO better to store (and annotate!) the title separately, since some titles consist of multiple sentences
 			String annotatedTitle = annotatedText.replaceFirst("^(.+?[\\.\\!\\?])\\s.*$", "$1");
 			text.annotateXmlTitle(annotatedTitle);
 			// assume the 2nd and following sentences are the abstract

@@ -53,6 +53,7 @@ public class TextFactory {
 	public static TextRepository loadTextRepositoryFromDirectories (Collection<String> directories) {
 		TextRepository textRepository = new TextRepository();
 
+		// read the mapping of PMIDs to GO terms
 		if (ConstantsNei.verbosityAtLeast(ConstantsNei.OUTPUT_LEVELS.STATUS))
 			ConstantsNei.OUT.println("#TextFactory loading GO codes and terms...");
 		String file = ISGNProperties.get("pubmedId2GO");
