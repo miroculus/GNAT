@@ -18,13 +18,16 @@ import java.util.Set;
 
 /**
  * Also known as the CrazyRegExFilter. Removes gene names that are too unspecific
- * ("DNA binding protein") and most likely refer to a gene family, process, cell, etc.
+ * ("DNA binding protein") and those that most likely refer to a gene family, process, 
+ * cell, disease, experimental technique (GST, LPS), etc.
  *
  * @author Joerg
  */
 public class UnspecificNameFilter implements Filter {
 
+	/** characters that appear on the left side of a proper word: white space, bracket starts, .. */
 	public static String leftWordBoundary = "(^|[\\s\\(\\[\\/])";
+	/** characters that appear on the right side of a proper word: white space, comma, bracket ends, .. */
 	public static String rightWordBoundary = "([\\s\\,\\)\\]\\/\\;\\!\\?]|$)";
 
 	
@@ -35,7 +38,6 @@ public class UnspecificNameFilter implements Filter {
 	public void filter (Context context, TextRepository textRepository, GeneRepository geneRepository) {
 		int removed = 0;
 		int total =  context.getUnidentifiedEntities().size();
-		//TreeSet<String> removedNames = new TreeSet<String>();
 
 		Iterator<RecognizedEntity> unidentifiedGeneNames = context.getUnidentifiedEntities().iterator();
 		while (unidentifiedGeneNames.hasNext()) {
@@ -58,74 +60,40 @@ public class UnspecificNameFilter implements Filter {
 			// mask any characters that have a meaning in reg.exes
 			String maskedGeneName = StringHelper.espaceString(recognizedGeneName.getName());
 
-			boolean remove = false;
-			if (isUnspecific(maskedGeneName, speciesIDs)) {
-				if (ConstantsNei.verbosityAtLeast(ConstantsNei.OUTPUT_LEVELS.DEBUG))
-					ConstantsNei.OUT.println("UNF: removing " + recognizedGeneName.getName() + " in sentence " + sentence + "; reason: unspecific");
-				remove = true;
-			} else if (isUnspecificSingleWordCaseInsensitive(maskedGeneName)) {
-				if (ConstantsNei.verbosityAtLeast(ConstantsNei.OUTPUT_LEVELS.DEBUG))
-					ConstantsNei.OUT.println("UNF: removing " + recognizedGeneName.getName() + " in sentence " + sentence + "; reason: unspecific single word case-insensitive");
-				remove = true;
-			} else if (isUnspecificSingleWord(maskedGeneName)) {
-				if (ConstantsNei.verbosityAtLeast(ConstantsNei.OUTPUT_LEVELS.DEBUG))
-					ConstantsNei.OUT.println("UNF: removing " + recognizedGeneName.getName() + " in sentence " + sentence + "; reason: unspecific single word");
-				remove = true;
-			} else if (isTissueCellCompartment(maskedGeneName)) {
-				if (ConstantsNei.verbosityAtLeast(ConstantsNei.OUTPUT_LEVELS.DEBUG))
-					ConstantsNei.OUT.println("UNF: removing " + recognizedGeneName.getName() + " in sentence " + sentence + "; reason: tissue, cell compartment");
-				remove = true;
-			} else if (isUnspecificAbbreviation(recognizedGeneName.getName(), sentence, speciesIDs)) {
-				if (ConstantsNei.verbosityAtLeast(ConstantsNei.OUTPUT_LEVELS.DEBUG))
-					ConstantsNei.OUT.println("UNF: removing " + recognizedGeneName.getName() + " in sentence " + sentence + "; reason: unspecific abbreviation");
-				remove = true;
-			} else if (isSpecies(maskedGeneName)) {
-				if (ConstantsNei.verbosityAtLeast(ConstantsNei.OUTPUT_LEVELS.DEBUG))
-					System.out.println("UNF: removing " + recognizedGeneName.getName() + " in sentence " + sentence + "; reason: species");
-				remove = true;
-			} else if (isAminoAcid(maskedGeneName)) {
-				if (ConstantsNei.verbosityAtLeast(ConstantsNei.OUTPUT_LEVELS.DEBUG))
-					System.out.println("UNF: removing " + recognizedGeneName.getName() + " in sentence " + sentence + "; reason: amino acid");
-				remove = true;
-			} else if (textHasPlural(maskedGeneName, text.plainText)) {
-				if (ConstantsNei.verbosityAtLeast(ConstantsNei.OUTPUT_LEVELS.DEBUG))
-					ConstantsNei.OUT.println("UNF: removing " + recognizedGeneName.getName() + " in sentence " + sentence + "; reason: text has plural form");
-				remove = true;
-			} else if (isChromosome(recognizedGeneName.getName(), sentence)) {
-				if (ConstantsNei.verbosityAtLeast(ConstantsNei.OUTPUT_LEVELS.DEBUG))
-					ConstantsNei.OUT.println("UNF: removing " + recognizedGeneName.getName() + " in sentence " + sentence + "; reason: chromosome");
-				remove = true;
-			} else if (isDiseaseName(recognizedGeneName.getName())) {
-				if (ConstantsNei.verbosityAtLeast(ConstantsNei.OUTPUT_LEVELS.DEBUG))
-					ConstantsNei.OUT.println("UNF: removing " + recognizedGeneName.getName() + " in sentence " + sentence + "; reason: disease name");
-				remove = true;
-			} else if (isDiseaseName(maskedGeneName)) {
-				if (ConstantsNei.verbosityAtLeast(ConstantsNei.OUTPUT_LEVELS.DEBUG))
-					ConstantsNei.OUT.println("UNF: removing " + recognizedGeneName.getName() + " in sentence " + sentence + "; reason: disease name (masked)");
-				remove = true;
-			} else if (sentence.matches(".*" + maskedGeneName + "([\\-\\/][A-Za-z0-9]*[A-Z0-9][A-Za-z0-9]*)?( [a-z]+)? (gene|protein) family([\\.\\,\\;\\:]| [a-z]+ [a-z]+[\\s\\,\\.\\:\\;]).*")) {
-				if (ConstantsNei.verbosityAtLeast(ConstantsNei.OUTPUT_LEVELS.DEBUG))
-					ConstantsNei.OUT.println("UNF: removing " + recognizedGeneName.getName() + " in sentence " + sentence + "; reason: gene family");
-			}
+			//
+			String reason = "";
+			if (isUnspecific(maskedGeneName, speciesIDs))
+				reason = "unspecific";
+			else if (isUnspecificSingleWordCaseInsensitive(maskedGeneName))
+				reason = "unspecific single word case-insensitive";
+			else if (isUnspecificSingleWord(maskedGeneName))
+				reason = "unspecific single word";
+			else if (isTissueCellCompartment(maskedGeneName))
+				reason = "tissue, cell compartment";
+			else if (isUnspecificAbbreviation(recognizedGeneName.getName(), sentence, speciesIDs))
+				reason = "unspecific abbreviation";
+			else if (isSpecies(maskedGeneName))
+				reason = "species";
+			else if (isAminoAcid(maskedGeneName))
+				reason = "amino acid";
+			else if (textHasPlural(maskedGeneName, text.plainText))
+				reason = "text has plural form";
+			else if (isChromosome(recognizedGeneName.getName(), sentence))
+				reason = "chromosome";
+			else if (isDiseaseName(recognizedGeneName.getName()))
+				reason = "disease name";
+			else if (isDiseaseName(maskedGeneName))
+				reason = "disease name (masked)";
+			else if (isNegativePair(recognizedGeneName.getName(), sentence))
+				reason = "not a gene in this context";
+			else if (sentence.matches(".*" + maskedGeneName + "([\\-\\/][A-Za-z0-9]*[A-Z0-9][A-Za-z0-9]*)?( [a-z]+)? (gene|protein) family([\\.\\,\\;\\:]| [a-z]+ [a-z]+[\\s\\,\\.\\:\\;]).*"))
+				reason = "gene family";
 			
-//			if (isUnspecific(maskedGeneName, speciesIDs)
-//				|| isUnspecificSingleWordCaseInsensitive(maskedGeneName)
-//				|| isUnspecificSingleWord(maskedGeneName)
-//				|| isTissueCellCompartment(maskedGeneName)
-//				|| isUnspecificAbbreviation(recognizedGeneName.getName(), sentence, speciesIDs)
-//				|| isSpecies(maskedGeneName)
-//				|| isAminoAcid(maskedGeneName)
-//				|| textHasPlural(maskedGeneName, text.plainText)
-//				|| isChromosome(recognizedGeneName.getName(), sentence)
-//				|| isDiseaseName(recognizedGeneName.getName())
-//				|| isDiseaseName(maskedGeneName)
-//				|| sentence.matches(".*" + maskedGeneName + "([\\-\\/][A-Za-z0-9]*[A-Z0-9][A-Za-z0-9]*)?( [a-z]+)? (gene|protein) family([\\.\\,\\;\\:]| [a-z]+ [a-z]+[\\s\\,\\.\\:\\;]).*")
-//				) {
-			if (remove) {
-//				if (ConstantsNei.verbosityAtLeast(ConstantsNei.OUTPUT_LEVELS.DEBUG))
-//					ConstantsNei.OUT.println("UNF: removing " + recognizedGeneName.getName() + " in sentence " + sentence);
+			//
+			if (reason.length() > 0) {
+				if (ConstantsNei.verbosityAtLeast(ConstantsNei.OUTPUT_LEVELS.DEBUG))
+					ConstantsNei.OUT.println("UNF: removing " + recognizedGeneName.getName() + " in sentence " + sentence + "; reason: " + reason);
 				context.removeRecognizedEntity(recognizedGeneName);
-				//removedNames.add(recognizedGeneName.getName() + "/" + recognizedGeneName.getText().ID);
 				removed++;
 			}
 		}
@@ -359,7 +327,7 @@ public class UnspecificNameFilter implements Filter {
 	 */
 	public static boolean isUnspecificSingleWordCaseInsensitive (String name) {
 		return name.toLowerCase().trim().matches("(for|in|of|at|an" +
-				"|milk|cycling|enabled|blast|lipase|golgi|fusion|proteins?|nuclear|and\\s1|sex" +
+				"|milk|cycling|enabled|blast|lipase|golgi|fusion|proteins?|nuclear|sex" +
 				"|similar\\sto|rough\\sdeal|alternative\\ssplicing|membrane[\\s\\-]?bound" +
 				"|proton[\\s\\-]?pump|partial|macrophage|condensed|proteins?)");
 	}
@@ -375,17 +343,20 @@ public class UnspecificNameFilter implements Filter {
 				"|gels|[Tt]ag|ORF|secretory|mediator|inactive|pump|cis|killer|[a-z]+[\\s\\-]?binding" +
 				"|islet|homeobox|insulin|clamp|MHC\\s[Cc]lass\\s[Ii][Ii]?" +
 				"|transactivator|open reading frame|scaffold|fused|blot" +
-				"|II|VII|[Bb]eta|[Aa]lpha|[Gg]amma|[Dd]elta|[Ee]psilon|tau|zeta" +
+				"|II|VII|[Aa]lpha|[Bb]eta|[Gg]amma|[Dd]elta|[Ee]psilon|tau|zeta" +
 				"|great|tissue|simple|face|nude|type|raft|partial|bind|cord|Chr|rank|anti" +
 				"|can|not|was|has|on|via|use|up|acidic|longest|best|raised|multiple" +
-				"|Ca2|CA|C\\-C|CHO|Cys|pro|how|early|similar|no|period" +
-				"|interleukins|releases?|origins?|chemokines?|sons?|nets?|[a-z]+s" +
+				"|Ca2|CA|C\\-C|CHO|Cys|pro|how|early|similar|no|period|rod" +
+				"|interleukins|releases?|origins?|chemokines?|sons?|nets?" +
+				//"|LPS" +
+				"|[a-z]+s" +
 				// added for Lupus/IBD project:
 				"|mild|platelet|drip|sera|neo|radix|spliceosomal|hip|Part I|[Uu]rinary protein|urine protein" +
 				"|Chi|dot|rash|pulmonary function|BMI|toll|min|lethal|pan|Med|celiac" +
-				"|Abs|Ags|UTR|expand|alpha|killer|alpha|beta|gamma|delta|gamma|alpha1|alpha4|beta1|gamma1" +
-				"|[Pp]roteasome|[Ii]ntestinal|flu|Dan|as 1|or 2" +
-				"|CD4|CD8|Mai|dL|IBD|severe combined immunodeficiency" +
+				"|Abs|Ags|UTR|expand|killer" +
+				"|alpha1|alpha4|beta1|gamma1" +
+				"|[Pp]roteasome|[Ii]ntestinal|flu|Dan|and 1|as 1|or 2" +
+				"|CD4|CD8|Mai|dL" +
 				// BC2 gn test
 				"|kbp|helical|post\\-?synaptic|min\\-1|death[\\-\\s]inducing|sub|repressor" +
 				"|early[\\-\\s]response|[Nn]on\\-histone[\\-\\s]chromosomal|pituitary|a catalytic" +
@@ -419,10 +390,11 @@ public class UnspecificNameFilter implements Filter {
 				"|Rb" + //|retinoblastoma" +
 				"|LW|LW\\sblood\\sgroup|Landsteiner[\\s\\-]Wiener\\sblood\\sgroup" +
 				"|autoimmune susceptibility" +
+				"|severe combined immunodeficiency" +
 				"|FHC" +//|familial\\shypercholesterolemia" +
 				// Lupus/IBD:
 				"|adipose|SLE|multiple sclerosis|anti\\-?phospholipid syndrome|[a-z]+ syndrome" +
-				"|thrombocytopenia|renal amyloidosis" +
+				"|thrombocytopenia|renal amyloidosis|IBD" +
 				// BC2 gn text
 				"|hepatocellular\\scarcinoma|hereditary\\shemochromatosis|promyelocytic\\sleukemia" +
 				"|retinitis pigmentosa|multiple endocrine neoplasia" +
@@ -532,6 +504,24 @@ public class UnspecificNameFilter implements Filter {
 		name = StringHelper.espaceString(name);
 		return sentence.matches(".*(chromosome " + name + "|" + name + " chromosome).*");
 	}
+	
+	
+	/**
+	 * Some gene names refer to the actual gene only in very few cases. Examples are<br>
+	 * - GST (glutathione-S-transferase, an experimental technique for pulldowns),<br>
+	 * - LPS (lipopolysaccharide in most cases, not IRF6),<br>
+	 * which need to be filtered out. 
+	 * 
+	 * @param name
+	 * @param sentence
+	 * @return 
+	 */
+	public static boolean isNegativePair (String name, String sentence) {
+		if (name.equals("LPS") && sentence.matches(".*(induce|administ|stimulat).*")) return true;
+		if (name.equals("GST") && sentence.matches(".*(pull\\-?down|assay|fusion|purification|\\Wtag\\W|blotting|anti\\-?body).*")) return true;
+		return false;
+	}
+	
 	
 	
 	/**

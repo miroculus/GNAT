@@ -2,11 +2,9 @@ package gnat.client;
 
 import gnat.ConstantsNei;
 import gnat.ISGNProperties;
-import gnat.filter.nei.AlignmentFilter;
 import gnat.filter.nei.GeneRepositoryLoader;
 import gnat.filter.nei.IdentifyAllFilter;
 import gnat.filter.nei.ImmediateContextFilter;
-import gnat.filter.nei.LeftRightContextFilter;
 import gnat.filter.nei.MultiSpeciesDisambiguationFilter;
 import gnat.filter.nei.NameValidationFilter;
 import gnat.filter.nei.RecognizedEntityUnifier;
@@ -23,14 +21,19 @@ import gnat.representation.RecognizedEntity;
 import gnat.representation.Text;
 import gnat.representation.TextAnnotation;
 import gnat.representation.TextFactory;
-import gnat.utils.AlignmentHelper;
 import gnat.utils.StringHelper;
 
+import java.io.BufferedWriter;
 import java.io.File;
+import java.io.FileWriter;
+import java.io.IOException;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.Comparator;
+import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 import java.util.TreeSet;
 
@@ -91,7 +94,7 @@ public class JustAnnotateInline {
 		for (int a = 0; a < args.length; a++) {
 			// parameter is -v to regulate verbosity at runtime
 			if (args[a].matches("\\-v=\\d+"))
-				run.verbosity = Integer.parseInt(args[0].replaceFirst("^\\-v=(\\d+)$", "$1"));
+				run.verbosity = Integer.parseInt(args[a].replaceFirst("^\\-v=(\\d+)$", "$1"));
 			else if (args[a].toLowerCase().matches("\\-\\-?outdir")) 
 				outDir = args[++a];
 			else if (args[a].toLowerCase().matches("\\-\\-?outdir\\=.+")) 
@@ -185,7 +188,7 @@ public class JustAnnotateInline {
 		run.addFilter(new ImmediateContextFilter());
 		
 		// strictFPs_2_2_context_all.object contains data on the context defined by two tokens left and two tokens right of a gene name
-		run.addFilter(new LeftRightContextFilter("data/strictFPs_2_2_context_all.object", "data/nonStrictFPs_2_2_context_all.object", 0d, 2, 2));
+		//run.addFilter(new LeftRightContextFilter("data/strictFPs_2_2_context_all.object", "data/nonStrictFPs_2_2_context_all.object", 0d, 2, 2));
 
 		//
 		run.addFilter(new ImmediateContextFilter());
@@ -204,7 +207,7 @@ public class JustAnnotateInline {
 		//
 		run.addFilter(new UnspecificNameFilter());
 		//
-		run.addFilter(new AlignmentFilter(AlignmentHelper.globalAlignment, 0.7f));
+		//run.addFilter(new AlignmentFilter(AlignmentHelper.globalAlignment, 0.7f));
 		//
 		run.addFilter(new NameValidationFilter());
 		
@@ -239,37 +242,35 @@ public class JustAnnotateInline {
 			if (!DIR.exists())
 				DIR.mkdirs();
 		}
-		//Set<Text> texts = run.context.getTexts();
-		//System.err.println("Context has " + texts.size() + " texts");
-		Collection<Text> texts = run.getTextRepository().getTexts();
-		//System.err.println("Run has " + texts2.size() + " texts");
-		//if (true)
-		//	return;
 		
+		// Ff texts belong to a document set (one XML document with multiple texts), store the annotated XML in a
+		// buffer before writing the actual XML set file(s)
+		// Input can come from multiple such document set files, therefore the two maps, which also
+		// store the file type (mostly to distinguish medline xml vs plain xml)
+		Map<String, StringBuilder> file2buffer  = new HashMap<String, StringBuilder>();
+		Map<String, Text.SourceTypes> file2type = new HashMap<String, Text.SourceTypes>();
+		
+		// loop through all texts, generate the annotated XML
+		// and write the new content to file(s)
+		Collection<Text> texts = run.getTextRepository().getTexts();
 		for (Text text: texts) {
-			Set<RecognizedEntity> entities = run.context.getRecognizedEntitiesInText(text);
-			if (ConstantsNei.verbosityAtLeast(ConstantsNei.OUTPUT_LEVELS.DEBUG))
-				if (entities.size() > 0)
-					System.out.println("Found " + entities.size() + " in text " + text.getPMID());
-			// sort entities by position within each text:
-			List<SortableEntity> sortedEntities = new LinkedList<SortableEntity>();
-			for (RecognizedEntity re: entities) {
-				sortedEntities.add(new SortableEntity(re));
-			}
-			Collections.sort(sortedEntities);
-			// insert into the text from back to end
-			Collections.reverse(sortedEntities);
 			
+			// sort entities by position within each text, insert into the text from back to end
+			List<RecognizedEntity> entitiesBackwards = new LinkedList<RecognizedEntity>();
+			entitiesBackwards.addAll(run.context.getRecognizedEntitiesInText(text));
+			Collections.sort(entitiesBackwards, new RecognizedEntitySorter());
+			Collections.reverse(entitiesBackwards);
 			
+			// start with the plain text ...
 			String annotatedText = text.plainText;
-			//System.err.println("Original text:\n-----\n"+annotatedText);
-			for (SortableEntity se: sortedEntities) {
-				TextAnnotation ta = se.entity.getAnnotation();
+			// ... and insert markup for all recognized entities
+			for (RecognizedEntity se: entitiesBackwards) {
+				TextAnnotation ta = se.getAnnotation();
 				ta.setType(TextAnnotation.Type.GENE);
 				//System.err.print(text.getID()
 				//		+ "\t" + se.entity.getBegin() + "\t" + se.entity.getEnd()
 				//		+ "\t" + se.entity.getName() + "\t" + ta.getType().toString());
-				IdentificationStatus idStatus = run.context.getIdentificationStatus(se.entity);
+				IdentificationStatus idStatus = run.context.getIdentificationStatus(se);
 				String geneId = idStatus.getId();
 				//System.err.println("\t" + geneId + "\t" + idStatus.getIdCandidates());
 				Set<String> otherIds_set = new TreeSet<String>();
@@ -286,13 +287,13 @@ public class JustAnnotateInline {
 				// add the other IDs in a separate XML attribute
 				String insert = "<";
 				if (geneId == null || geneId.length() == 0) {
-					annotatedText = annotatedText.substring(0, se.end + 1) + "</" + xml_tag_mention + ">" + annotatedText.substring(se.end + 1);
+					annotatedText = annotatedText.substring(0, se.getEnd() + 1) + "</" + xml_tag_mention + ">" + annotatedText.substring(se.getEnd() + 1);
 					
 					insert += xml_tag_mention;
 					if (otherIds.length() > 0)
 						insert += " " + xml_attribute_candidate_ids + "=\"" + otherIds + "\"";
 				} else {
-					annotatedText = annotatedText.substring(0, se.end + 1) + "</" + xml_tag + ">" + annotatedText.substring(se.end + 1);
+					annotatedText = annotatedText.substring(0, se.getEnd() + 1) + "</" + xml_tag + ">" + annotatedText.substring(se.getEnd() + 1);
 					
 					insert += xml_tag;
 					insert += " " + xml_attribute_id + "=\"" + geneId + "\"";
@@ -310,36 +311,38 @@ public class JustAnnotateInline {
 					if (symbol.length() > 0)
 						insert += " " + xml_attribute_symbol + "=\"" + gene.officialSymbol + "\"";
 					
-					//float score = run.context.getConfidenceScore(gene, text);
-					//System.err.println("Getting score for text " + text_id);
 					float score = run.context.getConfidenceScore(gene, text.ID);
 					if (score >= 0.0)
 						insert +=  " " + xml_attribute_score + "=\"" + score + "\"";
 				}
 				
 				insert += ">";
-				annotatedText = annotatedText.substring(0, se.start) + insert + annotatedText.substring(se.start);
+				annotatedText = annotatedText.substring(0, se.getBegin()) + insert + annotatedText.substring(se.getBegin());
 			}
 			
 			//System.err.println("-----\nAnnotated text:\n-----\n"+annotatedText+"\n----------");
-			if (sortedEntities.size() == 0) {
+			if (entitiesBackwards.size() == 0) {
 				if (ConstantsNei.verbosityAtLeast(ConstantsNei.OUTPUT_LEVELS.WARNINGS))
 					ConstantsNei.OUT.println("Found no genes in text " + text.getPMID());
 			}
+
 			
-			// get the first sentence from the text, by finding the first sentence end mark
-			// assumes it is the full title of the paper
-			// TODO better to store (and annotate!) the title separately, since some titles consist of multiple sentences
-			String annotatedTitle = annotatedText.replaceFirst("^(.+?[\\.\\!\\?])\\s.*$", "$1");
-			text.annotateXmlTitle(annotatedTitle);
-			// assume the 2nd and following sentences are the abstract
-			String annotatedAbstract = annotatedText.replaceFirst("^.+?[\\.\\!\\?]\\s(.*)$", "$1");
-			text.annotateXmlAbstract(annotatedAbstract);
-			//if (text.ID.equals("21340499") || text.getPMID() == 21340499) {
-			//	System.err.println("-----");
-			//	System.err.println(annotatedAbstract);
-			//	System.err.println("-----");
-			//}
+			if (text.sourceType == Text.SourceTypes.PLAIN) {
+				System.err.println("#text="+text.getID() + ", source="+text.sourceType.toString());
+				annotatedText = "<text id=\"" + text.getID() + "\">\n" + annotatedText + "\n</text>";
+				text.annotatedXml = annotatedText;
+				
+			} else if (text.sourceType == Text.SourceTypes.MEDLINE_XML || text.sourceType == Text.SourceTypes.MEDLINES_XML ) {
+				// get the first sentence from the text, by finding the first sentence end mark
+				// assumes it is the full title of the paper
+				// TODO better to store (and annotate!) the title separately, since some titles consist of multiple sentences
+				String annotatedTitle = annotatedText.replaceFirst("^(.+?[\\.\\!\\?])\\s.*$", "$1");
+				text.annotateXmlTitle(annotatedTitle);
+				
+				// assume the 2nd and following sentences are the abstract
+				String annotatedAbstract = annotatedText.replaceFirst("^.+?[\\.\\!\\?]\\s(.*)$", "$1");
+				text.annotateXmlAbstract(annotatedAbstract);
+			}
 
 			// if the XML tag used to mark gene names has a prefix ("prefix:TAG"), we need to bind this prefix
 			if (xml_tag.indexOf(":") > 0) {
@@ -350,8 +353,33 @@ public class JustAnnotateInline {
 			//
 			text.buildJDocumentFromAnnotatedXml();
 			
-			String outfileName = text.getID() + ".annotated.xml";
-			text.toXmlFile(outDir + "/" + outfileName);
+			// write annotated text to file:
+			// either into one or more document sets (file(s) with more than one text) ...
+			if (text.sourceType == Text.SourceTypes.MEDLINES_XML) {
+				String basefilename = text.filename.replaceFirst("^(.*)\\/([^\\/]+?)$", "$2");
+				basefilename = basefilename.replaceFirst(".medline", ".annotated.medline");
+				String x = text.toXmlString();
+				// texts that are part of a collection within one file get stored
+				// in a buffer for that file; we're storing this buffer in memory
+				// and write it to disk, together with appropriate XML root elements,
+				// once all texts were processed here
+				if (file2buffer.containsKey(basefilename)) {
+					StringBuilder buf = file2buffer.get(basefilename);
+					buf.append(x);
+					file2buffer.put(basefilename, buf);
+				} else {
+					StringBuilder buf = new StringBuilder();
+					buf.append(x);
+					file2buffer.put(basefilename, buf);
+					file2type.put(basefilename, Text.SourceTypes.MEDLINES_XML);
+				}
+			// ... or individually
+			} else {
+				// we write individual files directly to the disk:
+				String outfileName = text.getID() + ".annotated.xml";
+				if (outDir.length() > 0) text.toXmlFile(outfileName);
+				else					 text.toXmlFile(outDir + "/" + outfileName);
+			}
 			
 			// or, if no gene was recognized in the current text:
 			//} else {
@@ -359,7 +387,44 @@ public class JustAnnotateInline {
 			//	String outfileName = aText.getID() + "_nogenesfound.annotated.xml";
 			//	aText.toXmlFile(outDir + "/" + outfileName);
 			//}
+
 				
+		} // foreach text
+
+
+		
+		if (file2buffer.size() > 0) {
+			//System.err.println("#Writing file collections");
+			for (String basefilename: file2buffer.keySet()) {
+				StringBuilder buf = file2buffer.get(basefilename);
+				Text.SourceTypes type = file2type.get(basefilename);
+				
+				String outfile = basefilename;
+				if (outDir.length() > 0)
+					outfile = outDir + "/" + outfile;
+				
+				try {
+					BufferedWriter bw = new BufferedWriter(new FileWriter(outfile));
+					if (type == Text.SourceTypes.MEDLINES_XML)
+						bw.write("<?xml version=\"1.0\"?>\n" + 
+								 "<!DOCTYPE PubmedArticleSet PUBLIC \"-//NLM//DTD PubMedArticle, 1st January 2012//EN\" \"http://www.ncbi.nlm.nih.gov/corehtml/query/DTD/pubmed_120101.dtd\">\n" +
+								 "<PubmedArticleSet>\n");
+					else
+						bw.write("<?xml version=\"1.0\"?>\n" +
+								 "<DocumentSet>\n");
+					
+					bw.write(buf.toString());
+					
+					if (type == Text.SourceTypes.MEDLINES_XML)
+						bw.write("\n</PubmedArticleSet>");
+					else
+						bw.write("\n</DocumentSet>");
+					
+					bw.close();
+				} catch (IOException ioe) {
+					ioe.printStackTrace();
+				}
+			}
 		}
 
 	}
@@ -368,22 +433,10 @@ public class JustAnnotateInline {
 }
 
 
-class SortableEntity implements Comparable<SortableEntity> {
-	
-	public RecognizedEntity entity;
-	public int start;
-	public int end;
-	
-	public SortableEntity (RecognizedEntity entity) {
-		this.entity = entity;
-		this.start  = entity.getBegin();
-		this.end    = entity.getEnd();
-	}
-	
-	@Override public int compareTo (SortableEntity o) {
-		if (this.start != o.start) return this.start - o.start;
-		if (this.end != o.end) return this.end - o.end;
+class RecognizedEntitySorter implements Comparator<RecognizedEntity> {
+	@Override public int compare (RecognizedEntity re1, RecognizedEntity re2) {
+		if (re1.getBegin() != re2.getBegin()) return re1.getBegin() - re2.getBegin();
+		if (re1.getEnd()     != re2.getEnd()) return re1.getEnd()   - re2.getEnd();
 		return 0;
 	}
-	
 }

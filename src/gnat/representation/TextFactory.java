@@ -2,6 +2,7 @@ package gnat.representation;
 
 import gnat.ConstantsNei;
 import gnat.ISGNProperties;
+import gnat.representation.Text.IdTypes;
 import gnat.retrieval.PubmedAccess;
 
 import java.io.BufferedReader;
@@ -111,9 +112,9 @@ public class TextFactory {
 							textRepository.addText(text);
 						} else if (filename.endsWith(".medlines.xml")){
 							textRepository.addTexts(loadTextsFromMedlineSetXmlfile(dir + filename));
-						} else if (filename.endsWith(".xml")) { // !needs to be checked last, after the other .*.xml!
-							Text text = loadTextFromXmlfile(dir + filename);
-							textRepository.addText(text);
+						//} else if (filename.endsWith(".xml")) { // !needs to be checked last, after the other .*.xml!
+						//	Text text = loadTextFromXmlfile(dir + filename);
+						//	textRepository.addText(text);
 						}
 					}
 
@@ -176,11 +177,18 @@ public class TextFactory {
 	 * @return
 	 */
 	public static Text loadTextFromFile (String filename) {
-		// remove the extension from the filename to get an ID
-		String id = filename.replaceFirst("^(.+)\\..*?$", "$1");
-		
-		//System.out.println("id: "+ id);
-		
+		// remove the extension and file path from the filename to get an ID
+		String id = filename.replaceFirst("^(.*\\/)?(.+?)\\..*?$", "$2");
+		Text aText = new Text(id);
+		aText.filename = filename;
+		if (id.toLowerCase().matches("(pmid[\\-\\_]?)?(\\d+)")) {
+			aText.idType = IdTypes.PMID;
+			aText.setPMID(Integer.parseInt(id.toLowerCase().replaceFirst("^(pmid[\\-\\_]?)?(\\d+)$", "$2")));
+		} else if (id.toLowerCase().matches("pmc.+")) aText.idType = IdTypes.PMC;
+		//System.err.println("###id="+aText.getID());
+		//System.err.println("###filename="+aText.filename);
+		//System.err.println("###pmid="+aText.getPMID());
+
 		StringBuilder file_content = new StringBuilder();
 		
 		try {
@@ -195,12 +203,14 @@ public class TextFactory {
 			ioe.printStackTrace();
 		}
 		
-		Text aText = new Text(id);
 		if (filename.endsWith(".xml"))
 			aText.setPlainFromXml(file_content.toString());
 		else
 			aText.setPlainText(file_content.toString());
 
+		aText.sourceType = Text.SourceTypes.PLAIN;
+		aText.filename = filename;
+		
 		// every Text needs a context model
 		TextContextModel tcm = new TextContextModel(aText.ID);
 		tcm.addPlainText(aText.getPlainText());
@@ -310,11 +320,27 @@ public class TextFactory {
 		if (pmid != null && !pmid.equals("-1") && pmid.matches("\\d+")) {
 			aText.setPMID(Integer.parseInt(pmid));
 			aText.ID = pmid;
+			aText.idType = Text.IdTypes.PMID;
+		} else {
+			aText.idType = Text.IdTypes.UNKNOWN;
 		}
+
+		aText.sourceType = Text.SourceTypes.MEDLINE_XML;
+		aText.filename   = filename;
 		
 		// every Text needs a context model
 		TextContextModel tcm = new TextContextModel(aText.ID);
 		tcm.addPlainText(aText.getPlainText());
+
+		// 
+		if (pubmed2gocodes.containsKey(aText.getPMID())) {
+			Set<Integer> gocodes = pubmed2gocodes.get(aText.getPMID());
+			String[] scodes = new String[gocodes.size()];
+			int s = 0;
+			for (int gocode: gocodes)
+				scodes[s++] = ""+gocode;
+			tcm.addCodes(scodes, GeneContextModel.CONTEXTTYPE_GOCODES);
+		}
 
 		// add the extracted context model to the text
 		aText.setContextModel(tcm);
@@ -362,6 +388,7 @@ public class TextFactory {
 		StringBuilder xml = new StringBuilder();
 		// store the title, also gets reset for each new article encountered in the XML
 		String title = "";
+		// simply parse the XML file line by line, handling each article separately
 		try {
 			BufferedReader br = new BufferedReader(new FileReader(filename));
 			String line;
@@ -394,11 +421,27 @@ public class TextFactory {
 					if (pmid != null && !pmid.equals("-1") && pmid.matches("\\d+")) {
 						aText.setPMID(Integer.parseInt(pmid));
 						aText.ID = pmid;
-					}
+						aText.idType = Text.IdTypes.PMID;
+					} else
+						aText.idType = Text.IdTypes.UNKNOWN;
+					
+					//
+					aText.sourceType = Text.SourceTypes.MEDLINES_XML;
+					aText.filename   = filename;
 					
 					// every Text needs a context model
 					TextContextModel tcm = new TextContextModel(aText.ID);
 					tcm.addPlainText(aText.getPlainText());
+
+					// 
+					if (pubmed2gocodes.containsKey(aText.getPMID())) {
+						Set<Integer> gocodes = pubmed2gocodes.get(aText.getPMID());
+						String[] scodes = new String[gocodes.size()];
+						int s = 0;
+						for (int gocode: gocodes)
+							scodes[s++] = ""+gocode;
+						tcm.addCodes(scodes, GeneContextModel.CONTEXTTYPE_GOCODES);
+					}
 
 					// add the extracted context model to the text
 					aText.setContextModel(tcm);
@@ -420,7 +463,6 @@ public class TextFactory {
 					}
 					
 					temp_texts.add(aText);
-					//System.err.println("ADDED text " + aText.ID);
 					
 					// reset buffer
 					xml.setLength(0);
