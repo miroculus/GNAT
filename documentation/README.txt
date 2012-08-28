@@ -97,9 +97,29 @@ Main classes
 ------------
 
 To run GNAT, check the Pipeline classes in gnat.client.*, for example, the 
-DefaultPipe.
+DefaultPipeline.
 
-
+Several such classes are provided for users not interested in developing their
+own pipelines.
+- JustAnnotate: takes a directory of *.txt files as input, runs GNAT on each 
+  such text file, and prints a list of recognized genes and IDs in a tabular 
+  format. To see examples, take a look at the files in the folders texts/test/ 
+  and texts/test100/. Conventions: if your files originate from PubMed, name
+  them accordingly as <pubmedid>.txt.
+- JustAnnotateInline: takes a directory of *.xml files as input, runs GNAT on
+  each, and annotates each text.
+  Currently, only the PubmedArticle XML format is supported! Therefore, GNAT
+  relies on the following naming conventions:
+  XML files need to be called either *.medline.xml or *.medlines.xml. GNAT 
+  assumes a PubmedArticle (in *.medline.xml files) or a PubmedArticleSet (in 
+  *.medlines.xml files).
+  In a PubmedArticleSet file, GNAT treats each text found therein separately; 
+  in a PubmedArticle file, GNAT treats the entire document as one single text.
+  The current DTD for PubmedArticle(Set)s can be found here:
+    http://www.ncbi.nlm.nih.gov/corehtml/query/DTD/pubmed_120101.dtd
+- Example files can be found in texts/test and texts/test_xml/.
+- To call JustAnnotate or JustAnnotateInline, see the shell scripts in the
+  scripts/ folder.
 
 
 
