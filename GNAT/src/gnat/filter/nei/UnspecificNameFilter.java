@@ -360,7 +360,7 @@ public class UnspecificNameFilter implements Filter {
 				// BC2 gn test
 				"|kbp|helical|post\\-?synaptic|min\\-1|death[\\-\\s]inducing|sub|repressor" +
 				"|early[\\-\\s]response|[Nn]on\\-histone[\\-\\s]chromosomal|pituitary|a catalytic" +
-				"|P\\(k\\)|[Mm]ediator complex|trans-Golgi network" +
+				"|P\\(k\\)|[Mm]ediator complex|trans-Golgi network|D or" +
 				")");
 	}
 

@@ -190,13 +190,13 @@ public class TextFactory {
 		//System.err.println("###pmid="+aText.getPMID());
 
 		StringBuilder file_content = new StringBuilder();
-		
 		try {
 			BufferedReader br = new BufferedReader(new FileReader(filename));
 			String line;
 			while ((line = br.readLine()) != null) {
 				file_content.append(line);
-				file_content.append("\n");
+				file_content.append(" ");
+				//file_content.append(" ");
 			}
 			br.close();
 		} catch (IOException ioe) {
