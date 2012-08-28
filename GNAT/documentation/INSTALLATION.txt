@@ -5,6 +5,7 @@
 2) Create and fill a relational database
 3) Edit property files
 4) Run a test
+5) Run GNAT on your documents
 
 
 
@@ -14,9 +15,13 @@
 Download the following files from Sourceforge into a new folder:
 - gnat.tar.gz         - GNAT binaries for client and server, configurations,
                         data, scripts, test cases needed for GNAT
-- dictionaries.tar.gz - example dictionaries for human, mouse, and fruit fly,
-                        genes; and for GeneOntology and MeSH term recognition
-- sql.tar.gz          - gene information for GNAT
+- gnat_dictionaries.tar.gz - example dictionaries for human, mouse, and fruit fly,
+                             genes; and for GeneOntology and MeSH term recognition
+- gnat_sql_data.tar.gz     - gene information for GNAT
+Unless stated otherwise, the files are always downward-compatible, so make sure 
+to download the newest version of each file, even though the version numbers 
+might not match between the three different files (for example, SQL version
+1.2 and gnat.tar.gz version 1.1 will be okay).
 
 Unzip all *.gz files into the same folder. The following sub-directories
 will be created:
@@ -41,11 +46,12 @@ Make sure that all these sub-directories reside within the same folder.
 ----------------------------------------
 
 Load the SQL data into a relational database, such as MySQL.
-a) set up a local database if none is already running
-b) create a schema for GNAT data, for instance, called "GNAT"
+a) Set up a local database if none is already running
+b) Create a schema for GNAT data, for instance, called "GNAT"
    In the MySQL command prompt, for example, run
    > create database GNAT;
-c) load all the SQL files into that schema
+c) Load all the SQL files into that schema
+   Note: later versions of GNAT have all tables in a single SQL dump file
    Example in MySQL:
    - change to the sql/ directory
    - start the MySQL command prompt, usually by entering something like
@@ -57,25 +63,33 @@ c) load all the SQL files into that schema
      > use GNAT;
    - run the command
      > source gr_goterm.sql;
-   to load the GOTerm table; and similar for all other *.sql import scripts.
+     to load the GOTerm table; and similar for all other *.sql import scripts.
+   - or in later versions (1.2+) run the single command
+     > source gnat_sql_data-1.2.sql;
+     using the appropriate version number in the file name.
    For MySQL, you can simply run
      > source mysqlImportAll.sql;
-   to import all SQL files at once.
+   to import all SQL files at once (provided only with early versions of GNAT).
    Again, you need to be in the sql/ directory!
    This step will take several minutes to complete.
-d) download a JDBC driver for that database from the respective website, such
-   as mysql-connector-java-5.1.7-bin.jar, and move it to the lib/ directory
-e) change the database-related settings in isgn_properties.xml, see below
-f) The scripts provided assume a JDBC driver is stored as
-     lib/mysql-connector-java-5.1.7-bin.jar
+d) Download a JDBC driver for that database from the respective website, such
+   as mysql-connector-java-5.1.17-bin.jar, and move it to the lib/ directory.
+   For MySQL, the website (Aug 2012) is
+     http://dev.mysql.com/downloads/connector/j/
+e) Change the database-related settings in isgn_properties.xml, see below
+f) The scripts provided with GNAT assume a JDBC driver is stored as
+     lib/mysql-connector.jar
    If you are using a different version or a different driver, make sure to
    change the startup and test scripts, for instance,
      scripts/startGeneService.sh
      scripts/testLocalPipeline.sh 
-   accordingly: change the "-cp ..." command line parameter from
-     "-cp lib/gnat.jar:lib/mysql-connector-java-5.1.7-bin.jar"
+   Accordingly: change the "-cp ..." command line parameter from
+     "-cp lib/gnat.jar:lib/mysql-connector-java-5.1.17-bin.jar"
    into 
      "-cp lib/gnat.jar:<new-path>/<new-jdbc-driver>.jar"
+   Alternatively, you can simply rename your freshly downloaded version of the
+   JDBC driver into "mysql-connector.jar", again making sure it reside in the
+   lib/ folder within GNAT.
 
 
 3) Edit property files
@@ -123,6 +137,16 @@ c) You can also run the dictionary on a different machine; in this case, add
    the machine's address and port to the entry for 9606, in the format
    "server:port". Example:
      9606[TAB]myserver.com:5555[TAB]optional comment
+d) Do the same a-c) to launch the GeneOntology and MeSH term dictionary,
+   - see scripts/startGoMeshTerms.sh
 d) Run the test with scripts/testLocalPipeline.sh
 e) The test should return the message "Test okay!" upon completion
+
+
+
+5) Run GNAT on your documents
+-----------------------------
+
+Please see the "Main classes" section in README.txt on how to run GNAT on your
+own set of documents.
 
