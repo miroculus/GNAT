@@ -1,3 +1,6 @@
+Parallel molecular genetic pathways operate during CNS metamorphosis in
+Drosophila.
+
 Insect metamorphosis provides a valuable model for studying mechanisms of
 steroid hormone action on the nervous system during a dynamic phase of
 functional remodeling. The Drosophila Broad Complex (BRC) holds a pivotal

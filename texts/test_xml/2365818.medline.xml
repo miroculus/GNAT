@@ -1,0 +1,352 @@
+<PubmedArticle>
+    <MedlineCitation Owner="NLM" Status="MEDLINE">
+        <PMID Version="1">2365818</PMID>
+        <DateCreated>
+            <Year>1990</Year>
+            <Month>08</Month>
+            <Day>13</Day>
+        </DateCreated>
+        <DateCompleted>
+            <Year>1990</Year>
+            <Month>08</Month>
+            <Day>13</Day>
+        </DateCompleted>
+        <DateRevised>
+            <Year>2009</Year>
+            <Month>11</Month>
+            <Day>18</Day>
+        </DateRevised>
+        <Article PubModel="Print">
+            <Journal>
+                <ISSN IssnType="Print">0021-9738</ISSN>
+                <JournalIssue CitedMedium="Print">
+                    <Volume>86</Volume>
+                    <Issue>1</Issue>
+                    <PubDate>
+                        <Year>1990</Year>
+                        <Month>Jul</Month>
+                    </PubDate>
+                </JournalIssue>
+                <Title>The Journal of clinical investigation</Title>
+                <ISOAbbreviation>J. Clin. Invest.</ISOAbbreviation>
+            </Journal>
+            <ArticleTitle>Maple syrup urine disease. Complete primary structure of the E1 beta subunit of human branched chain alpha-ketoacid dehydrogenase complex deduced from the nucleotide sequence and a gene analysis of patients with this disease.</ArticleTitle>
+            <Pagination>
+                <MedlinePgn>242-7</MedlinePgn>
+            </Pagination>
+            <Abstract>
+                <AbstractText>A defect in the E1 beta subunit of the branched chain alpha-ketoacid dehydrogenase (BCKDH) complex is one cause of maple syrup urine disease (MSUD). In an attempt to elucidate the molecular basis of MSUD, we isolated and characterized a 1.35 kbp cDNA clone encoding the entire precursor of the E1 beta subunit of BCKDH complex from a human placental cDNA library. Nucleotide sequence analysis revealed that the isolated cDNA clone (lambda hBE1 beta-1) contained a 5'-untranslated sequence of four nucleotides, the translated sequence of 1,176 nucleotides and the 3'-untranslated sequence of 169 nucleotides. Comparison of the amino acid sequence predicted from the nucleotide sequence of the cDNA insert of the clone with the NH2-terminal amino acid sequence of the purified mature bovine BCKDH-E1 beta subunit showed that the cDNA insert encodes for a 342-amino acid subunit with a Mr = 37,585. The subunit is synthesized as the precursor with a leader sequence of 50 amino acids and is processed at the NH2 terminus. A search for protein homology revealed that the primary structure of human BCKDH-E1 beta was similar to the bovine BCKDH-E1 beta and to the E1 beta subunit of human pyruvate dehydrogenase complex, in all regions. The structures and functions of mammalian alpha-ketoacid dehydrogenase complexes are apparently highly conserved. Genomic DNA from lymphoblastoid cell lines derived from normal and five MSUD patients, in whom E1 beta was not detected by immunoblot analysis, gave the same restriction maps on Southern blot analysis. The gene has at least 80 kbp.</AbstractText>
+            </Abstract>
+            <Affiliation>Department of Pediatrics, Kumamoto University Medical School, Japan.</Affiliation>
+            <AuthorList CompleteYN="Y">
+                <Author ValidYN="Y">
+                    <LastName>Nobukuni</LastName>
+                    <ForeName>Y</ForeName>
+                    <Initials>Y</Initials>
+                </Author>
+                <Author ValidYN="Y">
+                    <LastName>Mitsubuchi</LastName>
+                    <ForeName>H</ForeName>
+                    <Initials>H</Initials>
+                </Author>
+                <Author ValidYN="Y">
+                    <LastName>Endo</LastName>
+                    <ForeName>F</ForeName>
+                    <Initials>F</Initials>
+                </Author>
+                <Author ValidYN="Y">
+                    <LastName>Akaboshi</LastName>
+                    <ForeName>I</ForeName>
+                    <Initials>I</Initials>
+                </Author>
+                <Author ValidYN="Y">
+                    <LastName>Asaka</LastName>
+                    <ForeName>J</ForeName>
+                    <Initials>J</Initials>
+                </Author>
+                <Author ValidYN="Y">
+                    <LastName>Matsuda</LastName>
+                    <ForeName>I</ForeName>
+                    <Initials>I</Initials>
+                </Author>
+            </AuthorList>
+            <Language>eng</Language>
+            <DataBankList CompleteYN="Y">
+                <DataBank>
+                    <DataBankName>GENBANK</DataBankName>
+                    <AccessionNumberList>
+                        <AccessionNumber>M55575</AccessionNumber>
+                    </AccessionNumberList>
+                </DataBank>
+            </DataBankList>
+            <PublicationTypeList>
+                <PublicationType>Journal Article</PublicationType>
+                <PublicationType>Research Support, Non-U.S. Gov't</PublicationType>
+            </PublicationTypeList>
+        </Article>
+        <MedlineJournalInfo>
+            <Country>UNITED STATES</Country>
+            <MedlineTA>J Clin Invest</MedlineTA>
+            <NlmUniqueID>7802877</NlmUniqueID>
+            <ISSNLinking>0021-9738</ISSNLinking>
+        </MedlineJournalInfo>
+        <ChemicalList>
+            <Chemical>
+                <RegistryNumber>0</RegistryNumber>
+                <NameOfSubstance>Multienzyme Complexes</NameOfSubstance>
+            </Chemical>
+            <Chemical>
+                <RegistryNumber>9007-49-2</RegistryNumber>
+                <NameOfSubstance>DNA</NameOfSubstance>
+            </Chemical>
+            <Chemical>
+                <RegistryNumber>EC 1.2.-</RegistryNumber>
+                <NameOfSubstance>Ketone Oxidoreductases</NameOfSubstance>
+            </Chemical>
+            <Chemical>
+                <RegistryNumber>EC 1.2.4.4</RegistryNumber>
+                <NameOfSubstance>3-Methyl-2-Oxobutanoate Dehydrogenase (Lipoamide)</NameOfSubstance>
+            </Chemical>
+        </ChemicalList>
+        <CitationSubset>AIM</CitationSubset>
+        <CitationSubset>IM</CitationSubset>
+        <CommentsCorrectionsList>
+            <CommentsCorrections RefType="Cites">
+                <RefSource>J Biol Chem. 1988 Apr 5;263(10):4509-11</RefSource>
+                <PMID Version="1">9729103</PMID>
+            </CommentsCorrections>
+            <CommentsCorrections RefType="Cites">
+                <RefSource>Clin Chim Acta. 1977 Nov 1;80(3):483-6</RefSource>
+                <PMID Version="1">410567</PMID>
+            </CommentsCorrections>
+            <CommentsCorrections RefType="Cites">
+                <RefSource>Proc Natl Acad Sci U S A. 1988 Jan;85(1):41-5</RefSource>
+                <PMID Version="1">3422424</PMID>
+            </CommentsCorrections>
+            <CommentsCorrections RefType="Cites">
+                <RefSource>Biochemistry. 1988 Mar 22;27(6):1972-81</RefSource>
+                <PMID Version="1">2837277</PMID>
+            </CommentsCorrections>
+            <CommentsCorrections RefType="Cites">
+                <RefSource>EMBO J. 1986 Jun;5(6):1335-42</RefSource>
+                <PMID Version="1">3015599</PMID>
+            </CommentsCorrections>
+            <CommentsCorrections RefType="Cites">
+                <RefSource>J Biol Chem. 1987 Mar 15;262(8):3718-25</RefSource>
+                <PMID Version="1">3029122</PMID>
+            </CommentsCorrections>
+            <CommentsCorrections RefType="Cites">
+                <RefSource>Cell. 1985 Jun;41(2):349-59</RefSource>
+                <PMID Version="1">2580642</PMID>
+            </CommentsCorrections>
+            <CommentsCorrections RefType="Cites">
+                <RefSource>Biochem J. 1989 Feb 1;257(3):625-32</RefSource>
+                <PMID Version="1">2649080</PMID>
+            </CommentsCorrections>
+            <CommentsCorrections RefType="Cites">
+                <RefSource>J Biol Chem. 1989 Sep 5;264(25):14597-600</RefSource>
+                <PMID Version="1">2768232</PMID>
+            </CommentsCorrections>
+            <CommentsCorrections RefType="Cites">
+                <RefSource>Biochem Biophys Res Commun. 1989 Jun 30;161(3):1035-41</RefSource>
+                <PMID Version="1">2742576</PMID>
+            </CommentsCorrections>
+            <CommentsCorrections RefType="Cites">
+                <RefSource>J Biol Chem. 1989 May 5;264(13):7742-6</RefSource>
+                <PMID Version="1">2708389</PMID>
+            </CommentsCorrections>
+            <CommentsCorrections RefType="Cites">
+                <RefSource>J Clin Invest. 1989 Apr;83(4):1425-9</RefSource>
+                <PMID Version="1">2703538</PMID>
+            </CommentsCorrections>
+            <CommentsCorrections RefType="Cites">
+                <RefSource>J Biol Chem. 1989 Feb 25;264(6):3448-53</RefSource>
+                <PMID Version="1">2914958</PMID>
+            </CommentsCorrections>
+            <CommentsCorrections RefType="Cites">
+                <RefSource>Proc Natl Acad Sci U S A. 1988 Mar;85(5):1422-6</RefSource>
+                <PMID Version="1">3278312</PMID>
+            </CommentsCorrections>
+            <CommentsCorrections RefType="Cites">
+                <RefSource>J Biol Chem. 1988 May 5;263(13):6165-8</RefSource>
+                <PMID Version="1">3245861</PMID>
+            </CommentsCorrections>
+            <CommentsCorrections RefType="Cites">
+                <RefSource>Gene. 1988 Sep 15;69(1):159-64</RefSource>
+                <PMID Version="1">3224821</PMID>
+            </CommentsCorrections>
+            <CommentsCorrections RefType="Cites">
+                <RefSource>Eur J Biochem. 1984 Dec 17;145(3):587-91</RefSource>
+                <PMID Version="1">6510417</PMID>
+            </CommentsCorrections>
+            <CommentsCorrections RefType="Cites">
+                <RefSource>Anal Biochem. 1986 Feb 1;152(2):232-8</RefSource>
+                <PMID Version="1">3516005</PMID>
+            </CommentsCorrections>
+            <CommentsCorrections RefType="Cites">
+                <RefSource>J Biol Chem. 1987 Dec 25;262(36):17313-8</RefSource>
+                <PMID Version="1">3693355</PMID>
+            </CommentsCorrections>
+            <CommentsCorrections RefType="Cites">
+                <RefSource>J Clin Invest. 1987 Jul;80(1):63-70</RefSource>
+                <PMID Version="1">3597778</PMID>
+            </CommentsCorrections>
+            <CommentsCorrections RefType="Cites">
+                <RefSource>Biochem J. 1985 Feb 1;225(3):731-5</RefSource>
+                <PMID Version="1">3977856</PMID>
+            </CommentsCorrections>
+            <CommentsCorrections RefType="Cites">
+                <RefSource>J Clin Invest. 1985 Mar;75(3):858-60</RefSource>
+                <PMID Version="1">3980729</PMID>
+            </CommentsCorrections>
+            <CommentsCorrections RefType="Cites">
+                <RefSource>Biochemistry. 1990 Feb 6;29(5):1154-60</RefSource>
+                <PMID Version="1">2322554</PMID>
+            </CommentsCorrections>
+            <CommentsCorrections RefType="Cites">
+                <RefSource>FEBS Lett. 1983 Jul 25;158(2):234-8</RefSource>
+                <PMID Version="1">6307746</PMID>
+            </CommentsCorrections>
+            <CommentsCorrections RefType="Cites">
+                <RefSource>Biochem J. 1982 Apr 15;204(1):353-6</RefSource>
+                <PMID Version="1">6288017</PMID>
+            </CommentsCorrections>
+            <CommentsCorrections RefType="Cites">
+                <RefSource>Gene. 1984 Jun;28(3):351-9</RefSource>
+                <PMID Version="1">6235151</PMID>
+            </CommentsCorrections>
+            <CommentsCorrections RefType="Cites">
+                <RefSource>Proc Natl Acad Sci U S A. 1984 Jul;81(14):4335-8</RefSource>
+                <PMID Version="1">6589597</PMID>
+            </CommentsCorrections>
+            <CommentsCorrections RefType="Cites">
+                <RefSource>Proc Natl Acad Sci U S A. 1983 Feb;80(3):726-30</RefSource>
+                <PMID Version="1">6572363</PMID>
+            </CommentsCorrections>
+            <CommentsCorrections RefType="Cites">
+                <RefSource>Nucleic Acids Res. 1984 Jan 25;12(2):857-72</RefSource>
+                <PMID Version="1">6694911</PMID>
+            </CommentsCorrections>
+            <CommentsCorrections RefType="Cites">
+                <RefSource>Biochemistry. 1983 Nov 22;22(24):5519-22</RefSource>
+                <PMID Version="1">6652074</PMID>
+            </CommentsCorrections>
+            <CommentsCorrections RefType="Cites">
+                <RefSource>FEBS Lett. 1983 Nov 28;164(1):85-8</RefSource>
+                <PMID Version="1">6653787</PMID>
+            </CommentsCorrections>
+            <CommentsCorrections RefType="Cites">
+                <RefSource>FEBS Lett. 1983 Aug 22;160(1-2):149-52</RefSource>
+                <PMID Version="1">6884504</PMID>
+            </CommentsCorrections>
+            <CommentsCorrections RefType="Cites">
+                <RefSource>FEBS Lett. 1982 Jul 19;144(1):57-62</RefSource>
+                <PMID Version="1">6980796</PMID>
+            </CommentsCorrections>
+            <CommentsCorrections RefType="Cites">
+                <RefSource>J Biol Chem. 1982 Dec 10;257(23):14433-9</RefSource>
+                <PMID Version="1">7142221</PMID>
+            </CommentsCorrections>
+            <CommentsCorrections RefType="Cites">
+                <RefSource>Proc Natl Acad Sci U S A. 1977 Mar;74(3):1245-9</RefSource>
+                <PMID Version="1">265567</PMID>
+            </CommentsCorrections>
+            <CommentsCorrections RefType="Cites">
+                <RefSource>Proc Natl Acad Sci U S A. 1978 Oct;75(10):4881-5</RefSource>
+                <PMID Version="1">283398</PMID>
+            </CommentsCorrections>
+            <CommentsCorrections RefType="Cites">
+                <RefSource>Proc Natl Acad Sci U S A. 1977 Dec;74(12):5463-7</RefSource>
+                <PMID Version="1">271968</PMID>
+            </CommentsCorrections>
+            <CommentsCorrections RefType="Cites">
+                <RefSource>J Biol Chem. 1979 Jun 25;254(12):5522-6</RefSource>
+                <PMID Version="1">447664</PMID>
+            </CommentsCorrections>
+            <CommentsCorrections RefType="Cites">
+                <RefSource>J Mol Biol. 1975 Nov 5;98(3):503-17</RefSource>
+                <PMID Version="1">1195397</PMID>
+            </CommentsCorrections>
+            <CommentsCorrections RefType="Cites">
+                <RefSource>Hum Genet. 1988 Sep;80(1):6-10</RefSource>
+                <PMID Version="1">3417306</PMID>
+            </CommentsCorrections>
+        </CommentsCorrectionsList>
+        <MeshHeadingList>
+            <MeshHeading>
+                <DescriptorName MajorTopicYN="N">3-Methyl-2-Oxobutanoate Dehydrogenase (Lipoamide)</DescriptorName>
+            </MeshHeading>
+            <MeshHeading>
+                <DescriptorName MajorTopicYN="N">Amino Acid Sequence</DescriptorName>
+            </MeshHeading>
+            <MeshHeading>
+                <DescriptorName MajorTopicYN="N">Base Sequence</DescriptorName>
+            </MeshHeading>
+            <MeshHeading>
+                <DescriptorName MajorTopicYN="N">Blotting, Southern</DescriptorName>
+            </MeshHeading>
+            <MeshHeading>
+                <DescriptorName MajorTopicYN="N">Cloning, Molecular</DescriptorName>
+            </MeshHeading>
+            <MeshHeading>
+                <DescriptorName MajorTopicYN="N">DNA</DescriptorName>
+                <QualifierName MajorTopicYN="N">genetics</QualifierName>
+            </MeshHeading>
+            <MeshHeading>
+                <DescriptorName MajorTopicYN="N">Genes</DescriptorName>
+            </MeshHeading>
+            <MeshHeading>
+                <DescriptorName MajorTopicYN="N">Humans</DescriptorName>
+            </MeshHeading>
+            <MeshHeading>
+                <DescriptorName MajorTopicYN="N">Ketone Oxidoreductases</DescriptorName>
+                <QualifierName MajorTopicYN="Y">genetics</QualifierName>
+            </MeshHeading>
+            <MeshHeading>
+                <DescriptorName MajorTopicYN="N">Maple Syrup Urine Disease</DescriptorName>
+                <QualifierName MajorTopicYN="N">enzymology</QualifierName>
+                <QualifierName MajorTopicYN="Y">genetics</QualifierName>
+            </MeshHeading>
+            <MeshHeading>
+                <DescriptorName MajorTopicYN="N">Molecular Sequence Data</DescriptorName>
+            </MeshHeading>
+            <MeshHeading>
+                <DescriptorName MajorTopicYN="N">Multienzyme Complexes</DescriptorName>
+                <QualifierName MajorTopicYN="Y">genetics</QualifierName>
+            </MeshHeading>
+            <MeshHeading>
+                <DescriptorName MajorTopicYN="N">Restriction Mapping</DescriptorName>
+            </MeshHeading>
+        </MeshHeadingList>
+        <OtherID Source="NLM">PMC296713</OtherID>
+    </MedlineCitation>
+    <PubmedData>
+        <History>
+            <PubMedPubDate PubStatus="pubmed">
+                <Year>1990</Year>
+                <Month>7</Month>
+                <Day>1</Day>
+            </PubMedPubDate>
+            <PubMedPubDate PubStatus="medline">
+                <Year>1990</Year>
+                <Month>7</Month>
+                <Day>1</Day>
+                <Hour>0</Hour>
+                <Minute>1</Minute>
+            </PubMedPubDate>
+            <PubMedPubDate PubStatus="entrez">
+                <Year>1990</Year>
+                <Month>7</Month>
+                <Day>1</Day>
+                <Hour>0</Hour>
+                <Minute>0</Minute>
+            </PubMedPubDate>
+        </History>
+        <PublicationStatus>ppublish</PublicationStatus>
+        <ArticleIdList>
+            <ArticleId IdType="pubmed">2365818</ArticleId>
+            <ArticleId IdType="doi">10.1172/JCI114690</ArticleId>
+            <ArticleId IdType="pmc">PMC296713</ArticleId>
+        </ArticleIdList>
+    </PubmedData>
+</PubmedArticle>

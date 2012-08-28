@@ -1,3 +1,6 @@
+Yeast mutants temperature-sensitive for growth after random mutagenesis of the
+chromosomal RAS2 gene and deletion of the RAS1 gene.
+
 Saccharomyces cerevisiae strains with a disrupted RAS1 gene and with an
 intact RAS2 gene (ras1- RAS2 strains) grew well on both fermentable and
 nonfermentable carbon sources. By constructing isogenic mutants having a
