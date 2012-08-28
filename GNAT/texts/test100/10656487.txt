@@ -1,3 +1,7 @@
+Influence of nucleotide excision repair and of dose on the types of vermilion
+mutations induced by diethyl sulfate in postmeiotic male germ cells of
+Drosophila.
+
 The role of a defect for nucleotide excision repair (NER) in oocytes on
 the repair of DNA ethyl adducts induced by diethyl sulfate (DES) in male
 germ cells of Drosophila was analysed. Frequencies of mutations at

@@ -1,3 +1,6 @@
+Targeted deletion of a yeast enolase structural gene. Identification and
+isolation of yeast enolase isozymes.
+
 Yeast contain two nontandemly repeated enolase structural genes which have
 been isolated on bacterial plasmids designated peno46 and peno8 (Holland,
 M. J., Holland, J. P., Thill, G. P., and Jackson, K. A. (1981) J. Biol.
