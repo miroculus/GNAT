@@ -1,4 +1,4 @@
-The GNAT package is copyright (c) 2008-2011 Joerg Hakenberg <jhakenberg@users.sourceforge.net>
+The GNAT package is copyright (c) 2008-2012 Joerg Hakenberg <jhakenberg@users.sourceforge.net>
 
 All rights reserved.
 

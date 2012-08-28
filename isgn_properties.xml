@@ -3,9 +3,9 @@
 <properties>
 
 <!-- some values that you have to set/change: -->
-<entry key="dbUser">myusername</entry>
-<entry key="dbPass">mypassword</entry>
-<entry key="dbAccessUrl">jdbc:mysql://myserver.com:3306/GNAT</entry>
+<entry key="dbUser">your-db-username</entry>
+<entry key="dbPass">your-db-password</entry>
+<entry key="dbAccessUrl">jdbc:mysql://localhost:3306/GNAT</entry>
 <entry key="dbDriver">org.gjt.mm.mysql.Driver</entry>
 <entry key="dictionaryServer">localhost</entry>
 
@@ -18,7 +18,16 @@
 <entry key="linnaeusUrl">bergman.smith.man.ac.uk:55000</entry>
 <entry key="dictionaryServerGO">http://bergman.smith.man.ac.uk:56099</entry>
 
+<!-- If no species name was found in a text, associated the default species (comma-separated) with that text -->
 <entry key="defaultSpecies">9606</entry>
+<!-- In addition to the species that were found in a text by name, adds all these as 'recognized' -->
+<entry key="assumeSpecies">9606</entry>
+<!-- Some modules in GNAT can be tuned towards either precision, recall, or fscore -->
+<entry key="tuning">fscore</entry>
+<!-- Some steps in GNAT will change the actual text, for instance, as pre-processing steps.    -->
+<!-- Reported results (positions of genes) will therefore not match the original text anymore. -->
+<!-- If you depend on positions for later steps outside of GNAT, set keepTextIntact to true!   -->
+<entry key="keepTextIntact">false</entry>
 
 <entry key="bannerProps">banner/banner.properties</entry>
 <entry key="bannerModel">banner/gene_model_v02.bin</entry>
@@ -35,6 +44,10 @@
 <entry key="stopWords">data/bnc_wordlist.txt</entry>
 <!-- some values for database access (table names): -->
 <entry key="pubmedToGoCodeTable">PubMedToGO</entry>
+<!-- GNAT can use information from EntrezGene as to which genes they annotate to which *full text* -->
+<!-- Information is stored in the database, GR_PubMedID table -->
+<!-- This needs to be set to 'false' for all benchmarking purposes -->
+<entry key="useGenePubmed">true</entry>
 
 <!-- some values you usually don't need not to bother with: -->
 <entry key="disambiguationThreshold">3</entry>
