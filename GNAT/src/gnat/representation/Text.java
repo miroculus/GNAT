@@ -8,6 +8,7 @@ import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.IOException;
 import java.io.StringWriter;
+import java.io.Writer;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.LinkedList;
@@ -51,15 +52,18 @@ import org.xml.sax.SAXException;
 
 public class Text {
 
-	public enum IdTypes {PMID, PMC, UNKNOWN};
-
+	public enum IdTypes {PMID, PMC, FILENAME, UNKNOWN};
+	public enum SourceTypes {PLAIN, XML, MEDLINE_XML, MEDLINES_XML, UNKNOWN};
+	
 	/** */
 	TextContextModel model;
 
 	/** */
 	public String ID = "-1";
 
-	public IdTypes idType;
+	public IdTypes idType = IdTypes.UNKNOWN;
+	
+	public SourceTypes sourceType = SourceTypes.UNKNOWN;
 
 	/** */
 	public String title = "";
@@ -80,6 +84,9 @@ public class Text {
 	 * Print the current Document to a file using {@link #toXmlFile(String)}.
 	 * */
 	public Document jdocument; 
+	
+	/** */
+	public String filename = "";
 
 	/** */
 	public int PMID = -1;
@@ -720,6 +727,12 @@ public class Text {
 	 * @param filename
 	 */
 	public void toXmlFile (String filename) {
+		// if the filename contains a folder, make sure this folder exists
+		if (filename.indexOf("/") >= 0) {
+			String dir = filename.replaceFirst("^(.+)\\/(.+?)$", "$1");
+			File DIR = new File(dir);
+			DIR.mkdirs();
+		}
 		if (jdocument == null) return;
 		TransformerFactory transformerFactory = TransformerFactory.newInstance();
 		Transformer transformer;
@@ -735,7 +748,38 @@ public class Text {
 		}
 	}
 
-
+	
+//	/**
+//	 * Returns the current XML content, as given in the JDOM Document {@link #jdocument},
+//	 * as a string.<br>
+//	 * If {@link #jdocument} is not set, returns null.
+//	 * <br><b>Note:</b> if the text in {@link #annotatedXml} was changed, for instance, using
+//	 * {@link #annotateXmlTitle(String)} or {@link #annotateXmlAbstract(String)}, you need to
+//	 * run {@link #buildJDocumentFromAnnotatedXml()} to propagate those changes to the
+//	 * the {@link #jdocument}!
+//	 * @param filename
+//	 */
+//	public String toXmlString () {
+//		if (jdocument == null) return "";
+//		TransformerFactory transformerFactory = TransformerFactory.newInstance();
+//		Transformer transformer;
+//		try {
+//			Writer outWriter = new StringWriter();
+//			transformer = transformerFactory.newTransformer();
+//			DOMSource source = new DOMSource(jdocument);
+//			//StreamResult result = new StreamResult(new File(filename)); 
+//			StreamResult result = new StreamResult( outWriter );  
+//			transformer.transform(source, result);
+//			return outWriter.toString();
+//		} catch (TransformerConfigurationException e) {
+//			e.printStackTrace();
+//		} catch (TransformerException e) {
+//			e.printStackTrace();
+//		}
+//		return null;
+//	}
+//	
+	
 	/**
 	 * Returns the current XML content, as given in the JDOM Document {@link #jdocument},
 	 * as a string.<br>
@@ -785,18 +829,6 @@ public class Text {
 		//if (m.matches())
 		//	System.err.println("!!!matches-title!!!");
 		full = m.replaceFirst("<ArticleTitle>" + annotatedTitle + "</ArticleTitle>");
-//		annotatedXml = full;
-//		
-//		full = "";
-//		String[] lines = annotatedXml.split("[\r\n]+");
-//		for (int l = 0; l < lines.length; l++) {
-//			String line = lines[l];
-//			if (line.matches("<ArticleTitle>.*</ArticleTitle>")) {
-//				lines[l] = line.replaceFirst("<ArticleTitle>.*</ArticleTitle>", "<ArticleTitle>" + annotatedTitle + "</ArticleTitle>");
-//			}
-//			full += lines[l] + "\n";
-//		}
-		//System.err.println(full);
 		
 		annotatedXml = full;
 	}
@@ -879,27 +911,10 @@ public class Text {
 				//annotatedXml = annotatedXml.replaceAll("±", "&plusmn;");
 				annotatedXml = annotatedXml.replaceAll("±", "plus/minus");
 				//annotatedXml = annotatedXml.replaceAll("([Pp]\\s*<)", "$1&lt;");
-				
-				
-//				annotatedXml = annotatedXml.replaceAll("&\\s", "&amp; ");
-//				annotatedXml = annotatedXml.replaceAll("&([A-Za-z0-9]\\W)", "&amp;$1");
-//				annotatedXml = annotatedXml.replaceAll("\\<([\\d\\.\\s])", "&lt;$1");
-//				annotatedXml = annotatedXml.replaceAll("\\<or=", "&lt;or=");
-//				//annotatedXml = annotatedXml.replaceAll("(\\W?)\\<(\\W)", "$1&lt;$2"); // this will replace ALL '<'/'>' in the entire XML document
-//				//annotatedXml = annotatedXml.replaceAll("(\\W?)\\>(\\W)", "$1&gt;$2");
-//				annotatedXml = annotatedXml.replaceAll("P\\s\\<\\s", "P &lt; ");
-//				annotatedXml = annotatedXml.replaceAll("P\\s\\>\\s", "P &gt; ");
-//				annotatedXml = annotatedXml.replaceAll("<mixed\\sH\\.", "&lt;mixed H."); // special case in Lupus/IBD...
-//				annotatedXml = annotatedXml.replaceAll("<\\/=", "&lt;/="); // in PubMed 9618483 "share </=50% identity"
-//				annotatedXml = annotatedXml.replaceAll("\\s\\>([\\d\\.\\s])", " &gt;$1");
-//				//annotatedXml = annotatedXml.replaceAll("±", "&plusmn;");
-//				annotatedXml = annotatedXml.replaceAll("±", "plus/minus");
-				
-				
+
 				//System.err.println("-----");
 				//System.err.println(annotatedXml);
 				//System.err.println("-----");
-				//annotatedXml = m.replaceFirst("<PubmedArticle xmlns:src=\"http://gnat.sourceforge.net\"");
 		    	jdocument = builder.parse(new ByteArrayInputStream(annotatedXml.getBytes()));
 			} else {
 				jdocument = builder.parse(new ByteArrayInputStream(originalXml.getBytes()));
@@ -910,9 +925,6 @@ public class Text {
 			System.err.println("##### ERROR building XML doc from ");
 			System.err.println(annotatedXml);
 			System.err.println("#####");
-			//System.err.println("##### Using original XML, discarding all markups");
-			//jdocument = builder.parse(new ByteArrayInputStream(originalXml.getBytes()));
-			//System.exit(2);
 		} catch (SAXException e) {
 			e.printStackTrace();
 		} catch (IOException e) {
