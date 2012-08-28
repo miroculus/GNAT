@@ -1,5 +1,6 @@
 package gnat.client;
 
+import gnat.ConstantsNei;
 import gnat.ISGNProperties;
 import gnat.filter.nei.AlignmentFilter;
 import gnat.filter.nei.GeneRepositoryLoader;
@@ -94,6 +95,7 @@ public class JustAnnotate {
 			}
 		}
 
+		ConstantsNei.setOutputLevel(run.verbosity);
 
 		//////////
 		// INPUT

@@ -20,15 +20,8 @@ import gnat.utils.AlignmentHelper;
 import java.io.BufferedReader;
 import java.io.FileReader;
 import java.io.IOException;
-import java.sql.Connection;
-import java.sql.DriverManager;
-import java.sql.ResultSet;
-import java.sql.SQLException;
-import java.sql.Statement;
-import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.Set;
 
 /**
  * Runs a test using a fixed GNAT text processing pipeline to ensure a local copy
@@ -126,42 +119,53 @@ public class LocalPipelineTest extends PipelineTest {
 		
 		// run all filters, changing run.context, run.textRepository, and run.geneRepository
 		run.runFilters();
-
-		
-//		List<RecognizedEntity> sortedREs = 
-//			run.context.sortRecognizedEntities(run.context.getRecognizedEntities());
-//		for (RecognizedEntity re: sortedREs)
-//			System.out.println(re.getText().getID() + "\t" + re.getName() + "\t" + re.getBegin() + "\t" + re.getEnd());
-//		if (true) return;
 				
 		// get the results for each text, in BioCreative tab-separated format
 		List<String> result = run.context.getIdentifiedGeneList_SortedByTextAndId();
+
 		// get expected results from saved file
 		List<String> expected = getExpectedOutput("texts/test/test.solution");
+		for (int e = 0; e < expected.size(); e++) {
+			String exp = expected.get(e);
+			exp = exp.replaceFirst("^.+/", "");
+			expected.set(e, exp);
+		}
 		
 		// compare tested and expected results
+		System.out.println("\nTest result:");
 		int foundInTest = 0;
 		for (String exp: expected) {
+			exp = exp.replaceFirst("^.+\\/", ""); // remove directory name
 			if (result.contains(exp))
 				foundInTest++;
 			else
-				System.out.println("#Not found in result: '" + exp + "'");
+				;//System.out.println("#Not found in result: '" + exp + "'");
 		}
 		
 		if (foundInTest == expected.size() && expected.size() == result.size()) {
-			System.out.println("Result:");
-			for (String res: result)
-				System.out.println(res);
-			System.out.println("\nTest okay!");
+			//System.out.println("Result from local pipeline:");
+			//for (String res: result)
+			//	System.out.println(res);
+			System.out.println("Test okay!");
 			
 		} else {
-			System.out.println("\nTested and expected results differ!");
-			System.out.println("Expected result:");
-			for (String exp: expected)
-				System.out.println(exp);
-			System.out.println("-----\nResult from test:");
-			for (String res: result)
-				System.out.println(res);
+			System.out.println("Tested and expected results differ!");
+			List<String> allExpected = new LinkedList<String>();
+			allExpected.addAll(expected);
+			allExpected.removeAll(result);
+			if (allExpected.size() > 0) {
+				System.out.println("The following entries are missing from the local pipeline (potential false negatives):");
+				for (String exp: allExpected)
+					System.out.println(exp);
+			}
+			List<String> allPredicted = new LinkedList<String>();
+			allPredicted.addAll(result);
+			allPredicted.removeAll(expected);
+			if (allPredicted.size() > 0) {
+				System.out.println("The following entries were produced by the local pipeline in addition to what was expected (potential false positives):");	
+				for (String res: allPredicted)
+					System.out.println(res);
+			}
 		}
 		
 	}
