@@ -57,7 +57,7 @@ public class DefaultSpeciesRecognitionFilter implements Filter {
 				continue;
 			}
 			
-			boolean debug = false;//text.getID().matches(".*(7498728|10833452).*");
+			boolean debug = ConstantsNei.verbosityAtLeast(ConstantsNei.OUTPUT_LEVELS.DEBUG);
 			
 			boolean foundAspecies = false;
 			
@@ -249,20 +249,20 @@ public class DefaultSpeciesRecognitionFilter implements Filter {
 			// assign default IDs if none where found in the text
 			if (taxonIDs.size() == 0) {
 				taxonIDs = ConstantsNei.DEFAULT_SPECIES;
-				if (ConstantsNei.OUTPUT_LEVEL.compareTo(ConstantsNei.OUTPUT_LEVELS.DEBUG) >= 0)
+				if (debug)
 					System.out.println("#DSRF: no taxIds found for " + text.PMID + ". Using default: " + taxonIDs);
 			}
 			
 			text.setTaxonIDs(taxonIDs);
 			text.addTaxonToNameMap(id2names);
-			if (ConstantsNei.OUTPUT_LEVEL.compareTo(ConstantsNei.OUTPUT_LEVELS.DEBUG) >= 0)
+			if (debug)
 				System.out.println("#DSRF: for text " + text.PMID + ", found species " + taxonIDs);
 			
 			allTaxonIDs.addAll(id2names.keySet());
 		} // for each text
 		
 		
-		if (ConstantsNei.OUTPUT_LEVEL.compareTo(ConstantsNei.OUTPUT_LEVELS.STATUS) >= 0)
+		if (ConstantsNei.verbosityAtLeast(ConstantsNei.OUTPUT_LEVELS.STATUS))
 			System.out.println("#SRF: recognized species in the text collection: " + allTaxonIDs);
 	}
 

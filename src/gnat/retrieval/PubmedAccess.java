@@ -265,8 +265,21 @@ public class PubmedAccess {
 		try {
 			SAXBuilder builder = new SAXBuilder();
 			Document doc = builder.build(new StringReader(xml));
-			Element root = doc.getRootElement(); // root should be "PubmedArticle"
-			List articleList = root.getChildren("MedlineCitation");
+			//Element root = doc.getRootElement(); // root should be "PubmedArticle"
+			
+			List articleList = null;
+			// two cases: ROOT is an ArticleSet or an Article
+			Element root = doc.getRootElement();
+			if (root.getName().equals("MedlineCitationSet"))
+				articleList = root.getChildren("MedlineCitation");
+			else if (root.getName().equals("PubmedArticleSet"))
+				articleList = root.getChildren("PubmedArticle");
+			else {
+				articleList = new LinkedList();
+				articleList.add(root);
+			}
+			
+			//List articleList = root.getChildren("MedlineCitation");
 			abs = new String[articleList.size()];
 			Iterator articleIt = articleList.iterator();
 			for (int i = 0; articleIt.hasNext(); i++) {
@@ -295,8 +308,21 @@ public class PubmedAccess {
 		try {
 			SAXBuilder builder = new SAXBuilder();
 			Document doc = builder.build(new StringReader(xml));
-			Element root = doc.getRootElement(); // root should be "PubmedArticle"
-			List articleList = root.getChildren("MedlineCitation");
+			
+			List articleList = null;
+			// two cases: ROOT is an ArticleSet or an Article
+			Element root = doc.getRootElement();
+			if (root.getName().equals("MedlineCitationSet"))
+				articleList = root.getChildren("MedlineCitation");
+			else if (root.getName().equals("PubmedArticleSet"))
+				articleList = root.getChildren("PubmedArticle");
+			else {
+				articleList = new LinkedList();
+				articleList.add(root);
+			}
+			//System.err.println("#ROOT="+root.getName());
+			
+			//List articleList = root.getChildren("MedlineCitation");
 			abs = new String[articleList.size()];
 			Iterator articleIt = articleList.iterator();
 			for (int i = 0; articleIt.hasNext(); i++) {
@@ -316,7 +342,10 @@ public class PubmedAccess {
 					}
 					
 				}
+
+				//System.out.println("#ABS"+i+"="+abs[i]);
 			}
+			
 		} catch (JDOMException e) {
 			e.printStackTrace();
 		} catch (IOException e) {

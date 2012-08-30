@@ -53,7 +53,7 @@ import org.xml.sax.SAXException;
 public class Text {
 
 	public enum IdTypes {PMID, PMC, FILENAME, UNKNOWN};
-	public enum SourceTypes {PLAIN, XML, MEDLINE_XML, MEDLINES_XML, UNKNOWN};
+	public enum SourceTypes {PLAIN, XML, MEDLINE_XML, MEDLINES_XML, PUBMED_XML, PUBMEDS_XML, UNKNOWN};
 	
 	/** */
 	TextContextModel model;
@@ -112,23 +112,9 @@ public class Text {
 	public LinkedList<TextAnnotation> annotations = new LinkedList<TextAnnotation>();
 
 
-
-
 	/** */
 	public Text (String id){
-		this.ID = id;
-		if (id.matches("\\d+"))
-			this.PMID = Integer.parseInt(id);	         // default: numerical ID only
-		else if (id.matches("\\d+\\.[a-z]+")) {          // PMID plus file extension
-			String pm = id.replaceFirst("^(\\d+)\\.[a-z]+$", "$1");
-			this.PMID = Integer.parseInt(pm);
-		} else if (id.matches(".*\\/\\d+")) {            // path plus PMID, no file extension
-			String pm = id.replaceFirst("^.*\\/(\\d+)$", "$1");
-			this.PMID = Integer.parseInt(pm);
-		} else if (id.matches(".*\\/\\d+\\.[a-z]+")) {   // path plus PMID plus file extension
-			String pm = id.replaceFirst("^.*\\/(\\d+)\\.[a-z]+$", "$1");
-			this.PMID = Integer.parseInt(pm);
-		}
+		setID(id);
 	}
 
 
@@ -156,21 +142,6 @@ public class Text {
 		this(id);
 		setSentences(sentences, xml);
 		sentencesInXML = xml;
-
-		TextContextModel tcm = new TextContextModel();
-		tcm.addPlainText(this.getPlainText());
-		this.setContextModel(tcm);
-	}
-
-
-	/**
-	 * 
-	 * @param id
-	 * @param sentences
-	 */
-	public Text (String id, List<String> sentences) {
-		this(id);
-		setSentences(sentences, false);
 
 		TextContextModel tcm = new TextContextModel();
 		tcm.addPlainText(this.getPlainText());
@@ -217,10 +188,73 @@ public class Text {
 
 	/**
 	 * 
+	 * @param id
+	 * @param sentences
+	 */
+	public Text (String id, List<String> sentences) {
+		this(id);
+		setSentences(sentences, false);
+
+		TextContextModel tcm = new TextContextModel();
+		tcm.addPlainText(this.getPlainText());
+		this.setContextModel(tcm);
+	}
+
+	
+	/**
+	 * 
 	 * @return
 	 */
-	public String getID() {
+	public String getID () {
 	    return ID;
+    }
+
+
+	/**
+	 * 
+	 * @param id
+	 */
+	public void setID (String id) {
+		this.ID = id;
+		this.idType = IdTypes.UNKNOWN;
+		
+		if (id.matches("\\d+")) {
+			setPMID(Integer.parseInt(id));	         // default: numerical ID only
+			idType = IdTypes.PMID;
+		} else if (id.matches("\\d+\\.[a-z]+")) {          // PMID plus file extension
+			String pm = id.replaceFirst("^(\\d+)\\.[a-z]+$", "$1");
+			setPMID(Integer.parseInt(pm));
+			idType = IdTypes.PMID;
+		} else if (id.matches(".*\\/\\d+")) {            // path plus PMID, no file extension
+			String pm = id.replaceFirst("^.*\\/(\\d+)$", "$1");
+			setPMID(Integer.parseInt(pm));
+			idType = IdTypes.PMID;
+		} else if (id.matches(".*\\/\\d+\\.[a-z]+")) {   // path plus PMID plus file extension
+			String pm = id.replaceFirst("^.*\\/(\\d+)\\.[a-z]+$", "$1");
+			setPMID(Integer.parseInt(pm));
+			idType = IdTypes.PMID;
+		
+		} else if (id.toLowerCase().matches("pmc\\d+")) {
+			idType = IdTypes.PMC;
+		}
+	}
+	
+
+	/**
+	 * 
+	 * @return
+	 */
+	public int getPMID() {
+    	return PMID;
+    }
+
+
+	/**
+	 * 
+	 * @param pmid
+	 */
+	public void setPMID (int pmid) {
+    	PMID = pmid;
     }
 
 
@@ -440,24 +474,6 @@ public class Text {
 	}
 
 	
-	/**
-	 * 
-	 * @return
-	 */
-	public int getPMID() {
-    	return PMID;
-    }
-
-
-	/**
-	 * 
-	 * @param pmid
-	 */
-	public void setPMID (int pmid) {
-    	PMID = pmid;
-    }
-
-
 	/**
 	 * Sentence 0 would typically be the title of a text.
 	 * @param index
@@ -858,11 +874,20 @@ public class Text {
 		// find and replace the first occurrence of any <AbstractText ..> ... </AbstractText> element
 		Pattern p = Pattern.compile("<AbstractText[^>]*>.*</AbstractText>", Pattern.UNIX_LINES | Pattern.MULTILINE);
 		Matcher m = p.matcher(full);
-		full = m.replaceFirst("<AbstractText>" + annotatedAbstract + "</AbstractText>");
-		// find and remove all further <AbstractText ..> elements 
-		Pattern p2 = Pattern.compile("<AbstractText[^>]+>.*</AbstractText>", Pattern.UNIX_LINES | Pattern.MULTILINE);
-		Matcher m2 = p2.matcher(full);
-		full = m2.replaceAll("");
+		//if (m.matches()) {
+			try {
+				full = m.replaceFirst("<AbstractText>" + annotatedAbstract + "</AbstractText>");
+			} catch (IndexOutOfBoundsException i) {
+				System.err.println("### " + i.getMessage() + "\n# " + annotatedAbstract+"\n###");
+			} catch (IllegalArgumentException i) {
+				System.err.println("### " + i.getMessage() + "\n# " + annotatedAbstract+"\n###");
+			}
+			// find and remove all further <AbstractText ..> elements 
+			Pattern p2 = Pattern.compile("<AbstractText[^>]+>.*</AbstractText>", Pattern.UNIX_LINES | Pattern.MULTILINE);
+			Matcher m2 = p2.matcher(full);
+		//	if (m2.matches())
+				full = m2.replaceAll("");
+		//}
 		//
 		/////
 
@@ -897,19 +922,28 @@ public class Text {
 			builder = factory.newDocumentBuilder();
 			if (annotatedXml.length() > 0) {
 				// some PubMed "XMLs" still have a non-escaped ampersand in there
+				// ampersand
 				annotatedXml = annotatedXml.replaceAll("&\\s", "&amp; ");
 				annotatedXml = annotatedXml.replaceAll("&([A-Za-z0-9]\\W)", "&amp;$1");
+				// less/greater than
+				// "0<n<1"
+				annotatedXml = annotatedXml.replaceAll("(\\d)\\<([A-Za-z])\\<(\\d)", "$1&lt;$2&lt;$3");
 				annotatedXml = annotatedXml.replaceAll("\\<([\\d\\.\\s])", "&lt;$1");
-				annotatedXml = annotatedXml.replaceAll("\\<or=", "&lt;or=");
 				//annotatedXml = annotatedXml.replaceAll("(\\W?)\\<(\\W)", "$1&lt;$2"); // this will replace ALL '<'/'>' in the entire XML document
 				//annotatedXml = annotatedXml.replaceAll("(\\W?)\\>(\\W)", "$1&gt;$2");
-				annotatedXml = annotatedXml.replaceAll("P\\s\\<\\s", "P &lt; ");
-				annotatedXml = annotatedXml.replaceAll("P\\s\\>\\s", "P &gt; ");
-				annotatedXml = annotatedXml.replaceAll("<mixed\\sH\\.", "&lt;mixed H."); // special case in Lupus/IBD...
-				annotatedXml = annotatedXml.replaceAll("<\\/=", "&lt;/="); // in PubMed 9618483 "share </=50% identity"
+				annotatedXml = annotatedXml.replaceAll("([Pp])\\s\\<\\s", "$1 &lt; ");
+				annotatedXml = annotatedXml.replaceAll("([Pp])\\s\\>\\s", "$1 &gt; ");
+				annotatedXml = annotatedXml.replaceAll("([Pp])\\s\\<\\s0", "$1 &lt; 0");
+				annotatedXml = annotatedXml.replaceAll("([Pp])\\<(\\s|0)", "$1&lt;$2");
+				// special cases:
+				annotatedXml = annotatedXml.replaceAll("\\<([A-Za-z])\\(", "&lt;$1(");     // T(x)<T(y)
+				annotatedXml = annotatedXml.replaceAll("\\<mixed\\sH\\.", "&lt;mixed H."); // special case in Lupus/IBD...
+				annotatedXml = annotatedXml.replaceAll("\\<or=", "&lt;or=");
+				annotatedXml = annotatedXml.replaceAll("\\<\\/=", "&lt;/="); // in PubMed 9618483 "share </=50% identity"
+				//
 				annotatedXml = annotatedXml.replaceAll("\\s\\>([\\d\\.\\s])", " &gt;$1");
 				//annotatedXml = annotatedXml.replaceAll("±", "&plusmn;");
-				annotatedXml = annotatedXml.replaceAll("±", "plus/minus");
+				//annotatedXml = annotatedXml.replaceAll("±", "plus/minus");
 				//annotatedXml = annotatedXml.replaceAll("([Pp]\\s*<)", "$1&lt;");
 
 				//System.err.println("-----");

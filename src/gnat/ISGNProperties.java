@@ -11,6 +11,12 @@ import java.util.LinkedHashSet;
 import java.util.Properties;
 import java.util.Set;
 
+/**
+ * GNAT settings are stored in an XML file, by default, "isgn_properties.xml"
+ * in the main folder.<br><br>
+ * 
+ * @author Joerg, Conrad
+ */
 public class ISGNProperties {
 
 	/** */

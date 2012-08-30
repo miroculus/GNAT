@@ -166,7 +166,6 @@ public class RunAllGeneDictionaries implements Filter {
 					String annotatedTexts = dictionaryReader.readLine();
 					
 					if (ConstantsNei.verbosityAtLeast(ConstantsNei.OUTPUT_LEVELS.DEBUG))
-					//if (ConstantsNei.OUTPUT_LEVEL.compareTo(ConstantsNei.OUTPUT_LEVELS.DEBUG) >= 0)
 						System.out.println("#INFO dictionary returned entities\n" + annotatedTexts + "\n----------");
 					
 					List<String> entities = this.extractEntityTags(annotatedTexts);

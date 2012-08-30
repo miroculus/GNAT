@@ -41,11 +41,24 @@ import java.util.TreeSet;
  * A simple processing pipeline that takes a directory as input, reads all XML files (PubMed XML format)
  * and annotates the predicted genes inline with the text. Returns a simplified version of that XML,
  * containing only the ArticleTitle and AbstractText elements (but no author information, etc.)
- * <br><br>
+ * <pre>
+ * Supported file formats:
+   - plain text (one file each),
+   - Medline XML (MedlineCitation and MedlineCitationSet),
+   - PubMed XML (PubmedArticle and PubmedArticleSet),
+   - GZipped Medline/Pubmed XML files like 'medline12n0123.xml.gz'
+   As a convention, Medline/Pubmed XML files have to be named as such:
+   - *.medline.xml   -  single MedlineCitation/PubmedArticle in XML,
+   - *.medlines.xml  -  MedlineCitationSet/PubmedArticleSet,
+   - medline[year]n[number].xml(.gz)  -  MedlineCitationSet,
+   - [id].txt        -  single plain text,
+   - [id].xml        -  single text in XML format
+ * </pre>
  * Assumes that the gene repository is held in a local database (specified in isgn_properties.xml)
  * and that dictionary servers for human genes and GeneOntology terms are running,
  * on ports specified in config/taxonToServerPorts, on the server specified under 'dictionaryServer'  
  * in isgn_properties.xml.
+ * <br>
  * 
  * @author J&ouml;rg Hakenberg &lt;jhakenberg@users.sourceforge.net&gt;
  */
@@ -79,10 +92,23 @@ public class JustAnnotateInline {
 
 		// check for command line parameters
 		if (args.length == 0 || args[0].matches("\\-\\-?h(elp)?")) {
-			System.out.println("Need a directory with <ID>.xml files to annotate as parameter!");
+			System.out.println("JustAnnotateInline -- annotates genes in a text or text collection by adding\n" +
+					           "inline XML tags. Supported file formats:\n" +
+					           "- plain text (one file each),\n" +
+					           "- Medline XML (MedlineCitation and MedlineCitationSet),\n" +
+					           "- PubMed XML (PubmedArticle and PubmedArticleSet),\n" +
+					           "- GZipped Medline/Pubmed XML files like 'medline12n0123.xml.gz'\n" +
+					           "As a convention, Medline/Pubmed XML files have to be named as such:\n" +
+					           "- *.medline.xml   -  single MedlineCitation/PubmedArticle in XML,\n" +
+					           "- *.medlines.xml  -  MedlineCitationSet/PubmedArticleSet,\n" +
+					           "- medline<year>n<number>.xml(.gz)  -  MedlineCitationSet,\n" +
+					           "- <id>.txt        -  single plain text,\n" +
+					           "- <id>.xml        -  single text in XML format");
+			System.out.println("Call: JustAnnotateInline <dir>");
+			System.out.println(" <dir>     -  directory with one or more .txt, .xml, or .xml.gz files");
 			System.out.println("Optional parameters:");
 			System.out.println(" -v        -  Set verbosity level for progress and debugging information");
-			System.out.println("              Default: 0");
+			System.out.println("              Default: 0; warnings: 1, status: 2, ... debug: 6");
 			System.out.println(" --outdir  -  Folder in which to write the output XML");
 			System.out.println("              By default, will write into the current directory.");
 			System.exit(1);
@@ -153,10 +179,6 @@ public class JustAnnotateInline {
 		//////////
 		// NER filters here:
 		// default species NER: spots human, mouse, rat, yeast, and fly only
-//		DefaultSpeciesRecognitionFilter dsrf = new DefaultSpeciesRecognitionFilter();
-		//System.err.println("#Skipping species NER, using only defaults: " + ISGNProperties.get("defaultSpecies"));
-		//dsrf.useAllDefaultSpecies = true;
-//		run.addFilter(dsrf);
 		run.addFilter(new DefaultSpeciesRecognitionFilter());
 		String assumeSpecies = ISGNProperties.get("assumeSpecies");
 		if (assumeSpecies != null && assumeSpecies.length() > 0) {
@@ -171,14 +193,9 @@ public class JustAnnotateInline {
 		
 		// construct a dictionary for human, mouse, yeast, fruit fly genes only
 		RunAllGeneDictionaries afewDictionaryFilters = new RunAllGeneDictionaries();
-		//afewDictionaryFilters.setLimitToTaxons(9606, 10090, 10116, 559292, 7227);
-//		afewDictionaryFilters.setLimitToTaxons(9606);
 		afewDictionaryFilters.setLimitToTaxons(9606, 10090, 10116, 559292, 7227);
 		run.addFilter(afewDictionaryFilters);
-		
-		// print the status of gene NER right after the NER step, before filtering anything out
-		//run.addFilter(new PrintStatus());
-		
+
 		//////////
 		// NER post-processing filters here:
 		run.addFilter(new RecognizedEntityUnifier());
@@ -192,9 +209,6 @@ public class JustAnnotateInline {
 
 		//
 		run.addFilter(new ImmediateContextFilter());
-		
-		// print the status on all recognized genes before loading information on each gene
-		//run.addFilter(new PrintStatus());
 		
 		// load the gene repository to obtain information on each gene (if only the species)
 		// not loading gene repository will produce an empty result at the end
@@ -235,6 +249,8 @@ public class JustAnnotateInline {
 		
 		//////////
 		// OUTPUT
+		if (ConstantsNei.verbosityAtLeast(ConstantsNei.OUTPUT_LEVELS.STATUS))
+			System.err.println("#Writing output file(s)...");
 
 		// create the output directory if it does not exist
 		if (!outDir.equals(".")) {
@@ -253,6 +269,9 @@ public class JustAnnotateInline {
 		// loop through all texts, generate the annotated XML
 		// and write the new content to file(s)
 		Collection<Text> texts = run.getTextRepository().getTexts();
+		// TODO the output is currently not in the order of input!
+		// especially for PubmedArticleSet XML files it might be better to retain the input order
+		// (within one XML file)
 		for (Text text: texts) {
 			
 			// sort entities by position within each text, insert into the text from back to end
@@ -320,15 +339,15 @@ public class JustAnnotateInline {
 				annotatedText = annotatedText.substring(0, se.getBegin()) + insert + annotatedText.substring(se.getBegin());
 			}
 			
-			//System.err.println("-----\nAnnotated text:\n-----\n"+annotatedText+"\n----------");
-			if (entitiesBackwards.size() == 0) {
-				if (ConstantsNei.verbosityAtLeast(ConstantsNei.OUTPUT_LEVELS.WARNINGS))
-					ConstantsNei.OUT.println("Found no genes in text " + text.getPMID());
-			}
-
+			//System.err.println("#Annotated text:\n"+annotatedText+"\n----------");
+			
+			//if (entitiesBackwards.size() == 0) {
+			//	if (ConstantsNei.verbosityAtLeast(ConstantsNei.OUTPUT_LEVELS.WARNINGS))
+			//		ConstantsNei.OUT.println("Found no genes in text " + text.getPMID());
+			//}
 			
 			if (text.sourceType == Text.SourceTypes.PLAIN) {
-				System.err.println("#text="+text.getID() + ", source="+text.sourceType.toString());
+				//System.err.println("#text="+text.getID() + ", source="+text.sourceType.toString());
 				annotatedText = "<text id=\"" + text.getID() + "\">\n" + annotatedText + "\n</text>";
 				text.annotatedXml = annotatedText;
 				
@@ -357,7 +376,13 @@ public class JustAnnotateInline {
 			// either into one or more document sets (file(s) with more than one text) ...
 			if (text.sourceType == Text.SourceTypes.MEDLINES_XML) {
 				String basefilename = text.filename.replaceFirst("^(.*)\\/([^\\/]+?)$", "$2");
-				basefilename = basefilename.replaceFirst(".medline", ".annotated.medline");
+				if (basefilename.endsWith(".xml.gz"))
+					basefilename = basefilename.replaceFirst("\\.xml\\.gz$", ".annotated.xml");
+				else if (basefilename.endsWith(".xml"))
+					basefilename = basefilename.replaceFirst("\\.xml$", ".annotated.xml");
+				else
+					basefilename = basefilename.replaceFirst(".medline", ".annotated.medline");
+
 				String x = text.toXmlString();
 				// texts that are part of a collection within one file get stored
 				// in a buffer for that file; we're storing this buffer in memory
@@ -405,18 +430,24 @@ public class JustAnnotateInline {
 				
 				try {
 					BufferedWriter bw = new BufferedWriter(new FileWriter(outfile));
-					if (type == Text.SourceTypes.MEDLINES_XML)
+					if (type == Text.SourceTypes.PUBMEDS_XML)
 						bw.write("<?xml version=\"1.0\"?>\n" + 
 								 "<!DOCTYPE PubmedArticleSet PUBLIC \"-//NLM//DTD PubMedArticle, 1st January 2012//EN\" \"http://www.ncbi.nlm.nih.gov/corehtml/query/DTD/pubmed_120101.dtd\">\n" +
 								 "<PubmedArticleSet>\n");
+					else if (type == Text.SourceTypes.MEDLINES_XML)
+						bw.write("<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n" + 
+								 "<!DOCTYPE MedlineCitationSet PUBLIC \"-//NLM//DTD Medline Citation, 1st January, 2012//EN\" \"http://www.nlm.nih.gov/databases/dtd/nlmmedlinecitationset_120101.dtd\">\n" +
+								 "<MedlineCitationSet>\n");
 					else
 						bw.write("<?xml version=\"1.0\"?>\n" +
 								 "<DocumentSet>\n");
 					
 					bw.write(buf.toString());
 					
-					if (type == Text.SourceTypes.MEDLINES_XML)
+					if (type == Text.SourceTypes.PUBMEDS_XML)
 						bw.write("\n</PubmedArticleSet>");
+					else if (type == Text.SourceTypes.MEDLINES_XML)
+						bw.write("\n</MedlineCitationSet>");
 					else
 						bw.write("\n</DocumentSet>");
 					

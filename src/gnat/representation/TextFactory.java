@@ -8,8 +8,12 @@ import gnat.retrieval.PubmedAccess;
 import java.io.BufferedReader;
 import java.io.ByteArrayInputStream;
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.FileReader;
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.io.Reader;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -17,6 +21,7 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.zip.GZIPInputStream;
 
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
@@ -54,42 +59,7 @@ public class TextFactory {
 	public static TextRepository loadTextRepositoryFromDirectories (Collection<String> directories) {
 		TextRepository textRepository = new TextRepository();
 
-		// read the mapping of PMIDs to GO terms
-		if (ConstantsNei.verbosityAtLeast(ConstantsNei.OUTPUT_LEVELS.STATUS))
-			ConstantsNei.OUT.println("#TextFactory loading GO codes and terms...");
-		String file = ISGNProperties.get("pubmedId2GO");
-		if (file != null && file.length() > 0) {
-			File FILE = new File(file);
-			if (FILE.exists() && FILE.canRead()) {
-				try {
-					BufferedReader br = new BufferedReader(new FileReader(file));
-					String line;
-					while ((line = br.readLine()) != null) {
-						String[] cols = line.split("\t");
-						// assume one PMID in column 1
-						String[] pmids = new String[]{cols[0]};
-						// could be multiple, separated by , ; |
-						if (cols[0].matches(".*[\\;\\,\\|]\\s?.*"))
-							pmids = cols[0].split("[\\;\\,\\|]\\s*");
-						int gocode = Integer.parseInt(cols[1].toLowerCase().replaceFirst("go:", ""));
-						for (String pmid: pmids) {
-							int pubmed = Integer.parseInt(pmid);
-							Set<Integer> codes = pubmed2gocodes.get(pubmed);
-							if (codes == null) {
-								codes = new HashSet<Integer>();
-								pubmed2gocodes.put(pubmed, codes);
-							}
-							codes.add(gocode);
-						}
-					}
-					br.close();
-				} catch (IOException ioe) {
-					ioe.printStackTrace();
-				}
-			} else
-				if (ConstantsNei.verbosityAtLeast(ConstantsNei.OUTPUT_LEVELS.WARNINGS))
-					ConstantsNei.ERR.println("#TextFactory was expecting PubMed-to-GO mappings in " + file);
-		}
+		readPubmed2Go();
 
 		// go through all directories specified
 		if (ConstantsNei.verbosityAtLeast(ConstantsNei.OUTPUT_LEVELS.STATUS))
@@ -104,13 +74,16 @@ public class TextFactory {
 					// get the list of all files in that directory, load each if it is a .txt file
 					String[] files = DIR.list();
 					for (String filename : files) {
-						if (filename.endsWith(".txt")){
+						if (filename.endsWith(".txt")) {
 							Text text = loadTextFromFile(dir + filename);
 							textRepository.addText(text);
-						} else if (filename.endsWith(".medline.xml")){
+						} else if (filename.endsWith(".medline.xml")) {
 							Text text = loadTextFromMedlineXmlfile(dir + filename);
 							textRepository.addText(text);
-						} else if (filename.endsWith(".medlines.xml")){
+						} else if (filename.endsWith(".medlines.xml")
+								|| filename.matches(".*medline\\d+n\\d+.xml")
+								|| filename.matches(".*medline\\d+n\\d+.xml.gz")) {
+							//System.err.println("#####Reading from PubMed/MedlineCitationSet");
 							textRepository.addTexts(loadTextsFromMedlineSetXmlfile(dir + filename));
 						//} else if (filename.endsWith(".xml")) { // !needs to be checked last, after the other .*.xml!
 						//	Text text = loadTextFromXmlfile(dir + filename);
@@ -129,6 +102,10 @@ public class TextFactory {
 		
 		if (ConstantsNei.verbosityAtLeast(ConstantsNei.OUTPUT_LEVELS.STATUS))
 			ConstantsNei.OUT.println("#TextRepository loaded with " + textRepository.size() + " texts.");
+		//System.out.println(textRepository.getTextIDs());
+		//for (String id: textRepository.getTextIDs()) {
+		//	System.out.print(id + ", ");
+		//}
 
 		return textRepository;
 	}
@@ -185,9 +162,6 @@ public class TextFactory {
 			aText.idType = IdTypes.PMID;
 			aText.setPMID(Integer.parseInt(id.toLowerCase().replaceFirst("^(pmid[\\-\\_]?)?(\\d+)$", "$2")));
 		} else if (id.toLowerCase().matches("pmc.+")) aText.idType = IdTypes.PMC;
-		//System.err.println("###id="+aText.getID());
-		//System.err.println("###filename="+aText.filename);
-		//System.err.println("###pmid="+aText.getPMID());
 
 		StringBuilder file_content = new StringBuilder();
 		try {
@@ -223,7 +197,6 @@ public class TextFactory {
 			for (int gocode: gocodes)
 				scodes[s++] = ""+gocode;
 			tcm.addCodes(scodes, GeneContextModel.CONTEXTTYPE_GOCODES);
-			//System.err.println("#Added " + scodes.length + " GO codes for text " + aText.getPMID());
 		}
 
 		// add the extracted context model to the text
@@ -243,12 +216,9 @@ public class TextFactory {
 	public static Text loadTextFromXmlfile (String filename) {
 		// remove the extension from the filename to get an ID
 		String id = filename.replaceFirst("^(.+)\\..*?$", "$1");
-		
-		//System.out.println("id: "+ id);
-		
+			
 		StringBuilder plaintext = new StringBuilder();
 		StringBuilder xmltext   = new StringBuilder();
-		
 		try {
 			BufferedReader br = new BufferedReader(new FileReader(filename));
 			String line;
@@ -379,7 +349,7 @@ public class TextFactory {
 	 */
 	public static Collection<Text> loadTextsFromMedlineSetXmlfile (String filename) {
 		// remove the extension from the filename to get an ID
-		String id = filename.replaceFirst("^(.*\\/)?(.+?)\\..*?$", "$2");
+		//String id = filename.replaceFirst("^(.*\\/)?(.+?)\\..*?$", "$2");
 		
 		List<Text> temp_texts = new LinkedList<Text>();
 		
@@ -390,14 +360,24 @@ public class TextFactory {
 		String title = "";
 		// simply parse the XML file line by line, handling each article separately
 		try {
-			BufferedReader br = new BufferedReader(new FileReader(filename));
+			BufferedReader br  = null;
+			if (filename.endsWith(".gz")) {
+				//System.err.println("Opening a GZipped files");
+				InputStream fileStream = new FileInputStream(filename);
+				InputStream gzipStream = new GZIPInputStream(fileStream);
+				Reader decoder = new InputStreamReader(gzipStream, "UTF-8");
+				br = new BufferedReader(decoder);
+			} else {
+				br = new BufferedReader(new FileReader(filename));
+			}
+			
 			String line;
 			// parse the XML file, extract each individual article
 			while ((line = br.readLine()) != null) {
 				
 				// the XML file will contain (potentially) multiple abstracts/text
 				// start a new individual PubmedArticle, discard old lines
-				if (line.matches(".*<PubmedArticle.*")) {
+				if (line.matches(".*<(PubmedArticle|MedlineCitation)[\\s\\>].*")) {
 					xml.setLength(0);
 					xml.append(line);
 					xml.append("\n");
@@ -411,22 +391,27 @@ public class TextFactory {
 					title = line.replaceFirst("^.*<ArticleTitle>(.*)</ArticleTitle>.*$", "$1");
 				}
 
-				if (line.matches(".*</PubmedArticle>.*")) {
-					Text aText = new Text(id);
-					aText.setPlainFromXml(xml.toString());
-					aText.title = title;
-
+				if (line.matches(".*</(PubmedArticle|MedlineCitation)>.*")) {
+					Text aText = new Text("unknown"); // dangerous; make sure to set ID immediately after!
 					// get PubMed ID from the XML tag
 					String pmid = PubmedAccess.getPubMedIdFromXML(xml.toString());
 					if (pmid != null && !pmid.equals("-1") && pmid.matches("\\d+")) {
+						aText.setID(pmid);
 						aText.setPMID(Integer.parseInt(pmid));
-						aText.ID = pmid;
-						aText.idType = Text.IdTypes.PMID;
 					} else
 						aText.idType = Text.IdTypes.UNKNOWN;
 					
-					//
-					aText.sourceType = Text.SourceTypes.MEDLINES_XML;
+					//System.err.println("#####XML:\n" + xml.toString() + "\n#####");
+					
+					aText.setPlainFromXml(xml.toString());
+					aText.title = title;
+					
+					// determine the file type (XML DTD) from the file name
+					if (filename.matches(".*medline\\d+n\\d+.xml")
+						|| filename.matches(".*medline\\d+n\\d+.xml.gz"))
+						aText.sourceType = Text.SourceTypes.MEDLINES_XML;
+					else 
+						aText.sourceType = Text.SourceTypes.PUBMEDS_XML;
 					aText.filename   = filename;
 					
 					// every Text needs a context model
@@ -476,4 +461,61 @@ public class TextFactory {
 		
 		return temp_texts;
 	}
+	
+
+	/**
+	 * Reads a mapping from PubMed IDs to GO terms from a file.<br>
+	 * The filename is stored in the configuration {@link ISGNProperties}, key=pubmedId2GO.
+	 */
+	public static void readPubmed2Go () {
+		if (ConstantsNei.verbosityAtLeast(ConstantsNei.OUTPUT_LEVELS.STATUS))
+			ConstantsNei.OUT.println("#TextFactory loading GO codes and terms...");
+
+		// get filename from configuration file
+		String filename = ISGNProperties.get("pubmedId2GO");
+		// if filename is not set, try two options, txt and obj
+		if (filename == null || filename.length() == 0) {
+			filename = "data/pubmed2Go.txt";
+			File FILE = new File(filename);
+			if (!FILE.exists()) {
+				// if no file exists, clear current values and return
+				if (!FILE.exists()) {
+					pubmed2gocodes = new HashMap<Integer, Set<Integer>>();
+					return;
+				}
+			}
+			// set identified filename for later reference
+			ISGNProperties.set("pubmedId2GO", filename);
+		}
+
+		try {
+			BufferedReader br = new BufferedReader(new FileReader(filename));
+			String line;
+			while ((line = br.readLine()) != null) {
+				String[] cols = line.split("\t");
+				// assume one PMID in column 1
+				String[] pmids = new String[]{cols[0]};
+				// could be multiple, separated by , ; |
+				if (cols[0].matches(".*[\\;\\,\\|]\\s?.*"))
+					pmids = cols[0].split("[\\;\\,\\|]\\s*");
+				int gocode = Integer.parseInt(cols[1].toLowerCase().replaceFirst("go:", ""));
+				for (String pmid: pmids) {
+					int pubmed = Integer.parseInt(pmid);
+					Set<Integer> codes = pubmed2gocodes.get(pubmed);
+					if (codes == null) {
+						codes = new HashSet<Integer>();
+						pubmed2gocodes.put(pubmed, codes);
+					}
+					codes.add(gocode);
+				}
+			}
+			br.close();
+
+		} catch (IOException ioe) {
+			ioe.printStackTrace();
+		}
+
+
+	}
+
 }
