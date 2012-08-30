@@ -1,7 +1,7 @@
 package gnat.representation;
 
 import java.util.Collection;
-import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.Map;
 
 /**
@@ -12,9 +12,11 @@ import java.util.Map;
 public class TextRepository {
 
 	/** Maps text IDs to Text objects */
-	public Map<String, Text> textMap = new HashMap<String, Text>();
+	public Map<String, Text> textMap = new LinkedHashMap<String, Text>();
 
+	//public Collection<String> textOrder = new LinkedHashSet<String>();
 
+	
 	/**
 	 *
 	 *
@@ -41,6 +43,7 @@ public class TextRepository {
 	 */
 	public void addText (Text text) {
 		textMap.put(text.getID(), text);
+		//textOrder.add(text.getID());
 	}
 	
 	
@@ -50,8 +53,10 @@ public class TextRepository {
 	 * @param text
 	 */
 	public void addTexts (Collection<Text> texts) {
-		for (Text text: texts)
+		for (Text text: texts) {
 			textMap.put(text.getID(), text);
+			//textOrder.add(text.getID());
+		}
 	}
 
 
@@ -78,8 +83,7 @@ public class TextRepository {
 	 * Returns all Text objects currently in the repository
 	 * @return all Texts
 	 */
-	public Collection<Text> getTexts()
-	{
+	public Collection<Text> getTexts() {
 	    return textMap.values();
     }
 

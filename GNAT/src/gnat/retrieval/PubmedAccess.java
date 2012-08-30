@@ -331,6 +331,7 @@ public class PubmedAccess {
 				Element abstractElement = pubmedArticleElement.getChild("Article").getChild("Abstract");
 
 				abs[i] = titleElement.getTextTrim();
+				//System.err.println("#ADDING " + titleElement.getTextTrim());
 				if (abstractElement != null) {
 					//Element abstractText = abstractElement.getChild("AbstractText");
 					//abs[i] += " " + abstractText.getTextTrim();
@@ -343,7 +344,13 @@ public class PubmedAccess {
 					
 				}
 
-				//System.out.println("#ABS"+i+"="+abs[i]);
+				// escape XML characters again, since getTextTrim() de-escapes them :(
+				abs[i] = abs[i].replaceAll("&([A-Za-z]+[\\,\\.\\:\\!\\?\\(\\)\\s\\[\\]\\/])", "&amp;$1");
+				//abs[i] = abs[i].replaceAll("&perce?nt", "%");
+				abs[i] = abs[i].replaceAll("<", "&lt;");
+				abs[i] = abs[i].replaceAll(">", "&gt;");
+				
+				//System.err.println("#ABS"+i+"="+abs[i]+"\n-----");
 			}
 			
 		} catch (JDOMException e) {

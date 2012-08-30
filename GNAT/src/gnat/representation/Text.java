@@ -1,5 +1,6 @@
 package gnat.representation;
 
+import gnat.ConstantsNei;
 import gnat.preprocessing.sentences.SentenceSplitter;
 import gnat.preprocessing.sentences.SentenceSplitterRegex;
 import gnat.retrieval.PubmedAccess;
@@ -394,18 +395,15 @@ public class Text {
 	}
 
 
-	public String getPlainText()
-    {
+	public String getPlainText() {
 	    return plainText;
     }
 
 
-	public String getFileName()
-    {
-		// TODO
-	    return null;
-
+	public String getFileName() {
+	    return filename;
     }
+
 
 	/**
 	 * Returns the sentence that contains the given position.<br>
@@ -709,6 +707,50 @@ public class Text {
 	public void setPlainFromXml () {
 		plainText = PubmedAccess.getAbstractsFromXML(this.originalXml)[0];
 	}
+	
+	
+	/**
+	 * Converts XML meta-characters into the appropriate markup:<br>
+	 * For example, &lt; to &amp;lt; and &amp; to &amp;amp;.<br>
+	 * Should be called before building a JDocument, for example,
+	 * in {@link #buildJDocumentFromAnnotatedXml()} since otherwise
+	 * these builders (for instance, a {@link javax.xml.parsers.DocumentBuilder})
+	 * will fail.<br><br>
+	 * Changes the content of {@link #annotatedXml} and returns the altered content
+	 * for immediate use.
+	 * @return
+	 */
+	public String escapeAnnotatedXml () {
+		// ampersand
+		annotatedXml = annotatedXml.replaceAll("&\\s", "&amp; ");
+		annotatedXml = annotatedXml.replaceAll("&([A-Za-z0-9]\\W)", "&amp;$1");
+		// less/greater than
+		// "0<n<1"
+		annotatedXml = annotatedXml.replaceAll("(\\d)\\<([A-Za-z])\\<(\\d)", "$1&lt;$2&lt;$3");
+		annotatedXml = annotatedXml.replaceAll("\\<([\\d\\.\\s])", "&lt;$1");
+		//annotatedXml = annotatedXml.replaceAll("(\\W?)\\<(\\W)", "$1&lt;$2"); // this will replace ALL '<'/'>' in the entire XML document
+		//annotatedXml = annotatedXml.replaceAll("(\\W?)\\>(\\W)", "$1&gt;$2");
+		annotatedXml = annotatedXml.replaceAll("([Pp])\\s\\<\\s", "$1 &lt; ");
+		annotatedXml = annotatedXml.replaceAll("([Pp])\\s\\>\\s", "$1 &gt; ");
+		annotatedXml = annotatedXml.replaceAll("([Pp])\\s\\<\\s0", "$1 &lt; 0");
+		annotatedXml = annotatedXml.replaceAll("([Pp])\\<(\\s|0)", "$1&lt;$2");
+		// special cases:
+		annotatedXml = annotatedXml.replaceAll("\\<([A-Za-z])\\(", "&lt;$1(");     // T(x)<T(y)
+		annotatedXml = annotatedXml.replaceAll("\\<mixed\\sH\\.", "&lt;mixed H."); // special case in Lupus/IBD...
+		annotatedXml = annotatedXml.replaceAll("\\<or=", "&lt;or=");
+		annotatedXml = annotatedXml.replaceAll("\\<\\/=", "&lt;/="); // in PubMed 9618483 "share </=50% identity"
+		//
+		annotatedXml = annotatedXml.replaceAll("\\s\\>([\\d\\.\\s])", " &gt;$1");
+		//annotatedXml = annotatedXml.replaceAll("±", "&plusmn;");
+		//annotatedXml = annotatedXml.replaceAll("±", "plus/minus");
+		//annotatedXml = annotatedXml.replaceAll("([Pp]\\s*<)", "$1&lt;");
+
+		//System.err.println("-----");
+		//System.err.println(annotatedXml);
+		//System.err.println("-----");
+		
+		return annotatedXml;
+	}
 
 	
 	/**
@@ -839,12 +881,17 @@ public class Text {
 			annotatedXml = originalXml;
 		String full = annotatedXml;
 		Pattern p = Pattern.compile("<ArticleTitle>.*</ArticleTitle>", Pattern.UNIX_LINES | Pattern.MULTILINE);
-		//System.err.println("!!!testing title!!!");
-		//System.err.println(full);
 		Matcher m = p.matcher(full);
-		//if (m.matches())
-		//	System.err.println("!!!matches-title!!!");
-		full = m.replaceFirst("<ArticleTitle>" + annotatedTitle + "</ArticleTitle>");
+		annotatedTitle = Matcher.quoteReplacement(annotatedTitle);
+		try {
+			full = m.replaceFirst("<ArticleTitle>" + annotatedTitle + "</ArticleTitle>");
+		} catch (IndexOutOfBoundsException i) {
+			System.err.println("# ERROR replacing annotated title: " + i.getMessage() + "\n# " + annotatedTitle+"\n###");
+			i.printStackTrace();
+		} catch (IllegalArgumentException i) {
+			System.err.println("# ERROR replacing annotated title: " + i.getMessage() + "\n# " + annotatedTitle+"\n###");
+			i.printStackTrace();
+		}
 		
 		annotatedXml = full;
 	}
@@ -874,20 +921,20 @@ public class Text {
 		// find and replace the first occurrence of any <AbstractText ..> ... </AbstractText> element
 		Pattern p = Pattern.compile("<AbstractText[^>]*>.*</AbstractText>", Pattern.UNIX_LINES | Pattern.MULTILINE);
 		Matcher m = p.matcher(full);
-		//if (m.matches()) {
-			try {
-				full = m.replaceFirst("<AbstractText>" + annotatedAbstract + "</AbstractText>");
-			} catch (IndexOutOfBoundsException i) {
-				System.err.println("### " + i.getMessage() + "\n# " + annotatedAbstract+"\n###");
-			} catch (IllegalArgumentException i) {
-				System.err.println("### " + i.getMessage() + "\n# " + annotatedAbstract+"\n###");
-			}
-			// find and remove all further <AbstractText ..> elements 
-			Pattern p2 = Pattern.compile("<AbstractText[^>]+>.*</AbstractText>", Pattern.UNIX_LINES | Pattern.MULTILINE);
-			Matcher m2 = p2.matcher(full);
-		//	if (m2.matches())
-				full = m2.replaceAll("");
-		//}
+		annotatedAbstract = Matcher.quoteReplacement(annotatedAbstract);
+		try {
+			full = m.replaceFirst("<AbstractText>" + annotatedAbstract + "</AbstractText>");
+		} catch (IndexOutOfBoundsException i) {
+			System.err.println("# ERROR replacing annotated abstract: " + i.getMessage() + "\n# " + annotatedAbstract+"\n###");
+			i.printStackTrace();
+		} catch (IllegalArgumentException i) {
+			System.err.println("# ERROR replacing annotated abstract: " + i.getMessage() + "\n# " + annotatedAbstract+"\n###");
+			i.printStackTrace();
+		}
+		// find and remove all further <AbstractText ..> elements 
+		Pattern p2 = Pattern.compile("<AbstractText[^>]+>.*</AbstractText>", Pattern.UNIX_LINES | Pattern.MULTILINE);
+		Matcher m2 = p2.matcher(full);
+		full = m2.replaceAll("");
 		//
 		/////
 
@@ -922,47 +969,23 @@ public class Text {
 			builder = factory.newDocumentBuilder();
 			if (annotatedXml.length() > 0) {
 				// some PubMed "XMLs" still have a non-escaped ampersand in there
-				// ampersand
-				annotatedXml = annotatedXml.replaceAll("&\\s", "&amp; ");
-				annotatedXml = annotatedXml.replaceAll("&([A-Za-z0-9]\\W)", "&amp;$1");
-				// less/greater than
-				// "0<n<1"
-				annotatedXml = annotatedXml.replaceAll("(\\d)\\<([A-Za-z])\\<(\\d)", "$1&lt;$2&lt;$3");
-				annotatedXml = annotatedXml.replaceAll("\\<([\\d\\.\\s])", "&lt;$1");
-				//annotatedXml = annotatedXml.replaceAll("(\\W?)\\<(\\W)", "$1&lt;$2"); // this will replace ALL '<'/'>' in the entire XML document
-				//annotatedXml = annotatedXml.replaceAll("(\\W?)\\>(\\W)", "$1&gt;$2");
-				annotatedXml = annotatedXml.replaceAll("([Pp])\\s\\<\\s", "$1 &lt; ");
-				annotatedXml = annotatedXml.replaceAll("([Pp])\\s\\>\\s", "$1 &gt; ");
-				annotatedXml = annotatedXml.replaceAll("([Pp])\\s\\<\\s0", "$1 &lt; 0");
-				annotatedXml = annotatedXml.replaceAll("([Pp])\\<(\\s|0)", "$1&lt;$2");
-				// special cases:
-				annotatedXml = annotatedXml.replaceAll("\\<([A-Za-z])\\(", "&lt;$1(");     // T(x)<T(y)
-				annotatedXml = annotatedXml.replaceAll("\\<mixed\\sH\\.", "&lt;mixed H."); // special case in Lupus/IBD...
-				annotatedXml = annotatedXml.replaceAll("\\<or=", "&lt;or=");
-				annotatedXml = annotatedXml.replaceAll("\\<\\/=", "&lt;/="); // in PubMed 9618483 "share </=50% identity"
-				//
-				annotatedXml = annotatedXml.replaceAll("\\s\\>([\\d\\.\\s])", " &gt;$1");
-				//annotatedXml = annotatedXml.replaceAll("±", "&plusmn;");
-				//annotatedXml = annotatedXml.replaceAll("±", "plus/minus");
-				//annotatedXml = annotatedXml.replaceAll("([Pp]\\s*<)", "$1&lt;");
-
-				//System.err.println("-----");
-				//System.err.println(annotatedXml);
-				//System.err.println("-----");
+				escapeAnnotatedXml();
 		    	jdocument = builder.parse(new ByteArrayInputStream(annotatedXml.getBytes()));
 			} else {
 				jdocument = builder.parse(new ByteArrayInputStream(originalXml.getBytes()));
 			}
 		} catch (ParserConfigurationException e) {
-			e.printStackTrace();
+			//e.printStackTrace();
 		} catch (org.xml.sax.SAXParseException e) {
-			System.err.println("##### ERROR building XML doc from ");
-			System.err.println(annotatedXml);
-			System.err.println("#####");
+			System.err.println("# ERROR building XML for document " + this.getID() + ": " + e.getMessage());
+			if (ConstantsNei.verbosityAtLeast(ConstantsNei.OUTPUT_LEVELS.DEBUG)) {
+				System.err.println(annotatedXml);
+				System.err.println("#####");
+			}
 		} catch (SAXException e) {
-			e.printStackTrace();
+			//e.printStackTrace();
 		} catch (IOException e) {
-			e.printStackTrace();
+			//e.printStackTrace();
 		}
 	}
 

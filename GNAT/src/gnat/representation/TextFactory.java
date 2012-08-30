@@ -46,7 +46,6 @@ public class TextFactory {
 	/** Stores a mapping from PubMed IDs to GO terms; will be added to a Text's ContextModel. */
 	static Map<Integer, Set<String>> pubmed2goterms  = new HashMap<Integer, Set<String>>();
 	
-	
 	/**
 	 * Loads a text repository from the given directories.<br>
 	 * Supported file formats (which are determined by file extensions!) are .txt, .xml, .medline.xml, and .medlines.xml.<br>
