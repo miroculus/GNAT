@@ -1,0 +1,21 @@
+Error cases from the BioCreative 2 GN Train and Test collection
+-----
+
+Case:
+False negative SENP2 in 12192048
+GNAT output:
+#Disambiguating gene SENP2 with 2 candidates from species 9606
+Scores of gene 59343 in text texts/bc2/bc2GNtest/bc2GNtestdocs/12192048: {PM=1.0, FU=0.078431375, GR=0.086021505}
+Scores of gene 7341 in text texts/bc2/bc2GNtest/bc2GNtestdocs/12192048: {SU=0.08330622, PM=1.0, FU=0.1300813, GR=0.13043478}
+Comment:
+gene2pmid has both, 7341 (symbol SUMO1) and 59343 (SENP2), SUMO1 is listed with synonym SENP2 ...
+
+-----
+Case:
+False positive CREB-binding protein in 9368056
+GNAT output:
+Prediction: 1387    CREB-binding protein
+Comment:
+Gold standard has wrong ID (typo): 1837
+
+
