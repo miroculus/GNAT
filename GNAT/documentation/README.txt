@@ -1,8 +1,11 @@
 -- GNAT -- Gene mention Normalization Across Taxa --
 ----------------------------------------------------
 
-GNAT is a package to recognize and identify gene names in biomedical text.
+[Note for the notoriously impatient: If you just want to run GNAT, see the 
+"Main Classes" section further down follow the instructions in INSTALLATION.txt]
 
+
+GNAT is a package to recognize and identify gene names in biomedical text.
 
 GNAT performs a series of steps, first to recognize names of genes, species,
 and other terms in each text it is given; assign candidate IDs (of all possible
@@ -100,7 +103,9 @@ To run GNAT, check the Pipeline classes in gnat.client.*, for example, the
 DefaultPipeline.
 
 Several such classes are provided for users not interested in developing their
-own pipelines.
+own pipelines, but would rather ran GNAT as-is, using predefined filtering
+steps and output formats. Probably the most useful supported in/output formats
+are plain text to tabular, and XML to XML:
 - JustAnnotate: takes a directory of *.txt files as input, runs GNAT on each 
   such text file, and prints a list of recognized genes and IDs in a tabular 
   format. To see examples, take a look at the files in the folders texts/test/ 
@@ -108,15 +113,21 @@ own pipelines.
   them accordingly as <pubmedid>.txt.
 - JustAnnotateInline: takes a directory of *.xml files as input, runs GNAT on
   each, and annotates each text.
-  Currently, only the PubmedArticle XML format is supported! Therefore, GNAT
-  relies on the following naming conventions:
-  XML files need to be called either *.medline.xml or *.medlines.xml. GNAT 
-  assumes a PubmedArticle (in *.medline.xml files) or a PubmedArticleSet (in 
-  *.medlines.xml files).
-  In a PubmedArticleSet file, GNAT treats each text found therein separately; 
-  in a PubmedArticle file, GNAT treats the entire document as one single text.
+  Supported input formats are 
+  - plain text in .txt files (output will be enclosed by <document> tags)
+  - MedlineCitation and PubmedArticle, as single documents or as collections
+    inside MedlineCitationSet and PubmedArticleSet, respectively.
+  GNAT guesses the file type from the file names/extensions, therefore it is
+  best to follow these conventions:
+  - *.medline.xml files contain single documents
+  - *.medlines.xml files contain Sets
+  - NCBI Medline FTP download file names (medline[year]n[number].xml
+    can contain either MedlineCitation or PubmedArticle Sets; those files can
+    optionally be GZipped (.gz); the output will in any case be unzipped.
   The current DTD for PubmedArticle(Set)s can be found here:
     http://www.ncbi.nlm.nih.gov/corehtml/query/DTD/pubmed_120101.dtd
+  and MedlineCitation(Sets) here:
+    http://www.nlm.nih.gov/databases/dtd/nlmmedlinecitationset_120101.dtd
 - Example files can be found in texts/test and texts/test_xml/.
 - To call JustAnnotate or JustAnnotateInline, see the shell scripts in the
   scripts/ folder.
