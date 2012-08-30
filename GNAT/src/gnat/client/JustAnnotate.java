@@ -11,7 +11,6 @@ import gnat.filter.nei.MultiSpeciesDisambiguationFilter;
 import gnat.filter.nei.NameValidationFilter;
 import gnat.filter.nei.RecognizedEntityUnifier;
 import gnat.filter.nei.SpeciesFrequencyFilter;
-import gnat.filter.nei.SpeciesValidationFilter;
 import gnat.filter.nei.StopWordFilter;
 import gnat.filter.nei.UnambiguousMatchFilter;
 import gnat.filter.nei.UnspecificNameFilter;
@@ -52,9 +51,10 @@ public class JustAnnotate {
 
 		// check for command line parameters
 		if (args.length == 0 || args[0].matches("\\-\\-?h(elp)?")) {
-			System.out.println("A simple processing pipeline that takes a directory as input,\n" +
-				"reads all files (*.txt) and prints the list of predicted genes in a tabular format.");
-			System.out.println("Needs a directory with <PMID>.txt files to annotate as parameter.");
+			System.out.println("JustAnnotate -- A simple processing pipeline that takes a directory as input,\n" +
+				               "  reads all files (*.txt) and prints the list of predicted genes in a \n" +
+				               "  tabular format.");
+			System.out.println("Required parameter: directory with <PMID>.txt files to annotate");
 			System.out.println("Optional parameters:");
 			System.out.println(" -v=<int>    - set verbosity");
 			System.out.println(" -nodir      - do not print the directory name, just file name, in the output");

@@ -60,6 +60,7 @@ public class SpeciesValidationFilter implements Filter {
 		//System.out.println("#SVF: loading parent table from " + parentTableFile);
 		String[] lines = FileHelper.readFromFile(ISGNProperties.get("taxonParentTable"));
 		for (String line: lines) {
+			if (line.startsWith("#")) continue;
 			String[] cols = line.split("\t");
 			parentTable.put(Integer.parseInt(cols[0]), Integer.parseInt(cols[1]));
 		}
