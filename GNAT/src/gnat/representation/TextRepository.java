@@ -11,18 +11,18 @@ import java.util.Map;
 
 public class TextRepository {
 
-	/** Maps text IDs to Text objects */
-	public Map<String, Text> textMap = new LinkedHashMap<String, Text>();
+	/** Maps text IDs to Text objects.<br>
+	 *  Using a LinkedHashMap keeps FIFO order. */
+	public Map<String, Text> textMap = new LinkedHashMap<String, Text>(); // enforce LinkedHashMap to keep FIFO order
 
-	//public Collection<String> textOrder = new LinkedHashSet<String>();
-
+//	public List<String> frontMatter = new LinkedList<String>(); // XML etc in a CitationSet before the first Citation
+//	public List<String> backMatter  = new LinkedList<String>(); // XML etc in a CitationSet after the last Citation, for example, DeleteCitation in Medline XML!
 	
 	/**
 	 *
 	 *
 	 */
-	public TextRepository () {
-	}
+	public TextRepository () { }
 	
 
 	/**
@@ -30,20 +30,18 @@ public class TextRepository {
 	 *
 	 */
 	public TextRepository (Collection<Text> texts) {
-		for (Text text : texts) {
+		for (Text text : texts)
 	        addText(text);
-        }
 	}
 
 
 	/**
-	 * Adds a text to this repository.
+	 * Adds a {@link Text} to this repository.
 	 * <br>If another Text with the same ID exists already, overwrites the old Text.
 	 * @param text
 	 */
 	public void addText (Text text) {
 		textMap.put(text.getID(), text);
-		//textOrder.add(text.getID());
 	}
 	
 	
@@ -55,7 +53,6 @@ public class TextRepository {
 	public void addTexts (Collection<Text> texts) {
 		for (Text text: texts) {
 			textMap.put(text.getID(), text);
-			//textOrder.add(text.getID());
 		}
 	}
 
@@ -134,4 +131,30 @@ public class TextRepository {
 	public void clear () {
 		textMap.clear();
 	}
+	
+	
+//	public void addFrontMatter (List<String> lines) {
+//		frontMatter.addAll(lines);
+//	}
+//	
+//	public void addFrontmatter (String line) {
+//		frontMatter.add(line);
+//	}
+//	
+//	public void addBackMatter (List<String> lines) {
+//		backMatter.addAll(lines);
+//	}
+//	
+//	public void addBackmatter (String line) {
+//		backMatter.add(line);
+//	}
+//
+//	public List<String> getFrontMatter () {
+//		return this.frontMatter;
+//	}
+//	
+//	public List<String> getBackMatter () {
+//		return this.backMatter;
+//	}
+	
 }

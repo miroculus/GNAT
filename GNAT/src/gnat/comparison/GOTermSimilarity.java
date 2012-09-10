@@ -197,13 +197,13 @@ public class GOTermSimilarity implements Serializable {
 		float average = 0.0f;
 		float count = 0.0f;
 
-		for (int e = 0; e < entries.length; e++) {
-			String key = (String)entries[e].getKey();
-			float dist = pair2distance.get(key).floatValue();
-			//if (verbosity > 3) {
-			//	System.err.println("# pair " + key + ": sim=" + (1.0f-dist));
-			//}
-		}
+//		for (int e = 0; e < entries.length; e++) {
+//			String key = (String)entries[e].getKey();
+//			float dist = pair2distance.get(key).floatValue();
+//			//if (verbosity > 3) {
+//			//	System.err.println("# pair " + key + ": sim=" + (1.0f-dist));
+//			//}
+//		}
 
 		// get the best fitting pairs of myID and pID, remove them from the sets,
 		// until one set is empty
@@ -261,21 +261,25 @@ public class GOTermSimilarity implements Serializable {
 			in.close();
 		} catch (java.io.FileNotFoundException fnfe) {
 			//cnfe.printStackTrace();
-			System.err.println("# No such file found: " + go2gofile + ", starting with empty set of distances.");
+			System.err.println("#ERROR no such file: " + go2gofile + ", starting with empty set of GO-to-GO distances.");
 			goTermDistances = new HashMap<String, Float>();
 		} catch (ClassNotFoundException cnfe) {
-			cnfe.printStackTrace();
+			System.err.println("#ERROR opening " + go2gofile + ": unexpected content");
+			//cnfe.printStackTrace();
 			goTermDistances = new HashMap<String, Float>();
 		} catch (java.io.StreamCorruptedException sce) {
+			System.err.println("#ERROR opening " + go2gofile + ": " + sce.getMessage());
 			sce.printStackTrace();
 			//return null;
 			goTermDistances = new HashMap<String, Float>();
 		} catch (java.io.EOFException ee) {
-			ee.printStackTrace();
+			System.err.println("#ERROR opening " + go2gofile + ": " + ee.getMessage());
+			//ee.printStackTrace();
 			//return null;
 			goTermDistances = new HashMap<String, Float>();
 		} catch (java.io.IOException ioe) {
-			ioe.printStackTrace();
+			System.err.println("#ERROR opening " + go2gofile + ": " + ioe.getMessage());
+			//ioe.printStackTrace();
 			goTermDistances = new HashMap<String, Float>();
 		}
 		initiallyLoadedSimilarities = goTermDistances.size();

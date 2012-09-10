@@ -31,6 +31,79 @@ public class DefaultSpeciesRecognitionFilter implements Filter {
 	/** Use default species instead of actually running the NER for species. For debug purposes mostly. */
 	public boolean useAllDefaultSpecies = false;
 	
+	/** Defines the left side of a valid species name in a sentence: typically, a non-alphanumeric
+	 *  character such as bracket or white space immmediately to the left, and any number of 
+	 *  characters to the left till the sentence start. Has to start with "^" to match the sentence
+	 *  start. */
+	static final String PATTERN_LEFT  = "^.*(?:^|[\\W])";
+	/** Defines the right side of a valid species name in a sentence: typically, a non-alphanumeric
+	 *  character such as bracket or white space immmediately to the right, and any number of 
+	 *  characters to the right till the end of the sentence. Has to end with "$" to match the sentence
+	 *  end. */
+	static final String PATTERN_RIGHT = "(?:[\\W]|$).*$";
+	
+	/** Patterns that match certain species names in a sentence. As a convention,
+	 *  matching group 1 for the sentence has to return the matched species name.
+	 *  All other parenthesis should be marked such that they to not denote matching
+	 *  groups, using the markup "?:" as in "(?:...)".<br>
+	 *  The patterns also have to match from the sentence start to the end and 
+	 *  therefore always have to start with "^" and end with "$". Make use of 
+	 *  {@link #PATTERN_LEFT} and {@link #PATTERN_RIGHT} to surround the species names
+	 *  with valid left/right sides that also match to the sentence start/end. */
+	static final String PATTERN_YEAST = PATTERN_LEFT +
+			"(" +
+			"[Yy]east|baker's yeast" +
+			"|Saccharomyces cerevisiae S288c|Saccharomyces cerevisiae" +
+			"|[Ss]\\.\\s?[Cc]er(?:\\.|evisiae)?" +
+			"|ferments?" +
+			")" +
+			PATTERN_RIGHT;
+	static final String PATTERN_HUMAN = PATTERN_LEFT +
+			"(" +
+			"[Hh]umans?|man|patients?|cohorts?|[Hh](\\.|omo)\\ssap(\\.|iens)" +
+			// human cell lines
+			"|(?:HTB-134|HT-29" + 
+			"|293 cells?|HEK[\\-\\s]?293|293T|T47D|T-47D|Ramsey" +
+			// typically human diseases
+			"|breast cancer)" +
+			// generalization: mammals = humans in Medline
+			"|(?:mammalian cells?|mammalian|mammals|vertebrate homolog[a-z]*)" +
+			")" +
+			PATTERN_RIGHT;
+	static final String PATTERN_MOUSE = PATTERN_LEFT +
+			"(" +
+			"[Mm]ouse|[Mm]ice|[Mm]urine|[Mm](?:\\.|us)\\s[Mm]us(?:\\.|culus)?" +
+			// strains
+			"|C57BL|C3H" + 
+			// murine cell lines
+			"|3T3|NIH\\-3T3|STO|Yac\\-1|CTLL\\-2|EGG" + 
+			")" + 
+			PATTERN_RIGHT;
+	static final String PATTERN_RAT = PATTERN_LEFT +
+			"([Rr]at|[Rr]ats|[Rr](\\.|attus)\\s[Nn]or(\\.||v\\.|vegicus)?)" +
+			PATTERN_RIGHT;
+	static final String PATTERN_FRUITFLY = PATTERN_LEFT +
+			"(" +
+			"[Ff]ruit[\\s\\-]?[Ff]ly|[Ff]lies|[Ff]ly" +
+			"|[Dd](?:\\.|rosophilae?)|[Dd](?:\\.|rosophila)\\s[Mm]el(\\.|anogaster)" +
+			")" +
+			PATTERN_RIGHT;
+
+	// species-specific gene prefixes
+	// h, H - Homo sapiens
+	// m - Mus musculus
+	// d - Drosophila
+	// Hp - Hansenula polymorpha (yeast)
+	// At, Atp, Atb - Arabidopsis thaliana - AtRCE1, AtpDCT2, AtbZIP3
+	// Cn - Cryptococcus neoformans (fungal pathogen) - CnEF3
+	// Hw - Hortaea werneckii (black yeast) - HwSHO1A
+	// Hv - Hordeum vulgare L. (barley) - HvPIP1;6
+	// y - yeast (mostly S.cer.) - yBR101cp
+	// Bm - Bomby mori (silkworm/moth/insect) - BmMBP
+	// others:
+	// Avr - avirulence
+	// rp, Rp - ribosomal protein - RP17B
+	
 	
 	/**
 	 * 
@@ -64,26 +137,8 @@ public class DefaultSpeciesRecognitionFilter implements Filter {
 			Map<Integer, List<String>> id2names = new HashMap<Integer, List<String>>();
 			String[] lines = text.getPlainText().split("[\r\n]+");
 			for (String line: lines) {
-				while (line.matches(".*(?:^|[\\W])" +
-						"([Hh]umans?|man|patients?|[Hh](\\.|omo)\\ssap(\\.|iens)" +
-						"|" +
-						"(?:HTB-134|HT-29"  + // cell line names
-						"|293 cells?|HEK[\\-\\s]?293|293T|T47D|T-47D|Ramsey" + 
-						"|breast cancer)" +
-						"|" + 
-						"(?:mammalian cells?|vertebrate homolog[a-z]*|mammalian|mammals)" + // mammals count as 'humans'
-						")" +
-						"(?:[\\W]|$).*")) {
-					String name = line.replaceFirst("^.*(?:^|[\\W])" +
-							"([Hh]umans?|man|patients?|[Hh](\\.|omo)\\ssap(\\.|iens)" +
-							"|" +
-							"(?:HTB-134|HT-29" +
-							"|293 cells?|HEK[\\-\\s]?293|293T|T47D|T-47D|Ramsey" +
-							"|breast cancer)" +
-							"|" + 
-							"(?:mammalian cells?|vertebrate homolog[a-z]*|mammalian|mammals)" +
-							")" +
-							"(?:[\\W]|$).*$", "$1");
+				while (line.matches(PATTERN_HUMAN)) {
+					String name = line.replaceFirst(PATTERN_HUMAN, "$1");
 					String replace = "x";
 					for (int r = 1; r < name.length(); r++)	replace += "x";
 					line = line.replaceFirst(name, replace);
@@ -100,12 +155,8 @@ public class DefaultSpeciesRecognitionFilter implements Filter {
 					foundAspecies = true;
 				}
 				
-				while (line.matches(".*(?:^|[\\W])" +
-						"([Mm]ouse|[Mm]ice|[Mm]urine|[Mm](\\.|us)\\s[Mm]us(\\.|culus)?)" +
-						"(?:[\\W]|$).*")) {
-					String name = line.replaceFirst("^.*(?:^|[\\W])" +
-							"([Mm]ouse|[Mm]ice|[Mm]urine|[Mm](\\.|us)\\s[Mm]us(\\.|culus)?)" +
-							"(?:[\\W]|$).*$", "$1");
+				while (line.matches(PATTERN_MOUSE)) {
+					String name = line.replaceFirst(PATTERN_MOUSE, "$1");
 					String replace = "x";
 					for (int r = 1; r < name.length(); r++)	replace += "x";
 					line = line.replaceFirst(name, replace);
@@ -122,12 +173,8 @@ public class DefaultSpeciesRecognitionFilter implements Filter {
 					foundAspecies = true;
 				}
 				
-				while (line.matches(".*(?:^|[\\W])" +
-						"([Rr]at|[Rr]ats|[Rr](\\.|attus)\\s[Nn]or(\\.||v\\.|vegicus)?)" +
-						"(?:[\\W]|$).*")) {
-					String name = line.replaceFirst("^.*(?:^|[\\W])" +
-							"([Rr]at|[Rr]ats|[Rr](\\.|attus)\\s[Nn]or(\\.||v\\.|vegicus)?)" +
-							"(?:[\\W]|$).*$", "$1");
+				while (line.matches(PATTERN_RAT)) {
+					String name = line.replaceFirst(PATTERN_RAT, "$1");
 					String replace = "x";
 					for (int r = 1; r < name.length(); r++)	replace += "x";
 					line = line.replaceFirst(name, replace);
@@ -173,14 +220,8 @@ public class DefaultSpeciesRecognitionFilter implements Filter {
 					foundAspecies = true;
 				}
 				
-				while (line.matches(".*(?:^|[\\W])" +
-						"([Ff]ruit[\\s\\-]?[Ff]ly|[Ff]lies|[Ff]ly|[Dd](\\.|rosophilae?)|[Dd](\\.|rosophila)\\s[Mm]el(\\.|anogaster))" +
-						//"(drosophila)" +
-						"(?:[\\W]|$).*")) {
-					String name = line.replaceFirst("^.*(?:^|[\\W])" +
-							"([Ff]ruit[\\s\\-]?[Ff]ly|[Ff]lies|[Ff]ly|[Dd](\\.|rosophilae?)|[Dd](\\.|rosophila)\\s[Mm]el(\\.|anogaster))" +
-							//"(drosophila)" +
-							"(?:[\\W]|$).*$", "$1");
+				while (line.matches(PATTERN_FRUITFLY)) {
+					String name = line.replaceFirst(PATTERN_FRUITFLY, "$1");
 					String replace = "x";
 					for (int r = 1; r < name.length(); r++)	replace += "x";
 					line = line.replaceFirst(name, replace);
@@ -199,16 +240,10 @@ public class DefaultSpeciesRecognitionFilter implements Filter {
 				
 
 				// Saccharomyces cerevisiae S288c
-				while (line.matches(".*(?:^|[\\W])" +
-						"(baker's yeast|[Yy]east" +
-						"|Saccharomyces cerevisiae S288c|Saccharomyces cerevisiae" +
-						"|[Ss]\\.\\s?[Cc]er(\\.|evisiae)?)" +
-						"(?:[\\W]|$).*")
+				while (line.matches(PATTERN_YEAST)
 						&& !line.matches(".*((two|2|to|1|one|3|three)[\\s\\-]?hybrid|Y2H|YS2H).*")
 						&& !line.matches(".*yeast homolog.*")) {
-					String name = line.replaceFirst("^.*(?:^|[\\W])" +
-							"([Yy]east|baker's yeast|Saccharomyces cerevisiae|[Ss]\\.\\s?[Cc]er(\\.|evisiae)?)" +
-							"(?:[\\W]|$).*$", "$1");
+					String name = line.replaceFirst(PATTERN_YEAST, "$1");
 					String replace = "x";
 					for (int r = 1; r < name.length(); r++)	replace += "x";
 					line = line.replaceFirst(name, replace);

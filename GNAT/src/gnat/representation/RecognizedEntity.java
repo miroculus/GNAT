@@ -3,11 +3,12 @@ package gnat.representation;
 
 
 /**
- * Represents a recognized entity in a text.
+ * Represents a recognized entity in a text, independent of class and identifiers, but
+ * given only by the text and its position.
  *
  */
-public class RecognizedEntity
-{
+public class RecognizedEntity {
+	
 	private Text text;
 	private TextAnnotation textAnnotation;
 
