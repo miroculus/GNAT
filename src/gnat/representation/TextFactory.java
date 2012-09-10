@@ -111,6 +111,27 @@ public class TextFactory {
 	
 	
 	/**
+	 * Creates a TextRepository from a single XML file in Medline Citation set format.<br>
+	 * See <a href="http://www.nlm.nih.gov/databases/dtd/nlmmedlinecitationset_120101.dtd">http://www.nlm.nih.gov/databases/dtd/nlmmedlinecitationset_120101.dtd</a>
+	 * for the description of valid XML formats and elements.
+	 * <br><br>
+	 * Also accepts gzipped files.
+	 *  
+	 * @param filename - path and filename
+	 * @return
+	 */
+	public static TextRepository loadTextRepositoryFromMedlineFile (String filename) {
+		TextRepository textRepository = new TextRepository();
+
+		readPubmed2Go();
+		
+		textRepository.addTexts(loadTextsFromMedlineSetXmlfile(filename));
+		
+		return textRepository;
+	}
+	
+	
+	/**
 	 * Loads a text repository from the given directories. Convenience methods that calls
 	 * {@link #loadTextRepositoryFromDirectories(Collection)}.<br>
 	 * Supported file formats (identified by extensions) are .txt, .xml, and .medline.xml.

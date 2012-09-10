@@ -21,6 +21,7 @@ import gnat.representation.RecognizedEntity;
 import gnat.representation.Text;
 import gnat.representation.TextAnnotation;
 import gnat.representation.TextFactory;
+import gnat.utils.Sorting;
 import gnat.utils.StringHelper;
 
 import java.io.BufferedWriter;
@@ -29,7 +30,6 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.util.Collection;
 import java.util.Collections;
-import java.util.Comparator;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
@@ -39,8 +39,7 @@ import java.util.TreeSet;
 
 /**
  * A simple processing pipeline that takes a directory as input, reads all XML files (PubMed XML format)
- * and annotates the predicted genes inline with the text. Returns a simplified version of that XML,
- * containing only the ArticleTitle and AbstractText elements (but no author information, etc.)
+ * and annotates the predicted genes inline with the text.
  * <pre>
  * Supported file formats:
    - plain text (one file each),
@@ -58,7 +57,8 @@ import java.util.TreeSet;
  * and that dictionary servers for human genes and GeneOntology terms are running,
  * on ports specified in config/taxonToServerPorts, on the server specified under 'dictionaryServer'  
  * in isgn_properties.xml.
- * <br>
+ * <br><br>
+ * TODO Note: in MedlineCitationSets, currently loses all entries in DeleteCitation elements
  * 
  * @author J&ouml;rg Hakenberg &lt;jhakenberg@users.sourceforge.net&gt;
  */
@@ -277,7 +277,7 @@ public class JustAnnotateInline {
 			// sort entities by position within each text, insert into the text from back to end
 			List<RecognizedEntity> entitiesBackwards = new LinkedList<RecognizedEntity>();
 			entitiesBackwards.addAll(run.context.getRecognizedEntitiesInText(text));
-			Collections.sort(entitiesBackwards, new RecognizedEntitySorter());
+			Collections.sort(entitiesBackwards, new Sorting.RecognizedEntitySorter());
 			Collections.reverse(entitiesBackwards);
 			
 			// start with the plain text ...
@@ -461,13 +461,4 @@ public class JustAnnotateInline {
 	}
 	
 	
-}
-
-
-class RecognizedEntitySorter implements Comparator<RecognizedEntity> {
-	@Override public int compare (RecognizedEntity re1, RecognizedEntity re2) {
-		if (re1.getBegin() != re2.getBegin()) return re1.getBegin() - re2.getBegin();
-		if (re1.getEnd()     != re2.getEnd()) return re1.getEnd()   - re2.getEnd();
-		return 0;
-	}
 }

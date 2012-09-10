@@ -6,6 +6,7 @@ import java.io.BufferedWriter;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
+import java.net.DatagramSocket;
 import java.net.ServerSocket;
 import java.net.Socket;
 import java.util.Set;
@@ -130,6 +131,48 @@ public class DictionaryServer extends Server {
 		}
 	}
 
+	static final int MIN_PORT_NUMBER = 100;
+	static final int MAX_PORT_NUMBER = 100000;
+
+
+	/**
+	 * Check if the specified port is available on localhost.
+	 * @param port the port to check for availability
+	 */
+	public static boolean port_available (int port) {
+	    if (port < MIN_PORT_NUMBER || port > MAX_PORT_NUMBER) {
+	        throw new IllegalArgumentException("Dictionary server:" +
+	        		" invalid start port: " + port +
+	        		", has to be between " + MIN_PORT_NUMBER + " and " + MAX_PORT_NUMBER);
+	    }
+
+	    ServerSocket ss = null;
+	    DatagramSocket ds = null;
+	    try {
+	        ss = new ServerSocket(port);
+	        ss.setReuseAddress(true);
+	        ds = new DatagramSocket(port);
+	        ds.setReuseAddress(true);
+	        return true;
+	    } catch (IOException e) {
+	    } finally {
+	        if (ds != null) {
+	            ds.close();
+	        }
+
+	        if (ss != null) {
+	            try {
+	                ss.close();
+	            } catch (IOException e) {
+	                /* should not be thrown */
+	            }
+	        }
+	    }
+
+	    return false;
+	}
+	
+	
 	/**
 	 *
 	 * @param args
@@ -145,8 +188,13 @@ public class DictionaryServer extends Server {
 		}
 		
 		int port = Integer.parseInt(args[0]);
+		
+		if (!port_available(port)) {
+			System.err.println("Cannot start dictionary server: port " + port + " is already in use.");
+			System.exit(2);
+		}
+		
 		DictionaryServer dictionaryServer = new DictionaryServer(port, args[1]);
-
 		if (args.length > 2) {
 			String log = args[2];
 			if (log.matches("\\-\\-?v(erbosity)?=(\\d+)")) {
