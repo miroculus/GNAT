@@ -148,11 +148,11 @@ public class NameRangeExpander implements Filter {
 		return newText;
 	}
 
+
 	/**
-	 * Test
+	 * For testing purposes only; analyzes a list of hard-coded examples.
 	 */
-	public static void main(String[] args)
-	{
+	public static void main(String[] args) {
 		NameRangeExpander nameRangeExpander = new NameRangeExpander();
 		StringBuffer output = new StringBuffer();
 
@@ -178,7 +178,11 @@ public class NameRangeExpander implements Filter {
 			" SMADs 2 and 3 ",
 			" HDACs 1 and 2 ",
 			"at 3q27-29 ",
-			" Biochemistry 37:6033-6040, 1998) "
+			"at 3q27-29 and here is another 29",
+			" from 27 and then and then at 3q27-29 and here is another 29",
+			" Biochemistry 37:6033-6040, 1998) ",
+			" haplotypes rs737865-rs4680-rs165599 in the Catechol-O-methyltransferase gene",
+			"Multiple studies demonstrate a strong association between three variants at chromosome 10q26 - rs10490924, del443ins54, and rs11200638 - near the age-related maculopathy susceptibility 2 (ARMS2) and high-temperature requirement factor A1 (HTRA1) genes with susceptibility to age-related macular degeneration (AMD). In different reports, the del443ins54 and rs11200638 variants are suggested to affect ARMS2 mRNA stability and/or HTRA1 mRNA expression, respectively. The goal of this study is to examine whether these AMD-associated variants alter expression levels of ARMS2 and HTRA1 in human retina samples."
 		};
 
 		
@@ -220,12 +224,13 @@ public class NameRangeExpander implements Filter {
 	static class RangeActor implements Actor
 	{
 		// e.g. freak-1 to freak-3 -> freak-1, freak-2, and freak-3
-
+		
 		static String nameRangePattern = "(([A-Za-z0-9]+ )?([A-Za-z0-9]+)[ ]?[0-9]+[ ]?(to|\\-)[ ]?[0-9]+" +
 									"|" + "([A-Za-z0-9]+ )?[A-Za-z0-9\\-]+[0-9]+[ ]?(to|\\-)[ ]?[A-Za-z0-9\\-]+[0-9]+)";
 
 		public void act(final char[] chars, final int matchStartIndex, final int matchEndIndex, final StringBuffer outputBuffer)
 		{
+			
 			boolean appendName = true;
 			StringBuffer name = new StringBuffer();
 			String nameRangeFromString = "";
@@ -252,7 +257,7 @@ public class NameRangeExpander implements Filter {
 					name.append(c);
 				}
 			}
-
+			
 			int nameRangeFrom;
             int nameRangeTo;
             try {
@@ -260,12 +265,16 @@ public class NameRangeExpander implements Filter {
 	            nameRangeTo = Integer.parseInt(nameRangeToString);
             }
             catch (NumberFormatException e) {
-	            System.err.println(e.getMessage());
+            	// an unlikely large numerical value (error converting to int) => ignore
+            	if (nameRangeFromString.matches("\\d+") && nameRangeToString.matches("\\d+"))
+            		; 
+            	else
+            		System.err.println("Error converting numerical range "
+            				+nameRangeToString + ".."+ nameRangeFromString + ": " + e.getMessage());
 	            return;
             }
 
 			String nameString = name.toString();
-			//System.out.println(nameString);
 
 			if (nameRangeTo <= nameRangeFrom
 							|| nameRangeTo-nameRangeFrom > 20
@@ -274,6 +283,7 @@ public class NameRangeExpander implements Filter {
 							|| nameString.contains("residues")
 							|| nameString.matches("(day|of) ")
 							|| nameString.contains("region")
+							|| nameString.contains("rs")           // dbSNP/RefSNP ID
 							|| nameString.matches(".*\\s\\d+[pq]") // chromosomal location: "3q27-29"
 							|| nameString.endsWith(":")            // citation, "Vol:PageRange"
 							|| nameString.equals("")
@@ -293,6 +303,7 @@ public class NameRangeExpander implements Filter {
 
 			}
 			outputBuffer.append("</$>");
+			
 		}
 
 		public void merge(final Actor actor)
