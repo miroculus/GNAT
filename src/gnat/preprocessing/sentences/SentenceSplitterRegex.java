@@ -20,8 +20,7 @@ public class SentenceSplitterRegex implements SentenceSplitter {
 			"|CONCLUSION|Design|DESIGN|Finding|FINDING|Interpretation|INTERPRETATION|Method|METHOD" +
 			"|Motivation|MOTIVATION|Objective|OBJECTIVE|Patient|PATIENT|Purpose|PURPOSE|Result|RESULT" +
 			"|Setting|SETTING|Study|STUDY";
-	
-	
+
 	/**
 	 * Splits a text around each punctuation mark (.!?;:) followed by space, newline, or return.
 	 * @param text - input text
@@ -35,7 +34,7 @@ public class SentenceSplitterRegex implements SentenceSplitter {
     	text = content;
     	return text.split("[\\.\\!\\?\\:\\;][\\s\r\n]+");
 	}
-	
+
 
 	/**
 	 * Splits a text into sentences.<br>
