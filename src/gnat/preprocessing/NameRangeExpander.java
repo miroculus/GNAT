@@ -148,6 +148,20 @@ public class NameRangeExpander implements Filter {
 		return newText;
 	}
 
+	
+	static String REGEX_NOTABASENAME = "(" +
+		"(and|about|against|among|are|around|as|at|be|being|by|for|from|had|have|in|into|is|of|on|only|or" +
+		"|than|that|the|these|to|until|was|were|whereas|while|whom|with|other" +
+		   "|day|region|trisomy|duration|lack|alive|approximately|chr|blot" +
+		   "|December|March|July|April|January|February|May|November|October|September|August|June" +
+		   "|includes|analyze" +
+		   "|revealed|detected|identified|included|comprised|increased|aged|termed|inferred" +
+		   "|totaling|having|lasting|comprising|spanning|carrying|encoding" +
+		   ")" +
+		"|([Cc]hromosome|protein|domain|position|age|codon|site|repeat|grade|(para)?segment|residue|amino[ -]?acid|[Ee]xon|[Ii]ntron|number" +
+		   "|subtype|pair|construct|[Cc]ase|group|nucleotide|nt|molecule|experiment|mutation|type|SNP|genotype|vitamin|strain)s?" +
+		"|(class|mass)(es)?" +
+		")";
 
 	/**
 	 * For testing purposes only; analyzes a list of hard-coded examples.
@@ -359,7 +373,8 @@ public class NameRangeExpander implements Filter {
 				baseName = firstName.substring(0, firstName.length()-ending.length());
 			//System.out.println("basename: '" + baseName + "'");
 
-			if (baseName.matches("(day|of|at|positions?|(para)?segment|residues?|amino[ -]?acids?|repeats?) ")
+			if (baseName.matches(REGEX_NOTABASENAME + " ")
+				//if (baseName.matches("(day|of|at|in|was|being|positions?|(para)?segment|residues?|amino[ -]?acids?|repeats?) ")
 					|| baseName.equals("-")
 					|| ending.length() > baseName.length())
 				return;
@@ -627,8 +642,10 @@ public class NameRangeExpander implements Filter {
 	 * @return
 	 */	
 	static boolean sanityCheck (String basename, String[] numbers) {
-		if (basename.matches("(of|or|and|for|with)")) return false;
-		if (basename.matches("(chromosome|protein|domain)s?")) return false;
+		if (basename.matches(REGEX_NOTABASENAME)) return false;
+		//if (basename.matches("(of|or|and|for|with|at|in|the|was|being)")) return false;
+		//if (basename.matches("(chromosome|protein|domain|position|age|codon|site|grade|class)s?")) return false;
+		//if (basename.matches("classes")) return false;
 		
 		boolean arabic = numbers[0].matches("[1-9][0-9]*");
 		if (arabic) {

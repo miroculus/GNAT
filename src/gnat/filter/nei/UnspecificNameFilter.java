@@ -44,6 +44,10 @@ public class UnspecificNameFilter implements Filter {
 			//
 			RecognizedEntity recognizedGeneName = unidentifiedGeneNames.next();
 			IdentificationStatus identificationStatus = context.getIdentificationStatus(recognizedGeneName);
+			// genes deleted below for an entire text cannot be found anymore ...
+			// TODO cleaner solution than catching them here? they will still be contained in the unidentifiedGeneNames since that was fetched before the candidate was removed 
+			if (identificationStatus == null) continue;
+
 			HashSet<Integer> speciesIDs = new HashSet<Integer>();
 			if (geneRepository != null) {
 				Set<String> geneIdCandidates = identificationStatus.getIdCandidates();
@@ -52,7 +56,7 @@ public class UnspecificNameFilter implements Filter {
 						speciesIDs.add(geneRepository.getGene(gid).getTaxon());
 				}
 			}
-
+			
 			// the text in which this gene name occurs
 			Text text = recognizedGeneName.getText();
 			TextAnnotation annotation = recognizedGeneName.getAnnotation();
@@ -89,13 +93,20 @@ public class UnspecificNameFilter implements Filter {
 			else if (sentence.matches(".*" + maskedGeneName + "([\\-\\/][A-Za-z0-9]*[A-Z0-9][A-Za-z0-9]*)?( [a-z]+)? (gene|protein) family([\\.\\,\\;\\:]| [a-z]+ [a-z]+[\\s\\,\\.\\:\\;]).*"))
 				reason = "gene family";
 			
-			//
+			// remove the false positive occurrence (just this individual mention):
 			if (reason.length() > 0) {
 				if (ConstantsNei.verbosityAtLeast(ConstantsNei.OUTPUT_LEVELS.DEBUG))
 					ConstantsNei.OUT.println("UNF: removing " + recognizedGeneName.getName() + " in sentence " + sentence + "; reason: " + reason);
 				context.removeRecognizedEntity(recognizedGeneName);
 				removed++;
 			}
+			// some entities will always be false positive, throughout a text:
+			if (isNegativePair(recognizedGeneName.getName(), sentence)) {
+				context.removeEntitiesHavingName(recognizedGeneName.getName(), text);
+				if (ConstantsNei.verbosityAtLeast(ConstantsNei.OUTPUT_LEVELS.DEBUG))
+					ConstantsNei.OUT.println("UNF: removing all occurrences of " + recognizedGeneName.getName() + "; reason: " + reason);
+			}
+
 		}
 
 		if (ConstantsNei.verbosityAtLeast(ConstantsNei.OUTPUT_LEVELS.DEBUG))
@@ -355,7 +366,7 @@ public class UnspecificNameFilter implements Filter {
 				"|Chi|dot|rash|pulmonary function|BMI|toll|min|lethal|pan|Med|celiac" +
 				"|Abs|Ags|UTR|expand|killer" +
 				"|alpha1|alpha4|beta1|gamma1" +
-				"|[Pp]roteasome|[Ii]ntestinal|flu|Dan|and 1|as 1|or 2" +
+				"|[Pp]roteasome|[Ii]ntestinal|flu|Dan|and 1|as 1|or 2|an \\d+" +
 				"|CD4|CD8|Mai|dL" +
 				// BC2 gn test
 				"|kbp|helical|post\\-?synaptic|min\\-1|death[\\-\\s]inducing|sub|repressor" +
@@ -510,6 +521,7 @@ public class UnspecificNameFilter implements Filter {
 	 * Some gene names refer to the actual gene only in very few cases. Examples are<br>
 	 * - GST (glutathione-S-transferase, an experimental technique for pulldowns),<br>
 	 * - LPS (lipopolysaccharide in most cases, not IRF6),<br>
+	 * - polymerase (... chain reaction), ...<br>
 	 * which need to be filtered out. 
 	 * 
 	 * @param name
@@ -519,6 +531,9 @@ public class UnspecificNameFilter implements Filter {
 	public static boolean isNegativePair (String name, String sentence) {
 		if (name.equals("LPS") && sentence.matches(".*(induce|administ|stimulat).*")) return true;
 		if (name.equals("GST") && sentence.matches(".*(pull\\-?down|assay|fusion|purification|\\Wtag\\W|blotting|anti\\-?body).*")) return true;
+		if (name.equalsIgnoreCase("polymerase") && sentence.matches(".*(chain[\\-\\s]?reaction|PCR|Pcr).*")) return true;
+		if (sentence.matches(".*" + name + " (patient|disease|symptom|syndrome?)s?.*")) return true;
+		if (sentence.matches(".*(disease|symptom|syndrome?|cancer|[a-z]+oma|[a-z]+itis) \\(" + name + "\\)")) return true;
 		return false;
 	}
 	
