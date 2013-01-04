@@ -378,6 +378,10 @@ public class TextFactory {
 		StringBuilder xml = new StringBuilder();
 		// store the title, also gets reset for each new article encountered in the XML
 		String title = "";
+		// does the file contain a PubmedArticleSet or MedlineCitationSet
+		// --> will determine which tag determins the start/end of an abstract/citation
+		// possible types: MCS and PAS
+		String articleSetType = "";
 		// simply parse the XML file line by line, handling each article separately
 		try {
 			BufferedReader br  = null;
@@ -395,9 +399,20 @@ public class TextFactory {
 			// parse the XML file, extract each individual article
 			while ((line = br.readLine()) != null) {
 				
+				// if the set type has not been determined yet
+				if (articleSetType.length() == 0) {
+					if (line.trim().startsWith("<MedlineCitationSet"))
+						articleSetType = "MCS";
+					else if (line.trim().startsWith("<PubmedArticleSet"))
+						articleSetType = "PAS";
+				}
+				
 				// the XML file will contain (potentially) multiple abstracts/text
 				// start a new individual PubmedArticle, discard old lines
-				if (line.matches(".*<(PubmedArticle|MedlineCitation)[\\s\\>].*")) {
+				//if (line.matches(".*<(PubmedArticle|MedlineCitation)[\\s\\>].*")) {
+				if (   (line.matches(".*<PubmedArticle[\\s\\>].*") && articleSetType.equals("PAS") )
+					|| (line.matches(".*<MedlineCitation[\\s\\>].*") && articleSetType.equals("MCS") )
+					) {
 					xml.setLength(0);
 					xml.append(line);
 					xml.append("\n");
@@ -411,7 +426,10 @@ public class TextFactory {
 					title = line.replaceFirst("^.*<ArticleTitle>(.*)</ArticleTitle>.*$", "$1");
 				}
 
-				if (line.matches(".*</(PubmedArticle|MedlineCitation)>.*")) {
+				//if (line.matches(".*</(PubmedArticle|MedlineCitation)>.*")) {
+				if (   (line.matches(".*</PubmedArticle>.*") && articleSetType.equals("PAS") )
+					|| (line.matches(".*</MedlineCitation>.*") && articleSetType.equals("MCS") )
+					) {
 					Text aText = new Text("unknown"); // dangerous; make sure to set ID immediately after!
 					// get PubMed ID from the XML tag
 					String pmid = PubmedAccess.getPubMedIdFromXML(xml.toString());
@@ -427,8 +445,8 @@ public class TextFactory {
 					aText.title = title;
 					
 					// determine the file type (XML DTD) from the file name
-					if (filename.matches(".*medline\\d+n\\d+.xml")
-						|| filename.matches(".*medline\\d+n\\d+.xml.gz"))
+					if (filename.matches(".*medline\\d+n\\d+\\.xml(\\.gz)?")
+						|| filename.matches(".*outfile\\.\\d+\\.xml(\\.gz)?"))
 						aText.sourceType = Text.SourceTypes.MEDLINES_XML;
 					else 
 						aText.sourceType = Text.SourceTypes.PUBMEDS_XML;

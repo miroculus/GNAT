@@ -121,7 +121,9 @@ public class JustAnnotateInline {
 			// parameter is -v to regulate verbosity at runtime
 			if (args[a].matches("\\-v=\\d+"))
 				run.verbosity = Integer.parseInt(args[a].replaceFirst("^\\-v=(\\d+)$", "$1"));
-			else if (args[a].toLowerCase().matches("\\-\\-?outdir")) 
+			else if (args[a].matches("\\-v") && args[a+1].matches("\\d+")) {
+				run.verbosity = Integer.parseInt(args[++a]);
+			} else if (args[a].toLowerCase().matches("\\-\\-?outdir")) 
 				outDir = args[++a];
 			else if (args[a].toLowerCase().matches("\\-\\-?outdir\\=.+")) 
 				outDir = args[a].replaceFirst("^\\-\\-?[Oo][Uu][Tt][Dd][Ii][Rr]\\=", "");
@@ -162,6 +164,10 @@ public class JustAnnotateInline {
 
 		// load all texts required for the test
         run.setTextRepository(TextFactory.loadTextRepositoryFromDirectories(dir));
+        if (run.getTextRepository().getTexts().size() == 0) {
+        	System.err.println("Error: found no .txt or .xml files in the folder '" + dir + "'");
+        	System.exit(1);
+        }
 		
 		//////////
 		// PROCESSING
@@ -402,8 +408,8 @@ public class JustAnnotateInline {
 			} else {
 				// we write individual files directly to the disk:
 				String outfileName = text.getID() + ".annotated.xml";
-				if (outDir.length() > 0) text.toXmlFile(outfileName);
-				else					 text.toXmlFile(outDir + "/" + outfileName);
+				if (outDir.length() > 0) text.toXmlFile(outDir + "/" + outfileName);
+				else text.toXmlFile(outfileName);
 			}
 			
 			// or, if no gene was recognized in the current text:
@@ -416,6 +422,8 @@ public class JustAnnotateInline {
 				
 		} // foreach text
 
+		
+		//System.err.println("OUTDIR: " + outDir);
 
 		
 		if (file2buffer.size() > 0) {

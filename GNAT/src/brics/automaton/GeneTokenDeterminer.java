@@ -37,7 +37,8 @@ public class GeneTokenDeterminer implements StartAndEndOfTokenDeterminer
 				|| chars[index+1]==';' || chars[index+1]==')' || chars[index+1]=='/'
 				|| chars[index+1]=='-' || chars[index+1]=='+'
 					
-				|| (chars[index+1]=='(' && chars[index+2]=='+')
+				|| (chars[index+1]=='(')  // "KRAS(G12D)"
+				//|| (chars[index+1]=='(' && chars[index+2]=='+')
 				)
 			{
 				endOfToken = true;

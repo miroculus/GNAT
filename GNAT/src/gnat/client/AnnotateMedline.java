@@ -87,8 +87,8 @@ public class AnnotateMedline {
 		if (args.length == 0 || args[0].matches("\\-\\-?h(elp)?")) {
 			System.out.println("AnnotateMedline -- annotates genes in a Medline citation set\n" +
 					           "Supported file formats:\n" +
-					           "- Medline XML (MedlineCitation and MedlineCitationSet),\n" +
-					           "- PubMed XML (PubmedArticle and PubmedArticleSet),\n" +
+					           "- Medline XML (MedlineCitation in a MedlineCitationSet),\n" +
+					           "- PubMed XML (PubmedArticle in a PubmedArticleSet),\n" +
 					           "- GZipped Medline/Pubmed XML files like 'medline12n0123.xml.gz'\n" +
 					           "As a convention, Medline/Pubmed XML files have to be named as such:\n" +
 					           "- medline<year>n<number>.xml(.gz)");
@@ -141,8 +141,9 @@ public class AnnotateMedline {
 			System.exit(1);
 		} else {
 			File DIR = new File(dir);
-			if (!DIR.exists() || !DIR.isDirectory()) {
-				System.out.println("Please specify a valid input directory!");
+			if (!DIR.exists()) // || !DIR.isDirectory()) 
+				{
+				//System.out.println("Please specify a valid input directory!");
 				System.exit(1);
 			}
 		}
@@ -159,15 +160,27 @@ public class AnnotateMedline {
 
 		// check the input directory for all valid files
 		File DIR = new File(dir);
-		String[] filelist_p = DIR.list();
+		String[] filelist_p = {};
 		List<String> filelist = new LinkedList<String>();
-		for (String filename: filelist_p) {
-			if (filename.matches("medline\\d+n\\d+\\.xml(\\.gz)?"))
+		// if 'dir' indeed points to a directory:
+		if (DIR.isDirectory()) {
+			filelist_p = DIR.list();
+			for (String filename: filelist_p) {
+				if (filename.matches("medline\\d+n\\d+\\.xml(\\.gz)?") || filename.matches("outfile\\.\\d+\\.xml(\\.gz)?"))
+					filelist.add(filename);
+			}
+		// if 'dir' seems to be a single file:
+		} else {
+			String filename = dir.replaceFirst("^(.+)?\\/(.+?)$", "$2"); // get file name part
+			dir = dir.replaceFirst("^(.+)?\\/(.+?)$", "$1");             // get new directory name part
+			if (filename.matches("medline\\d+n\\d+\\.xml(\\.gz)?") || filename.matches("outfile\\.\\d+\\.xml(\\.gz)?"))
 				filelist.add(filename);
 		}
-		
-		
-		
+		if (filelist.size() == 0) {
+			System.err.println("Error: found no files matching the naming convention medline12n123.xml or .xml.gz");
+			System.exit(1);
+		}
+
 		// loop through all XML files, creating a Run each and process them individually
 		int c_file = 0;
 		long starttime = System.currentTimeMillis();
@@ -189,7 +202,7 @@ public class AnnotateMedline {
 				//System.err.println("#INFO annotating " + filename + " (" + c_file + " out of " + filelist.size() +
 				//	", ETA " + min_all_files + "min");
 				System.err.println("#INFO annotating " + filename + " (" + c_file + " out of " + filelist.size() +
-					", ETA " + time);
+					", ETA " + time + " (based on previously annotated file)");
 			}
 			
 			// each pipeline is handled by a "Run"
