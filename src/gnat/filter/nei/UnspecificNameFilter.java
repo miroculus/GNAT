@@ -320,11 +320,11 @@ public class UnspecificNameFilter implements Filter {
 	 */
 	public static boolean isUnspecificAbbreviation (String name, String sentence, HashSet<Integer> speciesIDs) {
 		if (name.length() > 2) return false;
-		//if (ImmediateContextFilterForHuman.isDiseaseName(name)) return false;
+		// fruit fly names can have one or two characers: a, e, v, ... so skip those
 		if (name.length() <= 2 && !speciesIDs.contains(7227)) {
-			name = StringHelper.espaceString(name);
-			if (sentence.matches(".*[\\s\\(]" + name + "[\\s\\,\\)]([^\\s]+\\s)?(gene|protein|locus|loci)s?.*")) return false;
-			if (sentence.matches(".*(gene|protein|locus\\sfor|loci\\sfor)s?[\\s\\,\\)]([^\\s]+\\s)?[\\(\\s]?" + name + "[\\s\\,\\)].*")) return false;
+			String maskedName = StringHelper.espaceString(name);
+			if (sentence.matches(".*[\\s\\(]" + maskedName + "[\\s\\,\\)]([^\\s]+\\s)?(gene|protein|locus|loci)s?.*")) return false;
+			if (sentence.matches(".*(gene|protein|locus\\sfor|loci\\sfor)s?[\\s\\,\\)]([^\\s]+\\s)?[\\(\\s]?" + maskedName + "[\\s\\,\\)].*")) return false;
 			return true;
 		}
 		return false;
@@ -513,7 +513,8 @@ public class UnspecificNameFilter implements Filter {
 	public static boolean isChromosome (String name, String sentence) {
 		if (!name.matches("(X|Y|[\\d]+[pq](\\.[\\d\\.]+)?)")) return false;
 		name = StringHelper.espaceString(name);
-		return sentence.matches(".*(chromosome " + name + "|" + name + " chromosome).*");
+		String maskedName = StringHelper.espaceString(name);
+		return sentence.matches(".*(chromosome " + maskedName + "|" + maskedName + " chromosome).*");
 	}
 	
 	
@@ -529,11 +530,12 @@ public class UnspecificNameFilter implements Filter {
 	 * @return 
 	 */
 	public static boolean isNegativePair (String name, String sentence) {
+		String maskedName = StringHelper.espaceString(name);
 		if (name.equals("LPS") && sentence.matches(".*(induce|administ|stimulat).*")) return true;
 		if (name.equals("GST") && sentence.matches(".*(pull\\-?down|assay|fusion|purification|\\Wtag\\W|blotting|anti\\-?body).*")) return true;
 		if (name.equalsIgnoreCase("polymerase") && sentence.matches(".*(chain[\\-\\s]?reaction|PCR|Pcr).*")) return true;
-		if (sentence.matches(".*" + name + " (patient|disease|symptom|syndrome?)s?.*")) return true;
-		if (sentence.matches(".*(disease|symptom|syndrome?|cancer|[a-z]+oma|[a-z]+itis) \\(" + name + "\\)")) return true;
+		if (sentence.matches(".*" + maskedName + " (patient|disease|symptom|syndrome?)s?.*")) return true;
+		if (sentence.matches(".*(disease|symptom|syndrome?|cancer|[a-z]+oma|[a-z]+itis) \\(" + maskedName + "\\)")) return true;
 		return false;
 	}
 	
