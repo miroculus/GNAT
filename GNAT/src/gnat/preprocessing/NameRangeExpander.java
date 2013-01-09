@@ -31,6 +31,23 @@ public class NameRangeExpander implements Filter {
 	
 	ActionAutomaton actionAutomaton;
 
+	static String REGEX_NOTABASENAME = "(" +
+	"(and|about|against|among|are|around|as|at|be|being|by|for|from|had|have|in|into|is|last|of|on|only|or" +
+	"|than|that|the|these|to|until|was|were|whereas|while|whom|with|other" +
+	   "|day|region|trisomy|duration|lack|alive|approximately|chr|blot|normal" +
+	   "|December|March|July|April|January|February|May|November|October|September|August|June" +
+	   "|includes|analyze|contain" +
+	   "|revealed|detected|identified|included|comprised|increased|aged|termed|inferred|contained|showed" +
+	   "|totaling|having|lasting|comprising|spanning|carrying|encoding" +
+	   ")" +
+	"|([Cc]hromosome|protein|domain|position|age|codon|site|repeat|grade|(para)?segment|residue|amino[ -]?acid" +
+	   "|[Ee]xon|[Ii]ntron|number" +
+	   "|subtype|pair|construct|ratio|[Cc]ase|group|nucleotide|nt|molecule|experiment" +
+	   "|mutation|variant|type|SNP|genotype|vitamin|strain|area|size)s?" +
+	   "|(class|mass)(es)?" +
+	")";
+
+
 	/***/
 	public NameRangeExpander() {
 
@@ -149,20 +166,6 @@ public class NameRangeExpander implements Filter {
 	}
 
 	
-	static String REGEX_NOTABASENAME = "(" +
-		"(and|about|against|among|are|around|as|at|be|being|by|for|from|had|have|in|into|is|of|on|only|or" +
-		"|than|that|the|these|to|until|was|were|whereas|while|whom|with|other" +
-		   "|day|region|trisomy|duration|lack|alive|approximately|chr|blot" +
-		   "|December|March|July|April|January|February|May|November|October|September|August|June" +
-		   "|includes|analyze" +
-		   "|revealed|detected|identified|included|comprised|increased|aged|termed|inferred" +
-		   "|totaling|having|lasting|comprising|spanning|carrying|encoding" +
-		   ")" +
-		"|([Cc]hromosome|protein|domain|position|age|codon|site|repeat|grade|(para)?segment|residue|amino[ -]?acid|[Ee]xon|[Ii]ntron|number" +
-		   "|subtype|pair|construct|[Cc]ase|group|nucleotide|nt|molecule|experiment|mutation|type|SNP|genotype|vitamin|strain)s?" +
-		"|(class|mass)(es)?" +
-		")";
-
 	/**
 	 * For testing purposes only; analyzes a list of hard-coded examples.
 	 */
