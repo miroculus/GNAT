@@ -1,5 +1,12 @@
 Contains some shell scripts that can be used to
 
 - launch servers and services
+  -- start*.sh
 - create dictionaries
+  -- subfolder makeDictionaries/
 - test local configuration
+  -- test*.sh
+- run GNAT on text input
+  -- justAnnotate(Inline).sh
+  -- annotateMedline.sh
+
