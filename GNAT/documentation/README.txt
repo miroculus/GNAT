@@ -105,7 +105,7 @@ DefaultPipeline.
 Several such classes are provided for users not interested in developing their
 own pipelines, but would rather ran GNAT as-is, using predefined filtering
 steps and output formats. Probably the most useful supported in/output formats
-are plain text to tabular, and XML to XML:
+are plain text with tabular output, and XML input with XML output:
 - JustAnnotate: takes a directory of *.txt files as input, runs GNAT on each 
   such text file, and prints a list of recognized genes and IDs in a tabular 
   format. To see examples, take a look at the files in the folders texts/test/ 
@@ -128,9 +128,14 @@ are plain text to tabular, and XML to XML:
     http://www.ncbi.nlm.nih.gov/corehtml/query/DTD/pubmed_120101.dtd
   and MedlineCitation(Sets) here:
     http://www.nlm.nih.gov/databases/dtd/nlmmedlinecitationset_120101.dtd
+- AnnotateMedline: takes a directory of Medline XML files (gzipped or open)
+  that were downloaded from NCBI FTP, where the files names are like
+  "medline12n0123.xml.gz"; annotates genes using <GNAT> XML tags and writes
+  the result into a given output directory, one XML output file per input
+  file.
 - Example files can be found in texts/test and texts/test_xml/.
-- To call JustAnnotate or JustAnnotateInline, see the shell scripts in the
-  scripts/ folder.
+- To call JustAnnotate, JustAnnotateInline, and AnnotateMedline, see the shell 
+  scripts in the scripts/ folder.
 
 
 
@@ -179,5 +184,5 @@ More on gene mention normalization:
 
 [6] Minlie Huang, Jingchen Liu, and Xiaoyan Zhu: "GeneTUKit: a software for 
     document-level gene normalization".
-	Bioinformatics, 2011, 27(7):1032-1033
-	DOI: 10.1093/bioinformatics/btr042 
+    Bioinformatics, 2011, 27(7):1032-1033
+    DOI: 10.1093/bioinformatics/btr042 

@@ -29,3 +29,21 @@ Bug fixes:
 - when reading abstracts, lines where concatenated w/o white space, so at 
   NER could fail within accidentally concatenated words b/c it requires
   word boundaries left+right of a gene and species
+
+
+1.1 to 1.2
+----------
+
+Resources:
+- updated GeneRIFs, GO terms and GO codes in DB
+
+Code:
+- in- and output of XML: inline annotations with JustAnnotateInline client
+
+
+1.21 to 1.22
+------------
+
+Code
+- added AnnotateMedline client - accepts multiple large medline.xml.gz files
+  as input
