@@ -126,10 +126,10 @@ public class UnspecificNameFilter implements Filter {
 
 	
 	/**
-	 * Decides whether a name is too unspecific: mainly checks for compound names that do not
-	 * have any reference concering the exact identify of a protein. Also removes units and
+	 * Decides whether a proposed gene name is too unspecific: mainly checks for compound names that do not
+	 * have any reference concering the exact identity of a protein. Also removes units and
 	 * diseases/syndromes, single letter names<br>
-	 * Examples: DNA binding protein, nerve growth factor, human polymerase, cell-surface glycoprotein.
+	 * Examples: protease, DNA binding protein, nerve growth factor, human polymerase, cell-surface glycoprotein.
 	 *
 	 * @param term
 	 * @return
@@ -158,22 +158,23 @@ public class UnspecificNameFilter implements Filter {
 
 
 		// specifiers that often occurr in name field entries of databases (mostly in brackets) or are just too unspecific
-		if(term.matches("([Aa]utosomal recessive|splicing|protease|checkpoint|T cell|cytoskeleton|C\\-terminal fragments" +
-				"|skeletal muscle|liver|kidney|expressed in .*|endothelial|murine|gene product|polypeptide|deafness|congenital" +
-				"|nonsyndromic|up\\-regulated|hematopoietic|retinal|macular|embryonic|myopia|catalytic subunits?|regulatory subunits?" +
-				"|T cell differentiation|processing of separase|chromosome|translocated to|mutated|bind|bind DNA|dendritic|repeats" +
-				"|autosomal recessive deafness|congenital deafness|tandem|lipid raft|[Ee]ndothelial cell|glucose|cadherin superfamily" +
+		if(term.matches("([Aa]utosomal recessive|splicing|protease|checkpoint|C\\-terminal fragments" +
+				"|expressed in .*|murine|gene product|polypeptide|deafness|congenital" +
+				"|nonsyndromic|up\\-regulated|macular|embryonic|juvenile||myopia|catalytic subunits?|regulatory subunits?" +
+				"|T cell differentiation|processing of separase|chromosome|translocated to|mutated|bind|bind DNA|repeats" +
+				"|autosomal recessive deafness|congenital deafness|tandem|lipid raft|glucose|cadherin superfamily" +
 				"|cadherin family" +
-				"|.* domain|processing of separase|molecular weight|[Cc]\\-terminal|epithelial|immunodeficiency|inhibitor securin" +
+				"|.* domain|processing of separase|molecular weight|[Cc]\\-terminal|immunodeficiency|inhibitor securin" +
 				"|[Ii]nhibitor binding|type I lissencephaly|antisense|secreted|high affinity|Collagen XVIII|transmembrane protease" +
-				"|transmembrane serine protease|regulatory subunit NEMO|interacting|autosomal dominant|retina|actin cytoskeleton" +
-				"|intestinal epithelial|juvenile|Rho family|.* chemokine|X\\-linked retinoschisis|secreted photoreceptor" +
+				"|transmembrane serine protease|regulatory subunit NEMO|interacting|autosomal dominant|actin cytoskeleton" +
+				"|intestinal epithelialRho family|.* chemokine|X\\-linked retinoschisis|secreted photoreceptor" +
 				"|putative secreted photoreceptor|soluble L1|Soluble CD2|loss of heterozygosity|Kv4.2 potassium channel|alpha1 AMPK" +
-				"|testis|K\\(\\+\\)|mm K\\(\\+\\)|Src homology|antiproliferative|focal|gamma IP-10|receptor trafficking|serine protease" +
-				"|homology|skin-derived|unknown function|lymphoid|EST|CNS" +
+				"|K\\(\\+\\)|mm K\\(\\+\\)|Src homology|antiproliferative|focal|gamma IP-10|receptor trafficking|serine protease" +
+				"|homology" +
+				"|unknown function|EST|CNS" +
 				// added to SF-Gnat acc. "100-test"
 				"|body weight|bone mineral content|long bones|renal cystic disease severity|GAGA transcription factor" +
-				"|[Dd]ominant megacolon|sex-peptide|gamma\\(c\\)|Ames dwarf|arch|obese)"
+				"|[Dd]ominant megacolon|sex-peptide|gamma\\(c\\)|Ames dwarf)"
 
 		)){
 			return true;
@@ -181,13 +182,28 @@ public class UnspecificNameFilter implements Filter {
 
 		// units and some typical mistakes (and 1, or in) --> bp has to keep Bp50!
 		if (term.matches("^(aa|bp\\s[0-9]{1,2}|kd|mg|Ki|nM|CD|Sci|Proc|Acad|\\d+ h" +
-				"|[\\d\\.]+[\\s\\-]?[Kk][Dd][Aa]" +
+				//"|[\\d\\.]+[\\s\\-]?[Kk][Dd][Aa]" +
+				"|(?:a )?[\\d+\\.][\\-\\s][Kk][Dd][Aa](?: protein)?" +
+				
 				"|or\\sin|and\\s[1Ii]|for\\s4|is\\s4|[Aa]\\sgene|[Aa]t\\s5|[Aa]\\sC|is\\s1|at\\s\\d" +
-				"|as a|a PS|or if|a [ACGTU]|d or|a part" +
+				"|as a|a PS|or if|a [ACGTU]|[dD] or|a part|[A-Za-z][A-Za-z] as" + // "HR as"
+				"|and 1|or 2|an \\d+" +
 
 				"|factor[\\s\\-]\\d|factor[\\s\\-](alpha|beta|gamma|delta)" +
 				"|receptor\\s\\d|[Ii]soforms?[\\s\\-]?\\d+|[Ii]sozymes?[\\s\\-]\\d+?" +
 				"|[A-Z]\\receptor|S phase" +
+				"|open reading frame" +
+				"|pulmonary function" +
+				"|MHC\\s[Cc]lass\\s[Ii][Ii]?" +
+				
+				"|Part I|[Uu]rinary protein|urine protein" +
+				"|death[\\-\\s]inducing|early[\\-\\s]response|[Nn]on\\-histone[\\-\\s]chromosomal" +
+				"|membrane[\\s\\-]?bound|proton[\\s\\-]?pump" +
+				"|similar\\sto" +
+				"|rough\\sdeal|alternative\\ssplicing" + 
+
+				"|[a-z]+[\\s\\-]?binding|a catalytic" +
+				"|P\\(k\\)|[Mm]ediator complex|trans-Golgi network" +
 
 				"|protein\\s[A-Za-z]|protein[\\s\\-][0-9]+" +
 				"|beta[\\s\\-]\\d+|\\d+[\\s\\-]beta([\\s\\-]\\d+)?" +
@@ -276,29 +292,50 @@ public class UnspecificNameFilter implements Filter {
 		return false;
 	}
 
+	
+	/**
+	 * Checks a gene name against a list of single word, case sensitive words
+	 * that are pretty much always false positives: "aim", "fat", "up". 
+	 * @param name
+	 * @return
+	 */
+	public static boolean isUnspecificSingleWord (String name) {
+		return name.trim().matches("(aim|fat|tube|part|mass|[Tt]runcated|envelope" +
+				"|gels|[Tt]ag|ORF|secretory|mediator|inactive|pump|cis|killer" +
+				"|islet|homeobox|insulin|clamp|arch|obese" +
+				"|transactivator|scaffold|fused|blot|ray" +
+				"|II|VII|[Aa]lpha|[Bb]eta|[Gg]amma|[Dd]elta|[Ee]psilon|tau|zeta" +
+				"|great|tissue|simple|face|nude|type|raft|partial|bind|cord|Chr|rank|anti" +
+				"|can|not|was|has|on|via|use|up|acidic|longest|best|raised|multiple" +
+				"|Ca2|CA|C\\-C|CHO|Cys|pro|how|early|similar|no|period|rod" +
+				"|interleukins|releases?|origins?|chemokines?|sons?|nets?" +
+				//"|LPS" +
+				"|[a-z]+s" + // caspases, kinases
+				// added for Lupus/IBD project:
+				"|mild|platelet|drip|sera|neo|radix|spliceosomal|hip" +
+				"|Chi|dot|rash|BMI|toll|min|lethal|pan|Med|celiac" +
+				"|Abs|Ags|UTR|expand|killer" +
+				"|alpha1|alpha4|beta1|gamma1" +
+				"|[Pp]roteasome|flu|Dan" +
+				"|CD4|CD8|Mai|dL" +
+				// some occurrences in BC2 GN test
+				"|kbp|helical" +
+				"|min\\-1" +
+				"|sub|repressor" +
+				"|pituitary" +
+				")");
+	}
 
-	public static boolean isAminoAcid (String name) {
-		return name.matches("(" +
-				"Ala|[Aa]lanine" +
-				"|Arg|[Aa]rginine" +
-				"|Asn|[Aa]sparagine" +
-				"|Asp|[Aa]spartic acid" +
-				"|Cys|[Cc]ysteine" +
-				"|Gln|[Gg]lutamine" +
-				"|Gly|[Gg]lycine" +
-				"|Glu|[Gg]lutamic acid" +
-				"|His|[Hh]istidine" +
-				"|Ile|[Ii]soleucine" +
-				"|Leu|[Ll]eucine" +
-				"|Lys|[Ll]ysine?" +
-				"|Met|[Mm]ethionine" +
-				"|Phe|[Pp]enylalanine" +
-				"|Pro|[Pp]roline" +
-				"|Ser|[Ss]erine" +
-				"|Thr|[Tt]hreonine" +
-				"|Trp|[Tt]ryptophane?" +
-				"|Tyr|[Tt]yrosine" +
-				"|Val|[Vv]aline)s?");
+
+	/**
+	 *
+	 * @param name
+	 * @return
+	 */
+	public static boolean isUnspecificSingleWordCaseInsensitive (String name) {
+		return name.toLowerCase().trim().matches("(for|in|of|at|an" +
+				"|milk|cycling|enabled|blast|lipase|golgi|fusion|proteins?|nuclear|sex" +
+				"|partial|macrophage|condensed|wt)");
 	}
 
 
@@ -332,55 +369,38 @@ public class UnspecificNameFilter implements Filter {
 
 
 	/**
-	 *
+	 * Checks if the given term matches an amino acid, using three-letter code (Ala) and full names (Alanine, alanines).
+	 * Does not check against one-letter codes (A). 
 	 * @param name
 	 * @return
 	 */
-	public static boolean isUnspecificSingleWordCaseInsensitive (String name) {
-		return name.toLowerCase().trim().matches("(for|in|of|at|an" +
-				"|milk|cycling|enabled|blast|lipase|golgi|fusion|proteins?|nuclear|sex" +
-				"|similar\\sto|rough\\sdeal|alternative\\ssplicing|membrane[\\s\\-]?bound" +
-				"|proton[\\s\\-]?pump|partial|macrophage|condensed|proteins?)");
+	public static boolean isAminoAcid (String name) {
+		return name.matches("(" +
+				"Ala|[Aa]lanine" +
+				"|Arg|[Aa]rginine" +
+				"|Asn|[Aa]sparagine" +
+				"|Asp|[Aa]spartic acid" +
+				"|Cys|[Cc]ysteine" +
+				"|Gln|[Gg]lutamine" +
+				"|Gly|[Gg]lycine" +
+				"|Glu|[Gg]lutamic acid" +
+				"|His|[Hh]istidine" +
+				"|Ile|[Ii]soleucine" +
+				"|Leu|[Ll]eucine" +
+				"|Lys|[Ll]ysine?" +
+				"|Met|[Mm]ethionine" +
+				"|Phe|[Pp]enylalanine" +
+				"|Pro|[Pp]roline" +
+				"|Ser|[Ss]erine" +
+				"|Thr|[Tt]hreonine" +
+				"|Trp|[Tt]ryptophane?" +
+				"|Tyr|[Tt]yrosine" +
+				"|Val|[Vv]aline)s?");
 	}
 
 
 	/**
-	 *
-	 * @param name
-	 * @return
-	 */
-	public static boolean isUnspecificSingleWord (String name) {
-		return name.trim().matches("(aim|fat|tube|part|mass|[Tt]runcated|envelope" +
-				"|gels|[Tt]ag|ORF|secretory|mediator|inactive|pump|cis|killer|[a-z]+[\\s\\-]?binding" +
-				"|islet|homeobox|insulin|clamp|MHC\\s[Cc]lass\\s[Ii][Ii]?" +
-				"|transactivator|open reading frame|scaffold|fused|blot" +
-				"|II|VII|[Aa]lpha|[Bb]eta|[Gg]amma|[Dd]elta|[Ee]psilon|tau|zeta" +
-				"|great|tissue|simple|face|nude|type|raft|partial|bind|cord|Chr|rank|anti" +
-				"|can|not|was|has|on|via|use|up|acidic|longest|best|raised|multiple" +
-				"|Ca2|CA|C\\-C|CHO|Cys|pro|how|early|similar|no|period|rod" +
-				"|interleukins|releases?|origins?|chemokines?|sons?|nets?" +
-				//"|LPS" +
-				"|[a-z]+s" +
-				// added for Lupus/IBD project:
-				"|mild|platelet|drip|sera|neo|radix|spliceosomal|hip|Part I|[Uu]rinary protein|urine protein" +
-				"|Chi|dot|rash|pulmonary function|BMI|toll|min|lethal|pan|Med|celiac" +
-				"|Abs|Ags|UTR|expand|killer" +
-				"|alpha1|alpha4|beta1|gamma1" +
-				"|[Pp]roteasome|[Ii]ntestinal|flu|Dan|and 1|as 1|or 2|an \\d+" +
-				"|CD4|CD8|Mai|dL" +
-				// BC2 gn test
-				"|kbp|helical|post\\-?synaptic|min\\-1|death[\\-\\s]inducing|sub|repressor" +
-				"|early[\\-\\s]response|[Nn]on\\-histone[\\-\\s]chromosomal|pituitary|a catalytic" +
-				"|P\\(k\\)|[Mm]ediator complex|trans-Golgi network|D or" +
-				")");
-	}
-
-	
-
-
-	/**
-	 *
-	 *	Returns true if the name is followed by a keyword indicating that this name is a disease.
+	 *	Returns true if the name represents a disease name.
 	 *
 	 * @param name
 	 * @return
@@ -417,8 +437,8 @@ public class UnspecificNameFilter implements Filter {
 	
 
 	/**
-	 *
-	 *	Returns true if this disease name is mentioned together with a locus or genes/proteins in this sentence.
+	 * Returns true if this disease name is mentioned together with a locus or genes/proteins in this sentence.
+	 * In these cases, we prefer to keep the name of the gene.
 	 *
 	 * @param name
 	 * @param sentence
@@ -448,13 +468,19 @@ public class UnspecificNameFilter implements Filter {
 				"|[a-z]+(skeletal|\\sretina)|amyloid|neuronal" +
 				"|[a-z]+(phil)" +
 				"|[a-z]+(cytes?)|[a-z]+ic cell" +
+				"|[Ss]tem cells?" +
+				"|[Ee]ndothelial cell|T cell" + 
 				"|[a-z]ial|[a-z]ic" +
-				"|[Ss]tem cells?" + 
+				"|post\\-?synaptic" +
+				"|endothelial|epithelial" +
+				"|[Ii]ntestinal" +
+				"|skin-derived|lymphoid" +
+				"|skeletal muscle|liver|kidney|cytoskeleton|hematopoietic|retinal|dendritic|retina|testis" +
 				")"
 		);
 	}
 
-	
+
 	/**
 	 *	Returns true if the name is followed by a keyword indicating that this name is a cell line.
 	 *
@@ -464,26 +490,26 @@ public class UnspecificNameFilter implements Filter {
 	 */
 	public static boolean isCellLine (String name, String sentence) {//, String text) {
 		// mask any characters that have a meaning in reg.exes
-		name = StringHelper.espaceString(name);
+		String maskedName = StringHelper.espaceString(name);
 		
-		if (sentence.matches(".*" + leftWordBoundary  + name + rightWordBoundary + "(cell|culture)s?.*")) {
-			//System.out.println("#Checking '" + name + "' for cell line in sentence '" + sentence + "' => yes");
+		if (sentence.matches(".*" + leftWordBoundary  + maskedName + rightWordBoundary + "(cell|culture)s?.*"))
 			return true;
-		}
+		
 //		if (sentence.matches(".*" + leftWordBoundary  + name + rightWordBoundary + "sequences?.*")) {
 //			System.out.print("#Checking '" + name + "' for cell line in sentence '" + sentence + "' => yes");
 //			return true;
 //		}
-		if (name.matches("CD\\d+")) {
-			if (sentence.matches(".*" + leftWordBoundary  + name + rightWordBoundary + "([A-Za-z\\-]+ )?(cell)s?.*")) {
-				//System.out.println("#Checking '" + name + "' for cell line in sentence '" + sentence + "' => yes");
-				return true;
-			}
-		}
-		if (sentence.matches(".*" + leftWordBoundary  + name + "[\\-\\/][0-9]+[A-Z]*" + rightWordBoundary + "([a-z]+ ){0,2}(cell|culture)s?.*")) {
-			//System.out.println("#Checking '" + name + "' for cell line in sentence '" + sentence + "' => yes");
+		
+		if (name.matches("CD\\d+")
+				&& sentence.matches(".*" + leftWordBoundary  + maskedName + rightWordBoundary + "([A-Za-z\\-]+ )?(cell)s?.*"))
 			return true;
-		}
+
+		if (name.startsWith("MDA") && sentence.matches(".*" + maskedName + "\\-MB.*"))
+			return true;
+
+		if (sentence.matches(".*" + leftWordBoundary  + maskedName + "[\\-\\/][0-9]+[A-Z]*" + rightWordBoundary + "([a-z]+ ){0,2}(cell|culture)s?.*"))
+			return true;
+
 		return false;
 	}
 
