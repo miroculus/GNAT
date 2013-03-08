@@ -21,3 +21,6 @@
   the different gene information types (chromosomal location, GO terms, ...)
 
 - Check SimpleSpeciesNER: should find mouse! and assign it to a Text.taxonIDs
+
+- Out of Memory when running multiple .xml.gz files
+

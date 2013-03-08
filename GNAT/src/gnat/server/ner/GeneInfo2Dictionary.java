@@ -4,9 +4,13 @@ import gnat.utils.HashHelper;
 
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
+import java.io.FileInputStream;
 import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.io.Reader;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -14,10 +18,11 @@ import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Set;
 import java.util.TreeSet;
+import java.util.zip.GZIPInputStream;
 
 
 /**
- * Reads the NCBI Entrez Gene's gene_info file and extracts names of genes and their synonyms.
+ * Reads the NCBI Entrez Gene's gene_info(.gz) file and extracts names of genes and their synonyms.
  * <br><br>
  * Format of the result:<br>
  *  &nbsp; GeneID [tab] name1 [tab] name2 ..                  (without the whitespaces)<br>
@@ -124,8 +129,15 @@ public class GeneInfo2Dictionary {
 		}
 				
 		try {
-			BufferedReader br = new BufferedReader(new FileReader(args[0]));
-			
+			BufferedReader br = null;
+			if (args[0].endsWith(".gz")) {
+				InputStream fileStream = new FileInputStream(args[0]);
+				InputStream gzipStream = new GZIPInputStream(fileStream);
+				Reader decoder = new InputStreamReader(gzipStream, "UTF-8");
+				br = new BufferedReader(decoder);
+			} else {
+				br = new BufferedReader(new FileReader(args[0]));
+			}			
 			String line = "";
 			while ((line = br.readLine()) != null) {
 				String[] cols = line.split("\t");
