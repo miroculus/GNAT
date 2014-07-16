@@ -3,6 +3,7 @@ package gnat.server.dictionary;
 import java.io.BufferedOutputStream;
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
+import java.io.File;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
@@ -191,6 +192,12 @@ public class DictionaryServer extends Server {
 		
 		if (!port_available(port)) {
 			System.err.println("Cannot start dictionary server: port " + port + " is already in use.");
+			System.exit(2);
+		}
+		
+		File DIR = new File(args[1]);
+		if (!DIR.exists() || !DIR.canRead()) {
+			System.err.println("#ERROR cannot access directory " + args[1]);
 			System.exit(2);
 		}
 		
