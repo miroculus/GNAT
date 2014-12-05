@@ -281,7 +281,7 @@ public class UnspecificNameFilter implements Filter {
 				"|[Aa]ntigen|lymphocyte|cytoplasmic|helicase|retinoic|acid|plasminogen|cytoskeletal|anchor" +
 				"|[Aa]nti|integral|membrane|[Nn]eutrophil|ubiquitin" +
 				"|basic|leucine|zipper|putative|transmembrane|proteasome|responsive" +
-
+				
 				// removed:
 				// |clathrin|I|i|II|ii|iii|III|gamma|delta|alpha|beta
 				// |[a-z]phin|[a-z]+[^u]lin|[a-z]+asia|[a-z]+itis
@@ -323,6 +323,12 @@ public class UnspecificNameFilter implements Filter {
 				"|min\\-1" +
 				"|sub|repressor" +
 				"|pituitary" +
+				// application to Medline XML found these:
+				"|ANOVA|flap|jaw|hook|wash|grid|scan|rage|coil|Poly|poly|ate|semi|ankle|fat-free|HDL|LDL|CHD|Mir|cited|hangover" +
+				"|per \\d+|or \\d+|OR \\d+|six \\d+|F \\d+|at \\d+|is \\d+|\\-19|n-3|at \\d+ d|s to|acid 2" +
+				"|pin|cramp|Vmax|chip|mix|max|spatial|c nu|scar|or VE|Platelet|Mn|ash|jade|cod|lip|tan|Amid|sec|lime" +
+				"|coreceptor|inter|stab|oligo|rim|peri|chi|mer|mol|sink|as L|kit|Pigs|goat|jet|taxi|lab|mask|patched" +
+
 				")");
 	}
 
