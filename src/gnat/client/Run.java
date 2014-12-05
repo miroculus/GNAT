@@ -90,8 +90,8 @@ public class Run {
 	public TextRepository getTextRepository () {
 		return this.textRepository;
 	}
-	
-	
+
+
 	/**
 	 * Assume that all file names in the textRepository are based on PubMed IDs: they have the form
 	 * "<tt>some/path/id.txt</tt>", where path and extension could be missing, but
@@ -122,6 +122,7 @@ public class Run {
 	
 	public void clearTextRepository () {
 		this.textRepository.clear();
+		this.textRepository = null;
 	}
 	
 	
