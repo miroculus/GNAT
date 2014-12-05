@@ -91,6 +91,11 @@ public class GnatService extends HttpService {
 	}
 	}
 
+	/** Define the base URL at which the public GNAT webservice is available. Default: http://textmining.ls.manchester.ac.uk */
+	public static String PUBLIC_SERVICE_BASEURL = "http://textmining.ls.manchester.ac.uk";
+	/** Port at which the public GNAT webservice is available. Default: 8081. */
+	public static int PUBLIC_SERVICE_PORT = 8081;
+
 	private Set<Tasks> providesTasks = new HashSet<Tasks>();
 	private Set<Tasks> defaultTasks  = new HashSet<Tasks>();
 	private Map<Integer, String> taxonToServerPortMap = new LinkedHashMap<Integer, String>();
@@ -460,8 +465,15 @@ class GnatServiceHandler extends ServiceHandler {
 	}
 
 
+	/**
+	 * Parse the requested tasks (species NER, GO terms, ...) and return them as a LinkedHashSet.
+	 * @param userQuery
+	 * @param responseBody
+	 * @return
+	 * @throws IOException
+	 */
 	private Set<GnatService.Tasks> getTasks(Request userQuery, OutputStream responseBody) throws IOException {
-		Set<GnatService.Tasks> annotationTasks = new LinkedHashSet<GnatService.Tasks>();
+		LinkedHashSet<GnatService.Tasks> annotationTasks = new LinkedHashSet<GnatService.Tasks>(); // LinkedHashSet to enforce order. To we need order?
 		if (userQuery.hasParameter("task")) {
 			String[] tasks = userQuery.getValue("task").split("\\s*[\\,\\;]\\s*");
 			for (String task: tasks) {
@@ -497,6 +509,10 @@ class GnatServiceHandler extends ServiceHandler {
 	}
 
 
+	/**
+	 * Set the type of the returned result: XML or TSV.
+	 * @param userQuery
+	 */
 	private void setReturnType(Request userQuery) {
 		// set some default parameters
 		if (userQuery.hasParameter("returntype")) {
@@ -529,6 +545,11 @@ class GnatServiceHandler extends ServiceHandler {
 	}
 
 
+	/**
+	 * Print a HELP screen showing all available services and parameters being offered.
+	 * @param responseBody
+	 * @throws IOException
+	 */
 	private void doHelp(OutputStream responseBody) throws IOException {
 		
 		responseBody.write(
@@ -568,53 +589,30 @@ class GnatServiceHandler extends ServiceHandler {
 						"**Examples**\n" + 
 						"\n" + 
 						"1) Print this help menu:\n" + 
-						"http://bergmanlab.smith.man.ac.uk:8081/?help\n" + 
+						GnatService.PUBLIC_SERVICE_BASEURL + ":" + GnatService.PUBLIC_SERVICE_PORT + "/?help\n" +
+						//"http://bergmanlab.smith.man.ac.uk:8081/?help\n" + 
 						"\n" + 
 						"2) Annotate gene mentions in the abstracts of PMIDs 21483786 & 21483692:\n" + 
-						"http://bergmanlab.smith.man.ac.uk:8081/?pmid=21483786,21483692\n" + 
+						GnatService.PUBLIC_SERVICE_BASEURL + ":" + GnatService.PUBLIC_SERVICE_PORT + "/?pmid=21483786,21483692\n" + 
 						"\n" + 
 						"3) Annotate gene mentions in the full text of PMCID PMC3069089 & abstract of PMID \n" + 
 						"21483786:\n" + 
-						"http://bergmanlab.smith.man.ac.uk:8081/?pmc=PMC3069089&pmid=21483786\n" + 
+						GnatService.PUBLIC_SERVICE_BASEURL + ":" + GnatService.PUBLIC_SERVICE_PORT + "/?pmc=PMC3069089&pmid=21483786\n" + 
 						"\n" + 
 						"4) Annotate gene mentions in the text string \"p53 gene\":\n" + 
-						"http://bergmanlab.smith.man.ac.uk:8081/?text=p53 gene\n" + 
+						GnatService.PUBLIC_SERVICE_BASEURL + ":" + GnatService.PUBLIC_SERVICE_PORT + "/?text=p53 gene\n" + 
 						"\n" + 
 						"5) Annotate gene mentions in the text string \"p53 gene\" using both human and mouse \n" + 
 						"Entrez gene IDs:\n" + 
-						"http://bergmanlab.smith.man.ac.uk:8081/?text=p53 gene&species=9606,10090\n" + 
+						GnatService.PUBLIC_SERVICE_BASEURL + ":" + GnatService.PUBLIC_SERVICE_PORT + "/?text=p53 gene&species=9606,10090\n" + 
 						"\n" + 
 						"6) Annotate species and gene mentions in the full text of PMCID PMC3069089:\n" + 
-						"http://bergmanlab.smith.man.ac.uk:8081/?pmc=PMC3069089&task=sner,gner\n" + 
+						GnatService.PUBLIC_SERVICE_BASEURL + ":" + GnatService.PUBLIC_SERVICE_PORT + "/?pmc=PMC3069089&task=sner,gner\n" + 
 						"\n" + 
 						"7) Generate XML files of normalized gene mentions and associated data for PMCID\n" + 
 						"PMC3069089:\n" + 
-						"http://bergmanlab.smith.man.ac.uk:8081/?pmc=PMC3069089&task=gnorm&returntype=xml\n").getBytes());
-		
-		
-//		responseBody.write("This service accepts HTTP GET and POST requests to annotate texts with species and genes.\n\n".getBytes());
-//		responseBody.write("Valid parameters (submitted as key=value pairs):\n".getBytes());
-//		responseBody.write("  help        - print a list of supported parameters; will ignore other parameters\n".getBytes());
-//		responseBody.write("  pmid        - get and annotate these PubMed abstracts (comma-separated list of PubMed IDs)\n".getBytes());
-//		responseBody.write("  pmc         - get and annotate these full texts from PubMedCentral (comma-separated list of PMC IDs)\n".getBytes());
-//		responseBody.write("  returntype  - xml: inline XML-style annotations in the submitted text\n".getBytes());
-//		responseBody.write("                tsv: tab-separated list of annotations, with position, evidence, score; default\n".getBytes());
-//		responseBody.write("  species     - taxon IDs for the species whose genes to annotate, comma separated; default: 9606\n".getBytes());
-//		responseBody.write(("  task        - the task(s) to perform on the text, comma separated: speciesNER (sner), geneNER (gner), " +
-//		"geneNormalization (gnorm), GO term recognition (gotrec)\n").getBytes());
-//		responseBody.write("  taxa        - get a list of all supported taxa; will ignore other parameters\n".getBytes());
-//		responseBody.write("  text        - the text to annotate\n".getBytes());
-//		responseBody.write("  textid      - an ID that will be assigned to the text submitted via the 'text' parameter\n".getBytes());
-//		responseBody.write("  textxref    - cross-reference/source for 'textid'\n\n".getBytes());
-//		responseBody.write(("The parameters 'text', 'pmid', and 'pmc' can be used together. In the response, results for 'text' are displayed " +
-//				"first, then for pmid, then for pmc. If 'pmid'/'pmc' had multiple IDs as their value, the results will appear in the " +
-//		"same order these IDs were given.\n\n").getBytes());
-//		responseBody.write(("A minimal request has at least one of 'pmid', 'pmc', or 'text'; with a corresponding value.\n\n").getBytes());
-//		responseBody.write(("In TSV output, the fields for an entity annotation are text ID (e.g., PubMed ID), text cross-reference (source, " +
-//				"e.g., PubMed), entity type (gene, goterm), entity subtype (species of the gene, GO branch), " +
-//				"entity candidate ID(s) [semi-colon separated], start position, end position, mention as found in the text, " +
-//		"and a score (optional).\n").getBytes());
-//		responseBody.write("\n".getBytes());
+						GnatService.PUBLIC_SERVICE_BASEURL + ":" + GnatService.PUBLIC_SERVICE_PORT + "/?pmc=PMC3069089&task=gnorm&returntype=xml\n").getBytes());
+
 		responseBody.close();
 	}
 
