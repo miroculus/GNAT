@@ -256,7 +256,7 @@ public class GOAccess {
 		} catch (NullPointerException npe) {
 			// DB not accessible?
 			//npe.printStackTrace();
-			System.err.println("#DB inaccessible?");
+			System.err.println("#ERROR GOAccess() DB inaccessible?");
 			//return Float.NEGATIVE_INFINITY;
 		}
 
