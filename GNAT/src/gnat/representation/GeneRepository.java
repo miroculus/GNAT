@@ -12,6 +12,17 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 
+/**
+ * For every gene, GNAT stores a plethora of information obtained from sources such as NCBI Entrez Gene, UniProt, and GOA. GNAT disambiguates 
+ * genes that share the same synonym when such a mention is encountered in a document. For example, the name "p21" can refer to (human) CDKN1A, TCEAL1, and NSG1, 
+ * among others. The data in the Gene Repository are used to determine which gene a specific publication is referring to, by comparing statements in the text to 
+ * information known about all potential candidate genes. For instance, the text might talk about a molecular function that is known for one of the candidates
+ * but not the others, or a tissue specificity, or involvement in disease.
+ * <br/>
+ * 
+ * 
+ * @author Joerg Hakenberg
+ */
 public class GeneRepository {//implements Serializable {
 
 	/**
