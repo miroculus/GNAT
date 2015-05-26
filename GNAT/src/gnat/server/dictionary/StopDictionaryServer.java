@@ -2,42 +2,34 @@ package gnat.server.dictionary;
 
 import gnat.ConstantsNei;
 import gnat.ISGNProperties;
-import gnat.filter.Filter;
-import gnat.representation.Context;
-import gnat.representation.GeneRepository;
-import gnat.representation.RecognizedEntity;
-import gnat.representation.Text;
-import gnat.representation.TextAnnotation;
-import gnat.representation.TextRange;
-import gnat.representation.TextRepository;
-import gnat.utils.StringHelper;
 
-import java.io.BufferedInputStream;
 import java.io.BufferedOutputStream;
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.FileReader;
 import java.io.IOException;
-import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
 import java.net.Socket;
 import java.net.UnknownHostException;
 import java.util.HashMap;
 import java.util.HashSet;
-import java.util.LinkedList;
-import java.util.List;
 import java.util.Map;
 import java.util.Set;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
 /**
- * Filter that contacts local or remote {@link DictionaryServer}s to perform NER.
+ * Stops a DictionaryServer that is running for a specific taxon (or a GO/MeSH term dictionary). Call with the taxon ID (999999999 for GO/MeSH)
+ * as parameter.
  * <br><br>
  * The mapping of species to server addresses is stored in a file found via the {@link ISGNProperties}
  * entry <tt>taxon2port</tt>. This file has two tab-separated columns for NCBI taxon ID and server 
  * address with port ("128.10.11.12:56001"); a third column for comments is optional. If the server address 
  * is a single number, we assume this points to a local port (localhost, 127.0.0.1).
+ * <br><br>
+ * Stopping a dictionary server requires a pass phrase. A default phrase is set in {@link gnat.server.dictionary.DictionaryServer#stopPassphrase}, 
+ * which is overwritten by any setting in isgn_properties.xml (entry <tt>stopDictPhasephrase</tt>), which can be overwritten by specifying a pass phrase 
+ * on the command line. The pass phrase known to a running dictionary server has to be specified at startup of that server using any of these three ways.
+ * It cannot be changed once the server is running. StopDictionaryServer will use the same order of precedence to determine which pass phrase to send to 
+ * the server for authentication.
  * 
  * @author Joerg
  */
@@ -255,30 +247,30 @@ public class StopDictionaryServer {
 
 		// now check all species/servers found in the map; add them to 'availableServersForSpecies' if the
 		// dictionary could be contacted w/o any errors
-		if (ConstantsNei.OUTPUT_LEVEL.compareTo(ConstantsNei.OUTPUT_LEVELS.DEBUG) >= 0)
-			System.out.println("#Trying to contact remote dictionary servers...");
+		//if (ConstantsNei.OUTPUT_LEVEL.compareTo(ConstantsNei.OUTPUT_LEVELS.DEBUG) >= 0)
+		//	System.out.println("#Trying to contact remote dictionary servers...");
 		boolean error = false;
 		for (int tax: taxonToServerPortMap.keySet()) {
-			String server = getServerForTaxon(tax);
-			int port      = getPortForTaxon(tax);
-			
-			if (!tryContacting(server, port)) {
-				if (!error) {
-					error = true;
-					if (ConstantsNei.OUTPUT_LEVEL.compareTo(ConstantsNei.OUTPUT_LEVELS.DEBUG) >= 0)
-						System.err.print("# Error contacting dictionary server " + server + ":" + port);
-				} else
-					if (ConstantsNei.OUTPUT_LEVEL.compareTo(ConstantsNei.OUTPUT_LEVELS.DEBUG) >= 0)
-						System.err.print(", " + server + ":" + port);
-				success = false;
-			} else {
+			//String server = getServerForTaxon(tax);
+			//int port      = getPortForTaxon(tax);
+			//
+			//if (!tryContacting(server, port)) {
+			//	if (!error) {
+			//		error = true;
+			//		if (ConstantsNei.OUTPUT_LEVEL.compareTo(ConstantsNei.OUTPUT_LEVELS.DEBUG) >= 0)
+			//			System.err.print("# Error contacting dictionary server " + server + ":" + port);
+			//	} else
+			//		if (ConstantsNei.OUTPUT_LEVEL.compareTo(ConstantsNei.OUTPUT_LEVELS.DEBUG) >= 0)
+			//			System.err.print(", " + server + ":" + port);
+			//	success = false;
+			//} else {
 				availableServersForSpecies.add(tax);
-			}
+			//}
 			
 		}
-		if (ConstantsNei.OUTPUT_LEVEL.compareTo(ConstantsNei.OUTPUT_LEVELS.DEBUG) >= 0)
-			if (error)
-				System.err.println();
+		//if (ConstantsNei.OUTPUT_LEVEL.compareTo(ConstantsNei.OUTPUT_LEVELS.DEBUG) >= 0)
+		//	if (error)
+		//		System.err.println();
 		
 		return success;
 	}
@@ -324,133 +316,24 @@ public class StopDictionaryServer {
 			return -1;
 	}
 	
-	
-	/**
-	 * Tries to contact the server (see <tt>serverName</tt>) at the given port.
-	 * @return
-	 */
-	boolean tryContacting (String serverName, int port) {
-		try {
-			Socket socket = new Socket(serverName, port);
-			socket.close();	
-		} catch (java.net.SocketException e) {
-			return false;
-		} catch (IOException e) {
-			//System.err.println(e.getMessage());
-			return false;
-		}
-		
-		return true;
-	}
-	
-	
-	/**
-	 * Set the filter to not invoke dictionary servers for the given taxa.<br>
-	 * <b>Note</b>: overwrites the previous setting. Use {@link #addExcludeTaxon(int)} to add a taxon.
-	 * @param taxa
-	 */
-	public void setExcludeTaxons (Set<Integer> taxa) {
-		if (excludeTaxons == null) 
-			excludeTaxons = new HashSet<Integer>();
-		else
-			excludeTaxons.clear();
-		excludeTaxons.addAll(taxa);
-	}
-	
-	
-	/**
-	 * Set the filter to not invoke dictionary servers for the given taxon.<br>
-	 * <b>Note</b>: adds this taxon to the existing list in <tt>excludeTaxons</tt>; set the 
-	 * complete list with {@link #setExcludeTaxons(Set)}.
-	 * @param taxon
-	 */
-	public void addExcludeTaxon (int taxon) {
-		if (excludeTaxons == null) 
-			excludeTaxons = new HashSet<Integer>();
-		excludeTaxons.add(taxon);
-	}
-	
-	
-	/**
-	 * Checks whether the given taxon ID should be excluded from processing, according to
-	 * {@link #excludeTaxons}.
-	 * @param taxon
-	 * @return
-	 */
-	public boolean isExcluded (int taxon) {
-		if (excludeTaxons == null) return false;
-		return excludeTaxons.contains(taxon);
-	}
-	
-	
-	/**
-	 * Checks whether the given taxon ID is valid and its corresponding dictionary should be used,
-	 * accordint to {@link #limitToTaxons}.
-	 * @param taxon
-	 * @return
-	 */
-	public boolean isLimited (int taxon) {
-		if (limitToTaxons == null) return false;
-		return limitToTaxons.contains(taxon);
-	}
-	
-	
-	/**
-	 * Checks whether dictionary calls should be limited to certain species.<br>
-	 * Returns true if {@link #limitToTaxons} contains at least one taxon ID.
-	 * @return
-	 */
-	public boolean hasLimited () {
-		return limitToTaxons != null && limitToTaxons.size() > 0;
-	}
-	
-	
-	/**
-	 * Set the filter to invoke dictionary servers only for the given taxa.<br>
-	 * <b>Note</b>: overwrites the previous setting. Use {@link #addLimitToTaxon(int)} to add a taxon.<br>
-	 * <b>Note</b>: the set {@link #excludeTaxons} overwrites the set {@link #limitToTaxons} - if a taxon
-	 * is contained in both sets, the dictionary for this taxon will <em>not be invoked</em>.
-	 * @param taxa
-	 */
-	public void setLimitToTaxons (Set<Integer> taxa) {
-		if (limitToTaxons == null) 
-			limitToTaxons = new HashSet<Integer>();
-		else
-			limitToTaxons.clear();
-		limitToTaxons.addAll(taxa);
-	}
-	
-	
-	/**
-	 * Set the filter to invoke dictionary servers only for the given taxa.<br>
-	 * <b>Note</b>: overwrites the previous setting. Use {@link #addLimitToTaxon(int)} to add a taxon.<br>
-	 * <b>Note</b>: the set {@link #excludeTaxons} overwrites the set {@link #limitToTaxons} - if a taxon
-	 * is contained in both sets, the dictionary for this taxon will <em>not be invoked</em>.
-	 * @param taxa
-	 */
-	public void setLimitToTaxons (int... taxa) {
-		if (limitToTaxons == null) 
-			limitToTaxons = new HashSet<Integer>();
-		else
-			limitToTaxons.clear();
-		for (int t: taxa)
-			limitToTaxons.add(t);
-	}
-	
-	
-	/**
-	 * Add a taxon to invoke dictionary servers only for specified taxons.<br>
-	 * <b>Note</b>: adds this taxon to the existing set {@link #limitToTaxons}; set the 
-	 * complete list with {@link #setLimitToTaxons(Set)}.<br>
-	 * <b>Note</b>: the set {@link #excludeTaxons} overwrites the set {@link #limitToTaxons} - if a taxon
-	 * is contained in both sets, the dictionary for this taxon will <em>not be invoked</em>.
-	 * @param taxon
-	 */
-	public void addLimitToTaxon (int taxon) {
-		if (limitToTaxons == null) 
-			limitToTaxons = new HashSet<Integer>();
-		limitToTaxons.add(taxon);
-	}
+//	
+//	/**
+//	 * Tries to contact the server (see <tt>serverName</tt>) at the given port.
+//	 * @return
+//	 */
+//	boolean tryContacting (String serverName, int port) {
+//		try {
+//			Socket socket = new Socket(serverName, port);
+//			socket.close();	
+//		} catch (java.net.SocketException e) {
+//			return false;
+//		} catch (IOException e) {
+//			//System.err.println(e.getMessage());
+//			return false;
+//		}
+//		
+//		return true;
+//	}
 	
 	
 }
