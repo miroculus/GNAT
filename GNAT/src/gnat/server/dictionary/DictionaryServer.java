@@ -1,5 +1,7 @@
 package gnat.server.dictionary;
 
+import gnat.ISGNProperties;
+
 import java.io.BufferedOutputStream;
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
@@ -35,6 +37,10 @@ public class DictionaryServer extends Server {
 
 	private Dictionary dictionary;
 	private int logLevel = 0;
+	protected static String stopPassphrase = "ShutDownNow.";
+	static {
+		if (ISGNProperties.get("stopDictPassphrase") != null) stopPassphrase = ISGNProperties.get("stopDictPassphrase");
+	}
 
 	public DictionaryServer(int port, String dictionaryDir) throws ClassCastException, IOException, ClassNotFoundException
 	{
@@ -85,6 +91,11 @@ public class DictionaryServer extends Server {
 				String input = bufferedReader.readLine();
 				if (input != null) {
 
+					if (input.equals("<stop passphrase=\"" + stopPassphrase + "\" />")) {
+						System.out.println("Server was asked to stop. Passphrase correct. Exiting.");
+						System.exit(0);
+					}
+					
 					StringBuffer outputBuffer = new StringBuffer();
 
 					int textTagBeginIndex = input.indexOf("<text");
@@ -184,7 +195,13 @@ public class DictionaryServer extends Server {
 	 */
 	public static void main(String[] args) throws Exception {
 		if (args.length < 2 || args.length > 3) {
-			System.out.println("Usage: java DictionaryServer <port> <automataDirectory> [-v=<verbosity>]");
+			System.out.println("Usage: java DictionaryServer <port> <automataDirectory> {-v=<verbosity>} {-pass=<passphrase>}");
+			System.out.println("Parameters:");
+			System.out.println("  port               -  port that the dictionary server will be listening on");
+			System.out.println("  automataDirectory  -  path to pre-compiled finite state automaton");
+			System.out.println("Options:");
+			System.out.println("  -v                 -  log level, default: 0");
+			System.out.println("  -pass              -  passphrase to stop a running dictionary server");
 			System.exit(1);
 		}
 		
@@ -203,9 +220,13 @@ public class DictionaryServer extends Server {
 		
 		DictionaryServer dictionaryServer = new DictionaryServer(port, args[1]);
 		if (args.length > 2) {
-			String log = args[2];
-			if (log.matches("\\-\\-?v(erbosity)?=(\\d+)")) {
-				dictionaryServer.logLevel = Integer.parseInt(log.replaceFirst("^\\-\\-?v(erbosity)?=(\\d+)$", "$2"));	
+			for (int a = 2; a < args.length; a++) {
+				//String log = args[2];
+				if (args[a].matches("\\-\\-?v(erbosity)?=(\\d+)")) {
+					dictionaryServer.logLevel = Integer.parseInt(args[a].replaceFirst("^\\-\\-?v(erbosity)?=(\\d+)$", "$2"));	
+				} else if (args[a].matches("\\-\\-?p(assphrase)?=(.+)")) {
+					dictionaryServer.stopPassphrase = args[a].replaceFirst("^\\-\\-?p(assphrase)?=(.+)$", "$2");	
+				}
 			}
 		}		
 
