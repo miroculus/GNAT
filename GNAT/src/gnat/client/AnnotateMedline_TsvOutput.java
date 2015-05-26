@@ -24,13 +24,14 @@ import gnat.representation.TextFactory;
 import gnat.utils.Sorting;
 import gnat.utils.StringHelper;
 
-import java.io.BufferedWriter;
+import java.io.BufferedReader;
 import java.io.File;
-import java.io.FileWriter;
+import java.io.FileReader;
 import java.io.IOException;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
@@ -39,8 +40,8 @@ import java.util.TreeSet;
 import java.util.concurrent.TimeUnit;
 
 /**
- * A simple processing pipeline that takes a directory as input, reads all XML files (Medline/PubMed XML format)
- * and annotates the predicted genes inline with the text.
+ * Another simple demo client that takes a directory as input, reads all XML files (Medline/PubMed XML format)
+ * and return one tab-separated output file with annotations: PubMed ID, mention start/end, gene ID, gene mention, score, taxonomy ID.
  * <pre>
  * Supported file formats:
    - Medline XML (MedlineCitation and MedlineCitationSet),
@@ -60,7 +61,7 @@ import java.util.concurrent.TimeUnit;
  * 
  * @author Joerg Hakenberg
  */
-public class AnnotateMedline {
+public class AnnotateMedline_TsvOutput {
 	
 	/** Name of the XML element tag that will be used to annotate genes found by GNAT. */
 	public static String xml_tag = "GNAT";
@@ -70,8 +71,6 @@ public class AnnotateMedline {
 	public static String xml_attribute_id     = "id";
 	/** Name of the XML attribute for the {@link #xml_tag} element, which will contain the gene symbols(s), also known as primary terms. */
 	public static String xml_attribute_symbol = "pt";
-	/** Name of the XML attribute for the {@link #xml_tag} element, which will contain the species' NCBI Taxonomy ID (for example, human=9606). */
-	public static String xml_attribute_species = "tax";
 	/** Name of the XML attribute for the {@link #xml_tag} element, which will contain the disambiguation score, or multiple
 	 *  semi-colon-separated scores in case multiple candidates are left. */
 	public static String xml_attribute_score = "score";
@@ -80,26 +79,23 @@ public class AnnotateMedline {
 	/** */
 	public static String xml_attribute_candidate_ids = "candidateIds";
 
-	/** Overwrite the above default XML element and attribute names according to the properties file. */
-	static {
-		if (ISGNProperties.get("xmlElementGeneNormalized") != null) xml_tag                     = ISGNProperties.get("xmlElementGeneNormalized");
-		if (ISGNProperties.get("xmlElementGeneRecognized") != null) xml_tag_mention             = ISGNProperties.get("xmlElementGeneRecognized");
-		if (ISGNProperties.get("xmlAttributeGeneId") != null)       xml_attribute_id            = ISGNProperties.get("xmlAttributeGeneId");
-		if (ISGNProperties.get("xmlAttributeGeneSymbol") != null)   xml_attribute_symbol        = ISGNProperties.get("xmlAttributeGeneSymbol");
-		if (ISGNProperties.get("xmlAttributeSpecies") != null)      xml_attribute_species       = ISGNProperties.get("xmlAttributeSpecies");
-		if (ISGNProperties.get("xmlAttributeScore") != null)        xml_attribute_score         = ISGNProperties.get("xmlAttributeScore");
-		if (ISGNProperties.get("xmlAttributeOtherIds") != null)     xml_attribute_other_ids     = ISGNProperties.get("xmlAttributeOtherIds");
-		if (ISGNProperties.get("xmlAttributeCandidateIds") != null) xml_attribute_candidate_ids = ISGNProperties.get("xmlAttributeCandidateIds");
+//	/** Collection of (PubMed or other) IDs not to parse (again). */
+//	public static Set<String> blacklist = new HashSet<String>();
+//	/** */
+//	public static Set<String> whitelist = new HashSet<String>();
 
-	}
-
+	
+	/**
+	 * 
+	 * @param args
+	 */
 	public static void main (String[] args) {
 		
 		int verbosity = 0;
 
 		// check for command line parameters
 		if (args.length == 0 || args[0].matches("\\-\\-?h(elp)?")) {
-			System.out.println("AnnotateMedline -- annotates genes in a Medline citation set\n" +
+			System.out.println("AnnotateMedline (TSV output) -- annotates genes in a Medline citation set\n" +
 					           "Supported file formats:\n" +
 					           "- Medline XML (MedlineCitation in a MedlineCitationSet),\n" +
 					           "- PubMed XML (PubmedArticle in a PubmedArticleSet),\n" +
@@ -112,8 +108,9 @@ public class AnnotateMedline {
 			System.out.println(" -g        -  Print only those texts to the output that have a gene");
 			System.out.println(" -v        -  Set verbosity level for progress and debugging information");
 			System.out.println("              Default: 0; warnings: 1, status: 2, ... debug: 6");
-			System.out.println(" --outdir  -  Folder in which to write the output XML");
-			System.out.println("              By default, will write into the current directory.");
+			System.out.println(" --outfile -  File to write the output list; default is STDOUT");
+//			System.out.println(" --black <file>  -  Do not parse PubMed articles listed in this file (PMIDs); blacklist has precedence over whitelist");
+//			System.out.println(" --white <file>  -  Parse only the PubMed articles listed in this file; blacklist has precedence over whitelist");
 			System.exit(1);
 		}
 		
@@ -121,16 +118,22 @@ public class AnnotateMedline {
 		String dir = "";        // directory to read from
 		String outDir = ".";    // 
 		boolean skipNoGeneAbstracts = false;
+		String blacklistfile = "";
+		String whitelistfile = "";
 		for (int a = 0; a < args.length; a++) {
 			// parameter is -v to regulate verbosity at runtime
 			if (args[a].matches("\\-v=\\d+"))
 				verbosity = Integer.parseInt(args[a].replaceFirst("^\\-v=(\\d+)$", "$1"));
-			else if (args[a].toLowerCase().matches("\\-\\-?outdir")) 
+			else if (args[a].toLowerCase().matches("\\-\\-?outfile")) 
 				outDir = args[++a];
-			else if (args[a].toLowerCase().matches("\\-\\-?outdir\\=.+")) 
-				outDir = args[a].replaceFirst("^\\-\\-?[Oo][Uu][Tt][Dd][Ii][Rr]\\=", "");
+			else if (args[a].toLowerCase().matches("\\-\\-?outfile\\=.+")) 
+				outDir = args[a].replaceFirst("^\\-\\-?[Oo][Uu][Tt][Ff][Ii][Ll][Ee]\\=", "");
 			else if (args[a].toLowerCase().equals("-g")) 
 				skipNoGeneAbstracts = true;
+			else if (args[a].toLowerCase().matches("\\-\\-?b(lack(list)?)?"))  
+				blacklistfile = args[++a];
+			else if (args[a].toLowerCase().matches("\\-\\-?w(hite(list)?)?"))  
+				whitelistfile = args[++a];
 			else {
 				dir = args[a];
 				File DIR = new File(dir);
@@ -168,6 +171,42 @@ public class AnnotateMedline {
 			if (!DIR.exists())
 				DIR.mkdirs();
 		}
+//		
+//		//
+//		if (blacklistfile.length() > 0) {
+//			try {
+//				BufferedReader br = new BufferedReader(new FileReader(blacklistfile));
+//				String line = "";
+//				while ((line = br.readLine()) != null) {
+//					if (line.matches("\\d+"))
+//						blacklist.add(line);
+//				}
+//				br.close();
+//			} catch (IOException e) {
+//				System.err.println("#ERROR reading black list file: " + blacklistfile);
+//				System.err.println("#ERROR " + e.getMessage());
+//				System.exit(2);
+//			}
+//			System.err.println("#INFO blacklisted " + blacklist.size() + " PubMed IDs");
+//		}
+//		
+//		//
+//		if (whitelistfile.length() > 0) {
+//			try {
+//				BufferedReader br = new BufferedReader(new FileReader(whitelistfile));
+//				String line = "";
+//				while ((line = br.readLine()) != null) {
+//					if (line.matches("\\d+"))
+//						whitelist.add(line);
+//				}
+//				br.close();
+//			} catch (IOException e) {
+//				System.err.println("#ERROR reading white list file: " + whitelistfile);
+//				System.err.println("#ERROR " + e.getMessage());
+//				System.exit(2);
+//			}
+//			System.err.println("#INFO whitelisted " + whitelist.size() + " PubMed IDs");
+//		}
 		
 		//
 		ConstantsNei.setOutputLevel(verbosity);
@@ -225,7 +264,10 @@ public class AnnotateMedline {
 			
 			//////////
 			// INPUT
+//			TextFactory.setBlacklist(blacklist);
+//			TextFactory.setWhitelist(whitelist);
 			run.setTextRepository(TextFactory.loadTextRepositoryFromMedlineFile(dir + "/" + filename));
+			System.err.println("#INFO done loading text repository: " + run.getTextRepository().size() + " texts");
 			
 			//////////
 			// PROCESSING
@@ -362,45 +404,33 @@ public class AnnotateMedline {
 					if (otherIds_set.size() > 0)
 						otherIds = StringHelper.joinStringSet(otherIds_set, ";");
 
-					// insert the gene's ID into the XML
-					// in some cases, candidate IDs with the same score are returned
-					// pick the first ID and set as main ID
-					// add the other IDs in a separate XML attribute
-					String insert = "<";
+					String tag = xml_tag;
+					String symbol = "N/A";
+					String sscore = "N/A";
+					String taxId = "N/A";
 					if (geneId == null || geneId.length() == 0) {
-						annotatedText = annotatedText.substring(0, se.getEnd() + 1) + "</" + xml_tag_mention + ">" + annotatedText.substring(se.getEnd() + 1);
-
-						insert += xml_tag_mention;
-						if (otherIds.length() > 0)
-							insert += " " + xml_attribute_candidate_ids + "=\"" + otherIds + "\"";
+						tag = xml_tag_mention;
 					} else {
-						annotatedText = annotatedText.substring(0, se.getEnd() + 1) + "</" + xml_tag + ">" + annotatedText.substring(se.getEnd() + 1);
-
-						insert += xml_tag;
-						insert += " " + xml_attribute_id + "=\"" + geneId + "\"";
-						if (otherIds.length() > 0)
-							insert += " " + xml_attribute_other_ids + "=\"" + otherIds + "\"";
-						// get the Gene object for the (main) gene ID
-						// and from that, get the official symbol (if known)
-						// and add to XML attribute
 						Gene gene = run.getGene(geneId);
-						String symbol = "";
 						if (gene != null && gene.officialSymbol != null && gene.officialSymbol.length() > 0)
 							symbol = gene.officialSymbol;
 						if (symbol.matches("\\s*[\\;\\,]\\s*"))
 							symbol = symbol.split("\\s*[\\,\\;]\\s*")[0].trim();
 						if (symbol.length() > 0)
-							insert += " " + xml_attribute_symbol + "=\"" + gene.officialSymbol + "\"";
-						if (gene.getTaxon() > 0)
-							insert += " " + xml_attribute_species + "=\"" + gene.getTaxon() + "\"";
-
+							symbol = gene.officialSymbol;
 						float score = run.context.getConfidenceScore(gene, text.ID);
 						if (score >= 0.0)
-							insert +=  " " + xml_attribute_score + "=\"" + score + "\"";
+							sscore = score + "";
+						taxId = gene.getTaxon() + "";
 					}
-
-					insert += ">";
-					annotatedText = annotatedText.substring(0, se.getBegin()) + insert + annotatedText.substring(se.getBegin());
+					String candidateIds = "N/A";
+					if (otherIds.length() > 0)
+						candidateIds = otherIds;
+					String mention = se.getName();
+					
+					
+					System.out.println(text.getPMID() + "\t" + se.getBegin() + "\t" + se.getEnd() + "\t" + mention + "\t" + tag + "\t" + candidateIds + "\t" + geneId + "\t" + symbol + "\t" + taxId + "\t" + sscore);
+					
 				}
 
 				//System.err.println("#Annotated text:\n"+annotatedText+"\n----------");
@@ -455,12 +485,10 @@ public class AnnotateMedline {
 					if (file2buffer.containsKey(basefilename)) {
 						StringBuilder buf = file2buffer.get(basefilename);
 						buf.append(x);
-						buf.append("\n");
 						file2buffer.put(basefilename, buf);
 					} else {
 						StringBuilder buf = new StringBuilder();
 						buf.append(x);
-						buf.append("\n");
 						file2buffer.put(basefilename, buf);
 						file2type.put(basefilename, Text.SourceTypes.MEDLINES_XML);
 					}
@@ -472,67 +500,17 @@ public class AnnotateMedline {
 					else					 text.toXmlFile(outDir + "/" + outfileName);
 				}
 
-				// or, if no gene was recognized in the current text:
-				//} else {
-				//	Text aText = run.getTextRepository().getText(text_id);
-				//	String outfileName = aText.getID() + "_nogenesfound.annotated.xml";
-				//	aText.toXmlFile(outDir + "/" + outfileName);
-				//}
-
+				// discard this text
+				text = null;
 
 			} // foreach text
-
-
-
-			if (file2buffer.size() > 0) {
-				//System.err.println("#Writing file collections");
-				for (String basefilename: file2buffer.keySet()) {
-					StringBuilder buf = file2buffer.get(basefilename);
-					Text.SourceTypes type = file2type.get(basefilename);
-
-					String outfile = basefilename;
-					if (outDir.length() > 0)
-						outfile = outDir + "/" + outfile;
-
-					try {
-						BufferedWriter bw = new BufferedWriter(new FileWriter(outfile));
-						if (type == Text.SourceTypes.PUBMEDS_XML)
-							bw.write("<?xml version=\"1.0\"?>\n" + 
-									"<!DOCTYPE PubmedArticleSet PUBLIC \"-//NLM//DTD PubMedArticle, 1st January 2012//EN\" \"http://www.ncbi.nlm.nih.gov/corehtml/query/DTD/pubmed_120101.dtd\">\n" +
-							"<PubmedArticleSet>\n");
-						else if (type == Text.SourceTypes.MEDLINES_XML)
-							bw.write("<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n" + 
-									"<!DOCTYPE MedlineCitationSet PUBLIC \"-//NLM//DTD Medline Citation, 1st January, 2012//EN\" \"http://www.nlm.nih.gov/databases/dtd/nlmmedlinecitationset_120101.dtd\">\n" +
-							"<MedlineCitationSet>\n");
-						else
-							bw.write("<?xml version=\"1.0\"?>\n" +
-							"<DocumentSet>\n");
-
-						bw.write(buf.toString());
-
-						if (type == Text.SourceTypes.PUBMEDS_XML)
-							bw.write("\n</PubmedArticleSet>");
-						else if (type == Text.SourceTypes.MEDLINES_XML)
-							bw.write("\n</MedlineCitationSet>");
-						else
-							bw.write("\n</DocumentSet>");
-
-						bw.close();
-					} catch (IOException ioe) {
-						ioe.printStackTrace();
-					}
-				}
-			} // for each input file from which texts were taken (here: always 1) 
-
+			
+			run.clearTextRepository();
 			
 			// haha
 			System.gc();
 
 		} // for each Medline XML file
-			
-		
-		
-
 		
 	}
 	

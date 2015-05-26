@@ -1,7 +1,6 @@
 package gnat.client;
 
 import gnat.ISGNProperties;
-import gnat.filter.nei.AlignmentFilter;
 import gnat.filter.nei.GeneRepositoryLoader;
 import gnat.filter.nei.IdentifyAllFilter;
 import gnat.filter.nei.ImmediateContextFilter;
@@ -9,18 +8,13 @@ import gnat.filter.nei.LeftRightContextFilter;
 import gnat.filter.nei.MultiSpeciesDisambiguationFilter;
 import gnat.filter.nei.NameValidationFilter;
 import gnat.filter.nei.RecognizedEntityUnifier;
-import gnat.filter.nei.SpeciesValidationFilter;
 import gnat.filter.nei.StopWordFilter;
 import gnat.filter.nei.UnambiguousMatchFilter;
 import gnat.filter.nei.UnspecificNameFilter;
-import gnat.filter.ner.GOFilter;
 import gnat.filter.ner.GnatServiceNer;
-import gnat.filter.ner.DefaultSpeciesRecognitionFilter;
 import gnat.filter.ner.LinnaeusSpeciesServiceNer;
-import gnat.preprocessing.NameRangeExpander;
 import gnat.representation.TextFactory;
 import gnat.server.GnatService;
-import gnat.utils.AlignmentHelper;
 
 import java.io.File;
 import java.util.LinkedList;

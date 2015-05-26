@@ -307,6 +307,7 @@ public class PubmedAccess {
 	 */
 	@SuppressWarnings("rawtypes")
 	public static String[] getAbstractsFromXML (String xml) {
+		//System.out.println("analyzing XML=>>" +xml + "<<");
 		String[] abs = new String[0];
 		try {
 			SAXBuilder builder = new SAXBuilder();
