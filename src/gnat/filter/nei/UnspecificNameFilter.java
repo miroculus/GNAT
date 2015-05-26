@@ -307,6 +307,7 @@ public class UnspecificNameFilter implements Filter {
 				"|II|VII|[Aa]lpha|[Bb]eta|[Gg]amma|[Dd]elta|[Ee]psilon|tau|zeta" +
 				"|great|tissue|simple|face|nude|type|raft|partial|bind|cord|Chr|rank|anti" +
 				"|can|not|was|has|on|via|use|up|acidic|longest|best|raised|multiple" +
+				"|miR|click|spin|pen" +
 				"|Ca2|CA|C\\-C|CHO|Cys|pro|how|early|similar|no|period|rod" +
 				"|interleukins|releases?|origins?|chemokines?|sons?|nets?" +
 				//"|LPS" +
@@ -325,7 +326,7 @@ public class UnspecificNameFilter implements Filter {
 				"|pituitary" +
 				// application to Medline XML found these:
 				"|ANOVA|flap|jaw|hook|wash|grid|scan|rage|coil|Poly|poly|ate|semi|ankle|fat-free|HDL|LDL|CHD|Mir|cited|hangover" +
-				"|per \\d+|or \\d+|OR \\d+|six \\d+|F \\d+|at \\d+|is \\d+|\\-19|n-3|at \\d+ d|s to|acid 2" +
+				"|per \\d+|or \\d+|OR \\d+|six \\d+|F \\d+|at \\d+|is \\d+|\\-19|n-3|at \\d+ d|s to|acid 2|HS is" +
 				"|pin|cramp|Vmax|chip|mix|max|spatial|c nu|scar|or VE|Platelet|Mn|ash|jade|cod|lip|tan|Amid|sec|lime" +
 				"|coreceptor|inter|stab|oligo|rim|peri|chi|mer|mol|sink|as L|kit|Pigs|goat|jet|taxi|lab|mask|patched" +
 
@@ -340,7 +341,8 @@ public class UnspecificNameFilter implements Filter {
 	 */
 	public static boolean isUnspecificSingleWordCaseInsensitive (String name) {
 		return name.toLowerCase().trim().matches("(for|in|of|at|an" +
-				"|milk|cycling|enabled|blast|lipase|golgi|fusion|proteins?|nuclear|sex" +
+				"|milk|cycling|enabled|blast|lipase|golgi|fusion|proteins?|nuclear|sex" + 
+				"|membrane|mitochondrial" +
 				"|partial|macrophage|condensed|wt)");
 	}
 
