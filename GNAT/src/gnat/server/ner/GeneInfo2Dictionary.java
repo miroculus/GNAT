@@ -117,7 +117,7 @@ public class GeneInfo2Dictionary {
 		for (int a = 1; a < args.length; a++) {
 			if (args[a].toLowerCase().matches("\\-\\-?(withtaxon|wt|t|taxon)"))
 				withTaxon = true;
-			else if (args[a].toLowerCase().matches("\\-\\-?(count|c)"))
+			else if (args[a].toLowerCase().matches("\\-\\-?(counts?|c)"))
 				printCounts = true;
 			else if (args[a].toLowerCase().matches("\\-\\-?s(pecies)?"))
 				if (args.length < a+1 || !args[a+1].matches("\\d+")) {
