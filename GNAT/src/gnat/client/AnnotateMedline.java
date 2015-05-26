@@ -455,12 +455,12 @@ public class AnnotateMedline {
 					if (file2buffer.containsKey(basefilename)) {
 						StringBuilder buf = file2buffer.get(basefilename);
 						buf.append(x);
-						buf.append("\n");
+						//buf.append("\n");
 						file2buffer.put(basefilename, buf);
 					} else {
 						StringBuilder buf = new StringBuilder();
 						buf.append(x);
-						buf.append("\n");
+						//buf.append("\n");
 						file2buffer.put(basefilename, buf);
 						file2type.put(basefilename, Text.SourceTypes.MEDLINES_XML);
 					}

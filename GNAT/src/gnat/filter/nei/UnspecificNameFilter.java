@@ -307,7 +307,7 @@ public class UnspecificNameFilter implements Filter {
 				"|II|VII|[Aa]lpha|[Bb]eta|[Gg]amma|[Dd]elta|[Ee]psilon|tau|zeta" +
 				"|great|tissue|simple|face|nude|type|raft|partial|bind|cord|Chr|rank|anti" +
 				"|can|not|was|has|on|via|use|up|acidic|longest|best|raised|multiple" +
-				"|miR|click|spin|pen" +
+				"|miR|click|spin|pen|flip" +
 				"|Ca2|CA|C\\-C|CHO|Cys|pro|how|early|similar|no|period|rod" +
 				"|interleukins|releases?|origins?|chemokines?|sons?|nets?" +
 				//"|LPS" +
