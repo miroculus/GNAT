@@ -28,6 +28,8 @@
 <!-- Reported results (positions of genes) will therefore not match the original text anymore. -->
 <!-- If you depend on positions for later steps outside of GNAT, set keepTextIntact to true!   -->
 <entry key="keepTextIntact">false</entry>
+<!-- Pass phrase for stopping a dictionary server. -->
+<entry key="stopDictPassphrase">StopIt!</entry>
 
 <entry key="bannerProps">banner/banner.properties</entry>
 <entry key="bannerModel">banner/gene_model_v02.bin</entry>
@@ -48,6 +50,16 @@
 <!-- Information is stored in the database, GR_PubMedID table -->
 <!-- This needs to be set to 'false' for all benchmarking purposes -->
 <entry key="useGenePubmed">true</entry>
+
+<!-- You can control the XML element tags and attributes that GNAT uses when annotating Medline XML using client.AnnotateMedline -->
+<entry key="xmlElementGeneNormalized">GNAT</entry>
+<entry key="xmlElementGeneRecognized">GNATGM</entry>
+<entry key="xmlAttributeGeneId">id</entry>
+<entry key="xmlAttributeGeneSymbol">pt</entry>
+<entry key="xmlAttributeSpecies">tax</entry>
+<entry key="xmlAttributeScore">score</entry>
+<entry key="xmlAttributeOtherIds">otherIds</entry>
+<entry key="xmlAttributeCandidateIds">candidateIds</entry>
 
 <!-- some values you usually don't need not to bother with: -->
 <entry key="disambiguationThreshold">3</entry>
