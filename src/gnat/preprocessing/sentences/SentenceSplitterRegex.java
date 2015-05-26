@@ -101,6 +101,9 @@ public class SentenceSplitterRegex implements SentenceSplitter {
     	text = text.replaceAll("(\\s[A-Z]|Dr|Drs|Prof|Profs|Mr|Mrs|Ms|ca|vs)\\.###SPLIT###", "$1. ");
     	text = text.replaceAll("([a-z]\\s[\\d\\-]+\\s[A-Z])\\.\\s([A-Z])", "$1.###SPLIT###$2");
 
+    	// common abbreviations
+    	text = text.replaceAll("(i\\.e|e\\.g|ca|vs|s\\.l)\\.###SPLIT###", "$1. ");
+    	
     	// one or two words on their own most probably belong to the sentence before
     	//text = text.replaceAll("###SPLIT###([A-Za-z0-9]+)(\\s(?:[A-Za-z0-9]+))?(###SPLIT###|\\.|$)", " $1$2$3");
     	
