@@ -275,7 +275,7 @@ public class GeneRepositoryFromDatabase {
 				gcm.addFunctions(values);
 			}
 
-			values = getValues("GR_ProteinKeywords", "keywords", geneId);
+			values = getValues("GR_ProteinKeywords", "keyword", geneId);
 			if (values != null && values.length > 0){
 				GeneContextModel gcm = contextModelTable.get(geneId);
 				if (gcm == null) {
