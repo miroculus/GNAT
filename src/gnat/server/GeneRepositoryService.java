@@ -301,7 +301,7 @@ public class GeneRepositoryService extends HttpService {
 			writeXmlItem(out, "disease", gene.get("Disease"));
 			
 			writeXmlItem(out, "goCodes", gene.get("GOCode"));
-			writeXmlItem(out, "keywords", gene.get("Keyword"));
+			writeXmlItem(out, "keyword", gene.get("Keyword"));
 			
 			out.write("</gene>\n".getBytes());
 		}
@@ -348,7 +348,7 @@ public class GeneRepositoryService extends HttpService {
 			Map<Integer, Set<String>> gene2disease = getValues("GR_ProteinDisease", "disease", geneIds);
 			Map<Integer, Set<String>> gene2domain = getValues("GR_ProteinDomain", "domain", geneIds);
 			Map<Integer, Set<String>> gene2function = getValues("GR_ProteinFunction", "function", geneIds);
-			Map<Integer, Set<String>> gene2keywords = getValues("GR_ProteinKeywords", "keywords", geneIds);
+			Map<Integer, Set<String>> gene2keywords = getValues("GR_ProteinKeywords", "keyword", geneIds);
 			Map<Integer, Set<String>> gene2protLength = getValues("GR_ProteinLength", "length", geneIds);
 			Map<Integer, Set<String>> gene2protMass = getValues("GR_ProteinMass", "mass", geneIds);
 			Map<Integer, Set<String>> gene2mutation = getValues("GR_ProteinMutation", "mutation", geneIds);
