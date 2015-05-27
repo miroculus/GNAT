@@ -1,4 +1,4 @@
-// ©2006 Transinsight GmbH - www.transinsight.com - All rights reserved.
+// (c)2006 Transinsight GmbH - www.transinsight.com - All rights reserved.
 package gnat.database.go;
 
 import gnat.ISGNProperties;
@@ -65,9 +65,9 @@ public class ImportGO2GO
 
 		}
 
+		reader.close();
 		statement.close();
 		connection.close();
-
 	}
 
 }

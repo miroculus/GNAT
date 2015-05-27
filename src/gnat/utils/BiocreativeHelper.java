@@ -410,6 +410,7 @@ public class BiocreativeHelper {
 			String id = line.split("\t")[0];
 			accessions.add(id);
 		}
+		reader.close();
 		return accessions;
 	}
 
@@ -2255,6 +2256,7 @@ public class BiocreativeHelper {
 	            }
 	            writer.write("\n");
 	        }
+	        writer.close();
         }
         catch (IOException e) {
 	        // TODO Auto-generated catch block

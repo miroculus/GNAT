@@ -11,7 +11,6 @@ import gnat.representation.TextAnnotation;
 import gnat.representation.TextRange;
 import gnat.representation.TextRepository;
 import gnat.server.dictionary.DictionaryServer;
-import gnat.utils.StringHelper;
 
 import java.io.BufferedInputStream;
 import java.io.BufferedOutputStream;

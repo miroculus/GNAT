@@ -523,17 +523,12 @@ public class AnnotateMedline {
 					}
 				}
 			} // for each input file from which texts were taken (here: always 1) 
-
 			
 			// haha
 			System.gc();
 
 		} // for each Medline XML file
 			
-		
-		
-
-		
 	}
 	
 }
