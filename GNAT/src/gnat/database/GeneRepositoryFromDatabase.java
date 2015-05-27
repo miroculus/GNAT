@@ -518,7 +518,7 @@ public class GeneRepositoryFromDatabase {
 		Map<Integer, Set<String>> gene2disease = getValues("GR_ProteinDisease", "disease", geneIds);
 		Map<Integer, Set<String>> gene2domain = getValues("GR_ProteinDomain", "domain", geneIds);
 		Map<Integer, Set<String>> gene2function = getValues("GR_ProteinFunction", "function", geneIds);
-		Map<Integer, Set<String>> gene2keywords = getValues("GR_ProteinKeywords", "keywords", geneIds);
+		Map<Integer, Set<String>> gene2keywords = getValues("GR_ProteinKeywords", "keyword", geneIds);
 		Map<Integer, Set<String>> gene2protLength = getValues("GR_ProteinLength", "length", geneIds);
 		Map<Integer, Set<String>> gene2protMass = getValues("GR_ProteinMass", "mass", geneIds);
 		Map<Integer, Set<String>> gene2mutation = getValues("GR_ProteinMutation", "mutation", geneIds);
