@@ -141,6 +141,7 @@ public class RunAutomaton implements Serializable {
 		return SpecialOperations.findIndex(c, points);
 	}
 
+	@SuppressWarnings("unused")
 	private RunAutomaton() {}
 
 	/**
