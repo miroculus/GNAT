@@ -1,0 +1,1 @@
+java -cp lib/gnat.jar gnat.tests.TestDictionaryServer $1
