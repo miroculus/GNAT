@@ -74,6 +74,7 @@ public class LinnaeusTest {
 			
 			
 			ObjectInputStream inputStream = new ObjectInputStream(new BufferedInputStream(socket.getInputStream()));
+			@SuppressWarnings("unchecked")
 			List<Mention> matches = (List<Mention>) inputStream.readObject();
 
 			

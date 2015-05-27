@@ -18,18 +18,7 @@ import gnat.representation.TextFactory;
 import gnat.server.GnatService;
 import gnat.utils.AlignmentHelper;
 
-import java.io.BufferedReader;
-import java.io.FileReader;
-import java.io.IOException;
-import java.sql.Connection;
-import java.sql.DriverManager;
-import java.sql.ResultSet;
-import java.sql.SQLException;
-import java.sql.Statement;
-import java.util.HashSet;
-import java.util.LinkedList;
 import java.util.List;
-import java.util.Set;
 
 /**
  * 

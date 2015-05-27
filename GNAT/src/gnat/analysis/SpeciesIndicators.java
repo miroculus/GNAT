@@ -46,7 +46,7 @@ public class SpeciesIndicators {
 				if (filename.endsWith(".gz")) {
 					//System.err.println("Opening a GZipped files");
 					InputStream fileStream = new FileInputStream(dir + "/" + filename);
-					InputStream gzipStream = new GZIPInputStream(fileStream);
+					@SuppressWarnings("resource") InputStream gzipStream = new GZIPInputStream(fileStream);
 					Reader decoder = new InputStreamReader(gzipStream, "UTF-8");
 					br = new BufferedReader(decoder);
 				} else {
@@ -95,7 +95,7 @@ public class SpeciesIndicators {
 								if (tok.matches(".*[a-z]+.*"))
 								//if (!tok.matches("[A-Z][a-z][a-z]"))            // over-simplified amino acids
 								if (!tok.matches("[A-Za-z]\\d[A-Za-z]"))          // simple molecules such as H2O
-								if (!tok.matches(".*[\\(\\)\\[\\]\\&\"\\'±×≤≥\\+\\?\\s].*")) // special chars or white space
+								if (!tok.matches(".*[\\(\\)\\[\\]\\&\"\\'\\+\\?\\s].*")) // special chars or white space
 								if (!tok.matches(".*(lt|gt|amp)(\\;.*|$)"))       // XML escaped special chars
 								if (!tok.matches("[A-Z]+\\-?\\d*\\-[a-z]+"))
 								if (!tok.matches("^(http|www\\.)"))

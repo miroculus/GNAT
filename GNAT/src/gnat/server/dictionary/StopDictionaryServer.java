@@ -1,6 +1,5 @@
 package gnat.server.dictionary;
 
-import gnat.ConstantsNei;
 import gnat.ISGNProperties;
 
 import java.io.BufferedOutputStream;
@@ -249,7 +248,7 @@ public class StopDictionaryServer {
 		// dictionary could be contacted w/o any errors
 		//if (ConstantsNei.OUTPUT_LEVEL.compareTo(ConstantsNei.OUTPUT_LEVELS.DEBUG) >= 0)
 		//	System.out.println("#Trying to contact remote dictionary servers...");
-		boolean error = false;
+		//boolean error = false;
 		for (int tax: taxonToServerPortMap.keySet()) {
 			//String server = getServerForTaxon(tax);
 			//int port      = getPortForTaxon(tax);

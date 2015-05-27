@@ -34,7 +34,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.Executors;
-import java.util.concurrent.Semaphore;
 
 import martin.common.ArgParser;
 
@@ -834,7 +833,7 @@ class GnatServiceHandler extends ServiceHandler {
 			for (String annotation: annotatedText.getAnnotations()) {
 				if (annotation.startsWith("<entity")) {
 					String type = annotation.replaceFirst("^<entity.* type=\"(.*?)\".*$", "$1");
-					String subtype = annotation.replaceFirst("^<entity.* subtype=\"(.*?)\".*$", "$1");
+					//String subtype = annotation.replaceFirst("^<entity.* subtype=\"(.*?)\".*$", "$1");
 					String ids = annotation.replaceFirst("^<entity.* ids=\"(.*?)\".*$", "$1");
 					String startIndex = annotation.replaceFirst("^<entity.* startIndex=\"(.*?)\".*$", "$1");
 					String endIndex = annotation.replaceFirst("^<entity.* endIndex=\"(.*?)\".*$", "$1");
