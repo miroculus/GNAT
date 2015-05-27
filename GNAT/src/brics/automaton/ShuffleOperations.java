@@ -272,6 +272,7 @@ final public class ShuffleOperations {
 		boolean surrogate;
 		int suspended1;
 
+		@SuppressWarnings("unused")
 		private ShuffleConfiguration() {}
 
 		ShuffleConfiguration(Collection<Automaton> ca, Automaton a) {

@@ -41,6 +41,7 @@ import java.util.Set;
  * <tt>Automaton</tt> state.
  * @author Anders M&oslash;ller &lt;<a href="mailto:amoeller@brics.dk">amoeller@brics.dk</a>&gt;
  */
+@SuppressWarnings("rawtypes")
 public class State implements Serializable, Comparable {
 
 	static final long serialVersionUID = 30001;
