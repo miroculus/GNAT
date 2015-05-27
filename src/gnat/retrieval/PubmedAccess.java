@@ -578,5 +578,39 @@ public class PubmedAccess {
 		return pmIds;
 	}
 
+	
+	/**
+	 * 'Main' offers access to some of the methods via the command line.
+	 * <br><br>
+	 * Currently implemented:<br>
+	 *  &nbsp; --getids &lt;query&gt; &nbsp; &mdash; &nbsp; will print a list of PubMed IDs matching the query to STDOUT; enclose multi-word queries in double quotes
+	 * @param args
+	 * @throws IOException 
+	 */
+	public static void main (String[] args) throws IOException {
+		if (args.length == 0 || args[0].toLowerCase().matches("\\-\\-?h(elp)?")) {
+			System.out.println("PubmedAccess");
+			System.out.println("Options:");
+			System.out.println("  --getids <query>");
+			System.exit(0);
+		}
+		
+		String query = "";
+		
+		for (int a = 0; a < args.length; a++) {
+			if (args[a].toLowerCase().matches("\\-\\-?getids?")) {
+				query = args[++a];
+				
+				// PubmedAccess pa = new PubmedAccess();
+				String[] ids = PubmedAccess.getPubmedIDsForQuery(query, 10000000);
+				for (String i : ids)
+					System.out.println(i);
+				System.exit(0);
+			}
+		}
+		
+		
+		
+	}
 
 }
