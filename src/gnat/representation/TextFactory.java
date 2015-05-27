@@ -46,6 +46,18 @@ public class TextFactory {
 	/** Stores a mapping from PubMed IDs to GO terms; will be added to a Text's ContextModel. */
 	static Map<Integer, Set<String>> pubmed2goterms  = new HashMap<Integer, Set<String>>();
 	
+//	/** */
+//	static Set<String> myblacklist = new HashSet<String>();
+//	static Set<String> mywhitelist = new HashSet<String>();
+//	public static void setBlacklist (Collection<String> blacklist) {
+//		myblacklist.clear();
+//		myblacklist.addAll(blacklist);
+//	}
+//	public static void setWhitelist (Collection<String> whitelist) {
+//		mywhitelist.clear();
+//		mywhitelist.addAll(whitelist);
+//	}
+	
 	/**
 	 * Loads a text repository from the given directories.<br>
 	 * Supported file formats (which are determined by file extensions!) are .txt, .xml, .medline.xml, and .medlines.xml.<br>
@@ -127,6 +139,9 @@ public class TextFactory {
 		
 		textRepository.addTexts(loadTextsFromMedlineSetXmlfile(filename));
 		
+		if (ConstantsNei.verbosityAtLeast(ConstantsNei.OUTPUT_LEVELS.STATUS))
+			ConstantsNei.OUT.println("#TextRepository loaded with " + textRepository.size() + " texts.");
+
 		return textRepository;
 	}
 	
@@ -405,6 +420,7 @@ public class TextFactory {
 						articleSetType = "MCS";
 					else if (line.trim().startsWith("<PubmedArticleSet"))
 						articleSetType = "PAS";
+					//System.out.println("articleSetType="+articleSetType);
 				}
 				
 				// the XML file will contain (potentially) multiple abstracts/text
@@ -430,6 +446,8 @@ public class TextFactory {
 				if (   (line.matches(".*</PubmedArticle>.*") && articleSetType.equals("PAS") )
 					|| (line.matches(".*</MedlineCitation>.*") && articleSetType.equals("MCS") )
 					) {
+					//System.out.println("#parsing text");
+					//System.out.println(xml.toString());
 					Text aText = new Text("unknown"); // dangerous; make sure to set ID immediately after!
 					// get PubMed ID from the XML tag
 					String pmid = PubmedAccess.getPubMedIdFromXML(xml.toString());
@@ -439,10 +457,13 @@ public class TextFactory {
 					} else
 						aText.idType = Text.IdTypes.UNKNOWN;
 					
+					//System.err.println("#Analyzing PMID " + pmid);
 					//System.err.println("#####XML:\n" + xml.toString() + "\n#####");
 					
 					aText.setPlainFromXml(xml.toString());
 					aText.title = title;
+					
+					//System.err.println("#Title=" + aText.title);
 					
 					// determine the file type (XML DTD) from the file name
 					if (filename.matches(".*medline\\d+n\\d+\\.xml(\\.gz)?")
@@ -484,8 +505,20 @@ public class TextFactory {
 					} catch (IOException e) {
 						e.printStackTrace();
 					}
+
 					
-					temp_texts.add(aText);
+//					if (myblacklist.size() > 0) {
+//						if (mywhitelist.size() > 0) {
+//							if (mywhitelist.contains(aText.ID) || mywhitelist.contains(aText.getPMID()))
+								temp_texts.add(aText);
+//						} else {	
+//							if (!myblacklist.contains(aText.ID) && !myblacklist.contains(aText.getPMID()))
+//								temp_texts.add(aText);
+//						}
+//					} else if (mywhitelist.size() > 0) {
+//						if (mywhitelist.contains(aText.ID) || mywhitelist.contains(aText.getPMID()))
+//							temp_texts.add(aText);
+//					}
 					
 					// reset buffer
 					xml.setLength(0);
@@ -509,6 +542,7 @@ public class TextFactory {
 		if (ConstantsNei.verbosityAtLeast(ConstantsNei.OUTPUT_LEVELS.STATUS))
 			ConstantsNei.OUT.println("#TextFactory loading GO codes and terms...");
 
+		BufferedReader br  = null;
 		// get filename from configuration file
 		String filename = ISGNProperties.get("pubmedId2GO");
 		// if filename is not set, try two options, txt and obj
@@ -527,7 +561,16 @@ public class TextFactory {
 		}
 
 		try {
-			BufferedReader br = new BufferedReader(new FileReader(filename));
+			if (filename.endsWith(".gz")) {
+				//System.err.println("Opening a GZipped files");
+				InputStream fileStream = new FileInputStream(filename);
+				InputStream gzipStream = new GZIPInputStream(fileStream);
+				Reader decoder = new InputStreamReader(gzipStream, "UTF-8");
+				br = new BufferedReader(decoder);
+			} else {
+				br = new BufferedReader(new FileReader(filename));
+			}
+			//BufferedReader br = new BufferedReader(new FileReader(filename));
 			String line;
 			while ((line = br.readLine()) != null) {
 				String[] cols = line.split("\t");

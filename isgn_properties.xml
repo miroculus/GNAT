@@ -40,7 +40,7 @@
 
 <!-- some values you might have to change, mainly if you changed the directory structure: -->
 <entry key="geneRepository">data/geneRepository.object</entry>
-<entry key="pubmedId2GO">data/pubmed2Go.txt</entry>
+<entry key="pubmedId2GO">data/pubmed2Go.txt.gz</entry>
 <entry key="taxonParentTable">data/tax_parenttable.txt</entry>
 <entry key="pubmed2Taxon">data/pmid2Taxon.txt</entry>
 <entry key="stopWords">data/bnc_wordlist.txt</entry>
