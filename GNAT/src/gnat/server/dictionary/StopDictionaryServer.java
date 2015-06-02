@@ -153,7 +153,7 @@ public class StopDictionaryServer {
 	 */
 	public static void main (String[] args) {
 		if (args.length == 0 || args[0].toLowerCase().matches("\\-\\-h(elp)?") || !args[0].matches("\\d+")) {
-			System.out.println("StopDictionaryServer -t=taxon {-pass=<passphrase>}");
+			System.out.println("StopDictionaryServer taxon {-pass=<passphrase>}");
 			System.exit(0);
 		}
 
