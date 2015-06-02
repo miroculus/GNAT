@@ -19,5 +19,5 @@ CP="lib/gnat.jar"
 DICT="dictionaries"
 
 #human
-nohup ${JAVA} -cp ${CP} -Xmx1500M gnat.server.dictionary.DictionaryServer 56001 ${DICT}/9606/ &
+nohup ${JAVA} -cp ${CP} -Xmx2500M gnat.server.dictionary.DictionaryServer 56001 ${DICT}/9606/ &
 
