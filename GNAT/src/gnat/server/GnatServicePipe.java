@@ -2,7 +2,6 @@ package gnat.server;
 
 import gnat.ISGNProperties;
 import gnat.client.Run;
-import gnat.filter.nei.BANNERValidationFilter;
 import gnat.filter.nei.GeneRepositoryLoader;
 import gnat.filter.nei.IdentifyAllFilter;
 import gnat.filter.nei.ImmediateContextFilter;
@@ -35,7 +34,7 @@ public class GnatServicePipe {
 		
 		run.addFilter(new RecognizedEntityUnifier());
 		run.addFilter(new GeneRepositoryLoader(GeneRepositoryLoader.RetrievalMethod.SERVICE));
-		run.addFilter(new BANNERValidationFilter());
+		//run.addFilter(new BANNERValidationFilter());
 		String f1 = new File("data/strictFPs_2_2_context_all.object").getAbsolutePath();
 		String f2 = new File("data/nonStrictFPs_2_2_context_all.object").getAbsolutePath();
 		run.addFilter(new LeftRightContextFilter(f1, f2, 0d, 2, 2));

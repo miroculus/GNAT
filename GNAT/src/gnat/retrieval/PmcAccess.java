@@ -1,5 +1,6 @@
 package gnat.retrieval;
 
+import gnat.ISGNProperties;
 import gnat.utils.StringHelper;
 
 import java.io.IOException;
@@ -23,10 +24,15 @@ import org.jdom.xpath.XPath;
  */
 public class PmcAccess {
 
+	/** */
+	public static String URI_PMC_BASE = "http://www.pubmedcentral.nih.gov";
+	static {
+		if (ISGNProperties.get("pmcBaseUrl") != null) URI_PMC_BASE = ISGNProperties.get("pmcBaseUrl");
+	}
+	
 	/** URL to download one full text article from PMC; append the PMC ID (without the "PMC", just the number). */
-	public static String PMC_OAI_BASEURL = "http://www.pubmedcentral.nih.gov/oai/oai.cgi" +
-			"?metadataPrefix=pmc&verb=GetRecord&identifier=oai:pubmedcentral.nih.gov:";
-
+	public static String PMC_OAI_BASEURL = URI_PMC_BASE +
+			"/oai/oai.cgi?metadataPrefix=pmc&verb=GetRecord&identifier=oai:pubmedcentral.nih.gov:";
 
 	/**
 	 * Get the XML version of the article with the given PMC-ID.

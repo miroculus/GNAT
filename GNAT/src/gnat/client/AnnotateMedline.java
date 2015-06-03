@@ -24,13 +24,17 @@ import gnat.representation.TextFactory;
 import gnat.utils.Sorting;
 import gnat.utils.StringHelper;
 
+import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
@@ -114,6 +118,7 @@ public class AnnotateMedline {
 			System.out.println("              Default: 0; warnings: 1, status: 2, ... debug: 6");
 			System.out.println(" --outdir  -  Folder in which to write the output XML");
 			System.out.println("              By default, will write into the current directory.");
+			System.out.println(" --ignore <file>  -  Ignore the files listed in <file>");
 			System.exit(1);
 		}
 		
@@ -121,6 +126,7 @@ public class AnnotateMedline {
 		String dir = "";        // directory to read from
 		String outDir = ".";    // 
 		boolean skipNoGeneAbstracts = false;
+		Set<String> xml_files_to_ignore = new HashSet<String>();
 		for (int a = 0; a < args.length; a++) {
 			// parameter is -v to regulate verbosity at runtime
 			if (args[a].matches("\\-v=\\d+"))
@@ -131,7 +137,28 @@ public class AnnotateMedline {
 				outDir = args[a].replaceFirst("^\\-\\-?[Oo][Uu][Tt][Dd][Ii][Rr]\\=", "");
 			else if (args[a].toLowerCase().equals("-g")) 
 				skipNoGeneAbstracts = true;
-			else {
+			else if (args[a].toLowerCase().matches("\\-\\-?i(gnore)?")) {
+				String ignorefile = args[++a];
+				try {
+					BufferedReader br = new BufferedReader(new FileReader(ignorefile));
+					String line = null;
+					while ((line = br.readLine()) != null) {
+						if (line.trim().length() > 0 && !line.startsWith("#"))
+							xml_files_to_ignore.add(line.trim());
+					}
+					br.close();
+					if (xml_files_to_ignore.size() > 0)
+						System.err.println("#INFO ignoring " + xml_files_to_ignore.size() + " input files.");
+					else
+						System.err.println("#WARN list of files to ignore seems to be empty: " + ignorefile);
+				} catch (FileNotFoundException e) {
+					System.err.println("#ERROR could not find file " + ignorefile);
+					System.exit(4);
+				} catch (IOException e) {
+					System.err.println("#ERROR reading from file " + ignorefile);
+					System.exit(4);
+				}
+			} else {
 				dir = args[a];
 				File DIR = new File(dir);
 				if (DIR.exists() && DIR.canRead()) {
@@ -181,14 +208,16 @@ public class AnnotateMedline {
 			filelist_p = DIR.list();
 			for (String filename: filelist_p) {
 				if (filename.matches("medline\\d+n\\d+\\.xml(\\.gz)?") || filename.matches("outfile\\.\\d+\\.xml(\\.gz)?"))
-					filelist.add(filename);
+					if (!xml_files_to_ignore.contains(filename))
+						filelist.add(filename);
 			}
 		// if 'dir' seems to be a single file:
 		} else {
 			String filename = dir.replaceFirst("^(.+)?\\/(.+?)$", "$2"); // get file name part
 			dir = dir.replaceFirst("^(.+)?\\/(.+?)$", "$1");             // get new directory name part
 			if (filename.matches("medline\\d+n\\d+\\.xml(\\.gz)?") || filename.matches("outfile\\.\\d+\\.xml(\\.gz)?"))
-				filelist.add(filename);
+				if (!xml_files_to_ignore.contains(filename))
+					filelist.add(filename);
 		}
 		if (filelist.size() == 0) {
 			System.err.println("Error: found no files matching the naming convention medline12n123.xml or .xml.gz");
