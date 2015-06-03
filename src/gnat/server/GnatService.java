@@ -258,6 +258,8 @@ class GnatServiceHandler extends ServiceHandler {
 			exchange.sendResponseHeaders(400, 0);
 			return;
 		}
+		
+		long time_started = System.currentTimeMillis();
 
 		// get the query parameters
 		Request userQuery = getQuery(exchange);
@@ -323,6 +325,12 @@ class GnatServiceHandler extends ServiceHandler {
 			}
 		}
 
+		if (logLevel > 4) {
+			long time = System.currentTimeMillis() - time_started;
+			//time = time / 1000;
+			System.out.println("Finished in " + time + "msec.");
+		}
+		
 		responseBody.close();
 	}
 
@@ -332,8 +340,21 @@ class GnatServiceHandler extends ServiceHandler {
 			linn.annotate(a);
 	}
 
-	private List<AnnotatedText> getTexts(Request userQuery,
-			OutputStream responseBody) throws IOException {
+	
+	/**
+	 * Put together a list of texts (as {@link gnat.server.AnnotatedText AnnotatedText}s) according to the user query.
+	 * <br/>
+	 * Currently supported: simple string, PubMed ID, and PubMedCentral ID.
+	 * Simple string requests will be wrapped in an {@link gnat.server.AnnotatedText AnnotatedText}.
+	 * Uses {@link gnat.retrieval.PubmedAccess PubmedAccess} and {@link gnat.retrieval.PmcAccess PmcAccess} to obtain the XML
+	 * for the requested IDs.
+	 * 
+	 * @param userQuery
+	 * @param responseBody
+	 * @return a list of {@link gnat.server.AnnotatedText AnnotatedText}s
+	 * @throws IOException
+	 */
+	private List<AnnotatedText> getTexts(Request userQuery, OutputStream responseBody) throws IOException {
 		List<RequestedText> textsToAnnotate = new LinkedList<RequestedText>();
 
 		// add texts given directly via the 'text' parameter in the query

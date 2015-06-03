@@ -18,6 +18,13 @@
 <entry key="linnaeusUrl">bergman.smith.man.ac.uk:55000</entry>
 <entry key="dictionaryServerGO">http://bergman.smith.man.ac.uk:56099</entry>
 
+<!-- URL to run an NCBI eUtils Fetch request -->
+<entry key="eUtilsBaseUrl">http://eutils.ncbi.nlm.nih.gov</entry>
+<entry key="pmcBaseUrl">http://www.pubmedcentral.nih.gov</entry>
+<!--entry key="eUtilsBaseUrl">http://130.14.29.110</entry>
+<entry key="removePubMedXmlHeader">yes</entry>
+<entry key="pmcBaseUrl">http://130.14.29.110</entry-->
+
 <!-- If no species name was found in a text, associated the default species (comma-separated) with that text -->
 <entry key="defaultSpecies">9606</entry>
 <!-- In addition to the species that were found in a text by name, adds all these as 'recognized' -->

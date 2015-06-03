@@ -79,10 +79,10 @@ public class AnnotateMedline_TsvOutput {
 	/** */
 	public static String xml_attribute_candidate_ids = "candidateIds";
 
-//	/** Collection of (PubMed or other) IDs not to parse (again). */
-//	public static Set<String> blacklist = new HashSet<String>();
-//	/** */
-//	public static Set<String> whitelist = new HashSet<String>();
+	/** Collection of (PubMed or other) IDs not to parse (again). */
+	public static Set<String> blacklist = new HashSet<String>();
+	/** */
+	public static Set<String> whitelist = new HashSet<String>();
 
 	
 	/**
@@ -109,8 +109,8 @@ public class AnnotateMedline_TsvOutput {
 			System.out.println(" -v        -  Set verbosity level for progress and debugging information");
 			System.out.println("              Default: 0; warnings: 1, status: 2, ... debug: 6");
 			System.out.println(" --outfile -  File to write the output list; default is STDOUT");
-//			System.out.println(" --black <file>  -  Do not parse PubMed articles listed in this file (PMIDs); blacklist has precedence over whitelist");
-//			System.out.println(" --white <file>  -  Parse only the PubMed articles listed in this file; blacklist has precedence over whitelist");
+			System.out.println(" --black <file>  -  Do not parse PubMed articles listed in this file (PMIDs); blacklist has precedence over whitelist");
+			System.out.println(" --white <file>  -  Parse only the PubMed articles listed in this file; blacklist has precedence over whitelist");
 			System.exit(1);
 		}
 		
@@ -171,42 +171,42 @@ public class AnnotateMedline_TsvOutput {
 			if (!DIR.exists())
 				DIR.mkdirs();
 		}
-//		
-//		//
-//		if (blacklistfile.length() > 0) {
-//			try {
-//				BufferedReader br = new BufferedReader(new FileReader(blacklistfile));
-//				String line = "";
-//				while ((line = br.readLine()) != null) {
-//					if (line.matches("\\d+"))
-//						blacklist.add(line);
-//				}
-//				br.close();
-//			} catch (IOException e) {
-//				System.err.println("#ERROR reading black list file: " + blacklistfile);
-//				System.err.println("#ERROR " + e.getMessage());
-//				System.exit(2);
-//			}
-//			System.err.println("#INFO blacklisted " + blacklist.size() + " PubMed IDs");
-//		}
-//		
-//		//
-//		if (whitelistfile.length() > 0) {
-//			try {
-//				BufferedReader br = new BufferedReader(new FileReader(whitelistfile));
-//				String line = "";
-//				while ((line = br.readLine()) != null) {
-//					if (line.matches("\\d+"))
-//						whitelist.add(line);
-//				}
-//				br.close();
-//			} catch (IOException e) {
-//				System.err.println("#ERROR reading white list file: " + whitelistfile);
-//				System.err.println("#ERROR " + e.getMessage());
-//				System.exit(2);
-//			}
-//			System.err.println("#INFO whitelisted " + whitelist.size() + " PubMed IDs");
-//		}
+		
+		//
+		if (blacklistfile.length() > 0) {
+			try {
+				BufferedReader br = new BufferedReader(new FileReader(blacklistfile));
+				String line = "";
+				while ((line = br.readLine()) != null) {
+					if (line.matches("\\d+"))
+						blacklist.add(line);
+				}
+				br.close();
+			} catch (IOException e) {
+				System.err.println("#ERROR reading black list file: " + blacklistfile);
+				System.err.println("#ERROR " + e.getMessage());
+				System.exit(2);
+			}
+			System.err.println("#INFO blacklisted " + blacklist.size() + " PubMed IDs");
+		}
+		
+		//
+		if (whitelistfile.length() > 0) {
+			try {
+				BufferedReader br = new BufferedReader(new FileReader(whitelistfile));
+				String line = "";
+				while ((line = br.readLine()) != null) {
+					if (line.matches("\\d+"))
+						whitelist.add(line);
+				}
+				br.close();
+			} catch (IOException e) {
+				System.err.println("#ERROR reading white list file: " + whitelistfile);
+				System.err.println("#ERROR " + e.getMessage());
+				System.exit(2);
+			}
+			System.err.println("#INFO whitelisted " + whitelist.size() + " PubMed IDs");
+		}
 		
 		//
 		ConstantsNei.setOutputLevel(verbosity);
@@ -264,8 +264,8 @@ public class AnnotateMedline_TsvOutput {
 			
 			//////////
 			// INPUT
-//			TextFactory.setBlacklist(blacklist);
-//			TextFactory.setWhitelist(whitelist);
+			TextFactory.setBlacklist(blacklist);
+			TextFactory.setWhitelist(whitelist);
 			run.setTextRepository(TextFactory.loadTextRepositoryFromMedlineFile(dir + "/" + filename));
 			System.err.println("#INFO done loading text repository: " + run.getTextRepository().size() + " texts");
 			

@@ -24,7 +24,7 @@ public class GOAccess {
 
 	public GOAccess () {
 		this(ISGNProperties.get("dbDriver"), ISGNProperties.get("dbAccessUrl"),
-			 ISGNProperties.get("dbUser"), ISGNProperties.get("dbPass"), true);
+					ISGNProperties.get("dbUser"), ISGNProperties.get("dbPass"), true);
 	}
 
 
@@ -554,6 +554,9 @@ public class GOAccess {
 					user,
 					pass);
 			userStatement = userConnection.createStatement();
+		} catch (com.mysql.jdbc.exceptions.jdbc4.CommunicationsException e) {
+			System.err.println("#ERROR connecting to database server at " + url);
+			System.err.println("#ERROR reason: " + e.getMessage());
 		} catch (java.sql.SQLException sqle) {
 			sqle.printStackTrace();
 			success = false;
@@ -564,10 +567,6 @@ public class GOAccess {
 		} catch (Exception e) {
 			System.err.println("Exception: unknown host?");
 		}
-		
-		//System.err.println(userStatement);
-		//System.err.println(success);
-		//System.exit(1);
 		
 		if (success) openConnection = true;
 		return success;

@@ -1,5 +1,6 @@
 package gnat.retrieval;
 
+import gnat.ISGNProperties;
 import gnat.preprocessing.sentences.SentenceSplitter;
 import gnat.preprocessing.sentences.SentenceSplitterRegex;
 import gnat.preprocessing.tokenization.PreTokenizer;
@@ -35,29 +36,42 @@ public class PubmedAccess {
 	/** URI mapping for Ali Baba namespace: http://siegfried.informatik.hu-berlin.de */
 	public static final String URI_NAMESPACE = "http://siegfried.informatik.hu-berlin.de";
 	
+	/** Base URL to access NCBI's eUtils. Default: "http://eutils.ncbi.nlm.nih.gov"; <br/>
+	 *  Can be overwritten by setting "eUtilsBaseUrl" in isgn_properties.xml (also see {@link gnat.ISGNProperties ISGNProperties}). */
+	public static String URI_EUTILS_BASE = "http://eutils.ncbi.nlm.nih.gov";
+	static {
+		if (ISGNProperties.get("eUtilsBaseUrl") != null) URI_EUTILS_BASE = ISGNProperties.get("eUtilsBaseUrl");
+	}
+	
 	/** To get a PubMed eUtils query, put together the QUERYTERM-URI, the query string,
 	 *  the RETMAXEXTENSION and the corresponding limit (if needed) */
-	public static final String URI_EUTILS_PUBMEDIDSFORQUERYTERM =
-		"http://eutils.ncbi.nlm.nih.gov/entrez/eutils/esearch.fcgi?db=pubmed&usehistory=y&term=";
+	public static final String URI_EUTILS_PUBMEDIDSFORQUERYTERM = URI_EUTILS_BASE + "/entrez/eutils/esearch.fcgi?db=pubmed&usehistory=y&term=";
 	/** To get a PubMed eUtils query, put together the QUERYTERM-URI, the query string,
 	 *  the RETMAXEXTENSION and the corresponding limit (if needed) */
 	public static final String URI_EUTILS_PUBMEDIDSFORQUERYTERM_RETMAXEXTENSION = "&retmax=";
 	
 	/** Link to retrieve a set of PubMed citations for given IDs. Append the IDs, comma separated, to this string. */
-	public static String URI_PUBMED_EUTILS_GETCITATIONS = "http://eutils.ncbi.nlm.nih.gov/entrez/eutils/efetch.fcgi?db=pubmed"
-			+ "&retmode=xml&rettype=abstract&id=";
-
+	public static final String URI_PUBMED_EUTILS_GETCITATIONS = URI_EUTILS_BASE + "/entrez/eutils/efetch.fcgi?db=pubmed&retmode=xml&rettype=abstract&id=";
 
 	/** */
-	public static final String URI_PUBMED_EUTILS_ELINK_RELATEDARTICLES = "http://eutils.ncbi.nlm.nih.gov/entrez/eutils/elink.fcgi?db=pubmed&cmd=neighbor&id=";
+	public static final String URI_PUBMED_EUTILS_ELINK_RELATEDARTICLES = URI_EUTILS_BASE + "/entrez/eutils/elink.fcgi?db=pubmed&cmd=neighbor&id=";
 	
+	/** */
 	static SentenceSplitter splitter = new SentenceSplitterRegex();
+	
+	/** */
+	public static boolean removePubMedXmlHeader = false;
+	static {
+		if (ISGNProperties.get("removePubMedXmlHeader") != null &&
+			ISGNProperties.get("removePubMedXmlHeader").toLowerCase().matches("(1|true|yes|y|\\+)"))
+			removePubMedXmlHeader = true;
+	}
 	
 	
 	/**
-	 * Returns an array of abstract texts for a given array of Pubmed Ids. If
-	 * unknown ids are encountered, the length of the array returned varies from
-	 * the given array of ids, ie. it is of shorter length. Concatenates title
+	 * Returns an array of abstract texts for a given array of PubMed IDs. If
+	 * unknown IDs are encountered, the length of the array returned varies from
+	 * the given array of IDs, that is, it is of shorter length. Concatenates title
 	 * and abstract text with a single white space.
 	 * @param pubmedIDs
 	 * @return String[]
@@ -77,8 +91,8 @@ public class PubmedAccess {
 	 */
 	public static String[][] getAbstractsAsTitleAndText (String[] pubmedIDs) {
 		String content = getOriginalCitations(pubmedIDs);
-		return PubmedAccess.getAbstractsAsTitleAndTextFromXML(content);
 
+		return PubmedAccess.getAbstractsAsTitleAndTextFromXML(content);
 	}
 	
 	
@@ -100,6 +114,21 @@ public class PubmedAccess {
 		//int responseCode = rh.getResponseCode(URL)/100;
 		String content = rh.getURLContent(URL);
 		
+		// workaround to avoid" unbound domain" exceptions for PubMed XML:
+		// remove the XML header that has the DTD (http://www.ncbi.nlm.nih.gov/corehtml/query/DTD/pubmed_150101.dtd)
+		if (removePubMedXmlHeader) {
+			StringBuffer c = new StringBuffer();
+			String[] lines = content.split("[\r\n]+");
+			for (int l = 0; l < lines.length; l++)
+				//if (lines[l].startsWith("<?xml ") || lines[l].startsWith("<!DOCTYPE "))
+				//	lines[l] = "";
+				if (!lines[l].startsWith("<?xml ") && !lines[l].startsWith("<!DOCTYPE ")) {
+					c.append(lines[l]); c.append("\n");
+				}
+			content = c.toString();
+			//System.out.println(content);
+		}
+
 		//if((responseCode!=1) && (responseCode!=2) && (responseCode!=3)){
 		//	ErrorHelper.eUtils_down=true;
 		//	ErrorHelper.eUtils_response_code=responseCode;
