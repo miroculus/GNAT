@@ -174,7 +174,10 @@ public class UnspecificNameFilter implements Filter {
 				"|unknown function|EST|CNS" +
 				// added to SF-Gnat acc. "100-test"
 				"|body weight|bone mineral content|long bones|renal cystic disease severity|GAGA transcription factor" +
-				"|[Dd]ominant megacolon|sex-peptide|gamma\\(c\\)|Ames dwarf)"
+				"|[Dd]ominant megacolon|sex-peptide|gamma\\(c\\)|Ames dwarf" +
+				// medline 2015:
+				"|cellular stress response" +
+			    ")"
 
 		)){
 			return true;
@@ -307,7 +310,6 @@ public class UnspecificNameFilter implements Filter {
 				"|II|VII|[Aa]lpha|[Bb]eta|[Gg]amma|[Dd]elta|[Ee]psilon|tau|zeta" +
 				"|great|tissue|simple|face|nude|type|raft|partial|bind|cord|Chr|rank|anti" +
 				"|can|not|was|has|on|via|use|up|acidic|longest|best|raised|multiple" +
-				"|miR|click|spin|pen|flip" +
 				"|Ca2|CA|C\\-C|CHO|Cys|pro|how|early|similar|no|period|rod" +
 				"|interleukins|releases?|origins?|chemokines?|sons?|nets?" +
 				//"|LPS" +
@@ -329,7 +331,8 @@ public class UnspecificNameFilter implements Filter {
 				"|per \\d+|or \\d+|OR \\d+|six \\d+|F \\d+|at \\d+|is \\d+|\\-19|n-3|at \\d+ d|s to|acid 2|HS is" +
 				"|pin|cramp|Vmax|chip|mix|max|spatial|c nu|scar|or VE|Platelet|Mn|ash|jade|cod|lip|tan|Amid|sec|lime" +
 				"|coreceptor|inter|stab|oligo|rim|peri|chi|mer|mol|sink|as L|kit|Pigs|goat|jet|taxi|lab|mask|patched" +
-
+				// medline 2015:
+				"|miR|click|spin|pen|flip|Tumor|lobe|longevity|gem|expanded|ATP|ADP|PR 1|Carlo" +
 				")");
 	}
 
