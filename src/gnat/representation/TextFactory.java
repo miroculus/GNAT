@@ -46,17 +46,17 @@ public class TextFactory {
 	/** Stores a mapping from PubMed IDs to GO terms; will be added to a Text's ContextModel. */
 	static Map<Integer, Set<String>> pubmed2goterms  = new HashMap<Integer, Set<String>>();
 	
-//	/** */
-//	static Set<String> myblacklist = new HashSet<String>();
-//	static Set<String> mywhitelist = new HashSet<String>();
-//	public static void setBlacklist (Collection<String> blacklist) {
-//		myblacklist.clear();
-//		myblacklist.addAll(blacklist);
-//	}
-//	public static void setWhitelist (Collection<String> whitelist) {
-//		mywhitelist.clear();
-//		mywhitelist.addAll(whitelist);
-//	}
+
+	static Set<String> myblacklist = new HashSet<String>();
+	static Set<String> mywhitelist = new HashSet<String>();
+	public static void setBlacklist (Collection<String> blacklist) {
+		myblacklist.clear();
+		myblacklist.addAll(blacklist);
+	}
+	public static void setWhitelist (Collection<String> whitelist) {
+		mywhitelist.clear();
+		mywhitelist.addAll(whitelist);
+	}
 	
 	/**
 	 * Loads a text repository from the given directories.<br>
